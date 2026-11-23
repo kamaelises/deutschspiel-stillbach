@@ -1,0 +1,66 @@
+{
+ "id": "ch01_d1",
+ "title_ru": "Новый сосед",
+ "roles": {
+  "A": "{hero_name} (герой)",
+  "B": "Herr Schmidt"
+ },
+ "lines": [
+  {
+   "id": "ch01_d1_01",
+   "role": "A",
+   "de": "Guten Morgen!",
+   "ru": "Доброе утро!",
+   "audio": "ch01_001.mp3"
+  },
+  {
+   "id": "ch01_d1_02",
+   "role": "B",
+   "de": "Guten Morgen!",
+   "ru": "Доброе утро!",
+   "audio": "ch01_001.mp3"
+  },
+  {
+   "id": "ch01_d1_03",
+   "role": "A",
+   "de": "Ich bin Max, Ihr neuer Nachbar.",
+   "ru": "Я {hero_name}, ваш новый сосед.",
+   "audio": null
+  },
+  {
+   "id": "ch01_d1_04",
+   "role": "B",
+   "de": "Mein Name ist Schmidt.",
+   "ru": "Меня зовут Шмидт.",
+   "audio": null
+  },
+  {
+   "id": "ch01_d1_05",
+   "role": "B",
+   "de": "Woher kommen Sie?",
+   "ru": "Откуда вы?",
+   "audio": "ch01_036.mp3"
+  },
+  {
+   "id": "ch01_d1_06",
+   "role": "A",
+   "de": "Ich komme aus der Ukraine.",
+   "ru": "Я из Украины.",
+   "audio": "ch01_038.mp3"
+  },
+  {
+   "id": "ch01_d1_07",
+   "role": "B",
+   "de": "Herzlich willkommen im Dorf!",
+   "ru": "Добро пожаловать в деревню!",
+   "audio": null
+  },
+  {
+   "id": "ch01_d1_08",
+   "role": "A",
+   "de": "Danke, auf Wiedersehen!",
+   "ru": "Спасибо, до свидания!",
+   "audio": null
+  }
+ ]
+}

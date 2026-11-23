@@ -1,0 +1,20 @@
+{
+ "hero": "held_11.png",
+ "schmidt": "schmidt_11.png",
+ "brezel_sit": "collie_22.png",
+ "brezel_happy": "collie_happy_51.png",
+ "brezel_run": "collie_run_51.png",
+ "house": "bld_elternhaus_501.png",
+ "tree_oak": "prop_tree_oak_81.png",
+ "tree_pine": "prop_tree_pine_81.png",
+ "fence": "prop_fence_81.png",
+ "mailbox": "prop_mailbox_81.png",
+ "flowerbed": "prop_flowerbed_81.png",
+ "bush": "prop_bush_81.png",
+ "doghouse": "prop_doghouse_81.png",
+ "icon_coin": "icon_coin_91.png",
+ "icon_bread": "icon_bread_91.png",
+ "icon_heart": "icon_heart_91.png",
+ "icon_star": "icon_star_91.png",
+ "kitchen": "room_empty_wood_31.png"
+}

@@ -1,0 +1,15 @@
+/* DeutschSpiel UI kit: pixel-art 9-slice frames. 1 art pixel = var(--px) screen px (use integer). */
+:root { --px: 3px; }
+.ui { image-rendering: pixelated; box-sizing: border-box; border-style: solid; font-family: 'Pixelify Sans', 'Press Start 2P', monospace; color: #2e1e12; }
+.ui-panel-paper { border-width: calc(6 * var(--px)); border-image: url(assets/panel_paper.png) 6 fill / calc(6 * var(--px)) stretch; padding: 0; }
+.ui-panel-wood  { border-width: calc(6 * var(--px)); border-image: url(assets/panel_wood.png) 6 fill / calc(6 * var(--px)) stretch; color: #f1e3c0; }
+.ui-bubble      { border-width: calc(6 * var(--px)); border-image: url(assets/bubble.png) 6 fill / calc(6 * var(--px)) stretch; position: relative; }
+.ui-bubble::after { content: ''; position: absolute; left: calc(8 * var(--px)); bottom: calc(-8 * var(--px)); width: calc(10 * var(--px)); height: calc(8 * var(--px)); background: url(assets/bubble_tail.png) no-repeat; background-size: 100% 100%; image-rendering: pixelated; }
+.ui-slot        { border-width: calc(4 * var(--px)); border-image: url(assets/slot.png) 4 fill / calc(4 * var(--px)) stretch; width: calc(24 * var(--px)); height: calc(24 * var(--px)); }
+.ui-nameplate   { border-width: calc(4 * var(--px)); border-image: url(assets/nameplate.png) 4 fill / calc(4 * var(--px)) stretch; }
+.ui-btn         { border-width: calc(4 * var(--px)); border-image: url(assets/btn_normal.png) 4 fill / calc(4 * var(--px)) stretch; min-height: 48px; min-width: 48px; background: none; cursor: pointer; }
+.ui-btn:hover   { border-image-source: url(assets/btn_hover.png); }
+.ui-btn:active  { border-image-source: url(assets/btn_pressed.png); }
+.ui-btn:disabled{ border-image-source: url(assets/btn_disabled.png); cursor: default; }
+.ui-bar         { border-width: calc(3 * var(--px)); border-image: url(assets/bar_frame.png) 3 fill / calc(3 * var(--px)) stretch; height: calc(10 * var(--px)); }
+.ui-bar > i     { display: block; height: 100%; background: url(assets/bar_fill_green.png) repeat-x; background-size: auto 100%; image-rendering: pixelated; }

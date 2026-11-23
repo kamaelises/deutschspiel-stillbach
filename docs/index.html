@@ -1,0 +1,45 @@
+﻿<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>DeutschSpiel: Vertikaler Schnitt (Elternhaus)</title>
+<style>
+@font-face { font-family: 'Pixelify Sans'; src: url(fonts/PixelifySans.ttf); font-weight: 400 700; }
+html, body { margin: 0; height: 100%; background: #1d130b; overflow: hidden; }
+#stage { position: absolute; left: 0; top: 0; width: 960px; height: 540px; transform-origin: 0 0; }
+#game, #game canvas { position: absolute; left: 0; top: 0; width: 960px; height: 540px; }
+#ui { position: absolute; left: 0; top: 0; width: 960px; height: 540px; pointer-events: none; font-family: 'Pixelify Sans', monospace; }
+#ui .ui, #ui button { pointer-events: auto; }
+.hud { position: absolute; display: flex; gap: 8px; align-items: center; color: #2e1e12; font-size: 22px; }
+.hud .ui-nameplate { padding: 0 10px; display: flex; align-items: center; gap: 6px; height: 36px; }
+.hud img { height: 24px; image-rendering: pixelated; }
+#goal { left: 12px; top: 10px; } #clock { right: 12px; top: 10px; } #bag { right: 12px; bottom: 12px; }
+#bag.ui-btn { font-size: 20px; padding: 0 14px; color: #2e1e12; }
+#dlg { position: absolute; left: 40px; right: 40px; bottom: 16px; display: none; }
+#who { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; font-size: 22px; margin-left: 20px; position: relative; top: 4px; z-index: 2; }
+#bubble { padding: 6px 14px 8px; min-height: 84px; font-size: 26px; line-height: 1.25; }
+#bubble #ru { font-size: 18px; opacity: .75; margin-top: 4px; min-height: 22px; }
+#btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+#btns .ui-btn { font-family: inherit; font-size: 22px; padding: 0 18px; min-width: 110px; height: 52px; color: #2e1e12; }
+#toast { position: absolute; left: 50%; top: 90px; transform: translateX(-50%); font-size: 30px; color: #fff; text-shadow: 2px 2px 0 #3b2314; display: none; }
+#reward { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 380px; display: none; text-align: center; font-size: 26px; padding: 8px 10px 16px; }
+#reward img { height: 72px; margin: 6px 8px; image-rendering: pixelated; }
+#reward .ui-btn { margin-top: 10px; font-family: inherit; font-size: 22px; padding: 0 22px; height: 52px; }
+#reset { position: absolute; left: 12px; bottom: 6px; font-size: 12px; color: #fff8; pointer-events: auto; cursor: pointer; }
+</style>
+<link rel="stylesheet" href="ui_kit.css">
+</head><body>
+<div id="stage">
+  <div id="game"></div>
+  <div id="ui">
+    <div class="hud" id="goal"><div class="ui ui-nameplate"><img id="icoCoin" alt="">&nbsp;<span id="coins">0</span></div><div class="ui ui-nameplate" id="goalTxt">Ziel: Elternhaus</div></div>
+    <div class="hud" id="clock"><div class="ui ui-nameplate">Morgen · Sonne</div></div>
+    <button class="ui ui-btn hud" id="bag">Rucksack</button>
+    <div id="dlg"><div class="ui ui-nameplate" id="who"></div><div class="ui ui-bubble" id="bubble"><div id="de"></div><div id="ru"></div></div>
+      <div id="btns"><button class="ui ui-btn" id="bHear">Hören</button><button class="ui ui-btn" id="bSpeak">Sprechen</button><button class="ui ui-btn" id="bNext">Weiter</button></div></div>
+    <div id="toast"></div>
+    <div class="ui ui-panel-paper" id="reward"><div>Belohnung!</div><div id="rwItems"></div><div id="rwTxt" style="font-size:20px"></div><button class="ui ui-btn" id="bBack">Zum Hof</button></div>
+    <div id="reset">Reset</div>
+  </div>
+</div>
+<script src="phaser.min.js"></script>
+<script src="main.js"></script>
+</body></html>

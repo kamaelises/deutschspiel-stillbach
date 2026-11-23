@@ -1,4 +1,4 @@
-// Деревня Stillbach — одна бесшовная карта (assets_v3/town): двор героя + улица + дома. Max идёт куда тапнули,
+﻿// Деревня Stillbach — одна бесшовная карта (assets_v3/town): двор героя + улица + дома. Max идёт куда тапнули,
 // тап по дому — идёт к двери и входит (Gildenhaus — сцена внутри мира; закрытые дома говорят, с какой главы).
 // Над домами — вывески с артиклем в цвете (der синий, die красный, das зелёный). Город растёт по главам (заглушки — «bald»).
 (function () {
@@ -34,6 +34,16 @@
         };
         if (window.walkToScene) window.walkToScene(sc, b.door[0], b.door[1] + 30, go); else go();
       });
+    });
+    (T.plots || []).forEach(p => {                                  // будущие места: табличка «Bauplatz» — дом появится с его главой
+      const [x0, y0, x1, y1] = p.box, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, [art, ...w] = p.de.split(' ');
+      const post = sc.add.rectangle(cx, cy + 34, 8, 60, 0x6b3f22).setStrokeStyle(2, 0x3b2314).setDepth(cy + 30);
+      const board = sc.add.rectangle(cx, cy, 240, 80, 0xe8d0a0).setStrokeStyle(4, 0x6b3f22).setDepth(cy + 31);
+      const t1 = sc.add.text(cx, cy - 22, 'Bauplatz', { fontFamily: 'Roboto, sans-serif', fontSize: '15px', fontStyle: 'bold', color: '#6b3f22' }).setOrigin(0.5, 0.5).setDepth(cy + 32);
+      const t2 = sc.add.text(cx, cy + 2, p.de, { fontFamily: 'Roboto, sans-serif', fontSize: '20px', fontStyle: 'bold', color: '#2e1e12' }).setOrigin(0.5, 0.5).setDepth(cy + 32);
+      const t3 = sc.add.text(cx, cy + 24, 'ab Kapitel ' + p.chapter + ' · ' + p.ru, { fontFamily: 'Roboto, sans-serif', fontSize: '12px', color: '#6b5640' }).setOrigin(0.5, 0.5).setDepth(cy + 32);
+      t2.setColor(COL[art] || '#2e1e12');
+      board.setInteractive({ useHandCursor: true }).on('pointerup', () => { if (sc.__dragged) return; if (window.speakDE) speakDE(p.de); toast(p.de + ' — ab Kapitel ' + p.chapter, 1800); });
     });
     const sp = sc.registry.get('spawnAt');                         // назад из дома — у его двери
     if (sp) { sc.registry.set('spawnAt', null); sc.camFocus = [sp[0], sp[1] - 60]; sc.__spawn = sp; }

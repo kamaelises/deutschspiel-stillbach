@@ -1,6 +1,6 @@
-/* DeutschSpiel UI kit: pixel-art 9-slice frames. 1 art pixel = var(--px) screen px (use integer). */
+﻿/* DeutschSpiel UI kit: pixel-art 9-slice frames. 1 art pixel = var(--px) screen px (use integer). */
 :root { --px: 3px; }
-.ui { image-rendering: pixelated; box-sizing: border-box; border-style: solid; font-family: 'Pixelify Sans', 'Press Start 2P', monospace; color: #2e1e12; }
+.ui { image-rendering: pixelated; box-sizing: border-box; border-style: solid; font-family: Roboto, 'Segoe UI', system-ui, sans-serif; font-weight: 600; color: #2e1e12; }
 .ui-panel-paper { border-width: calc(6 * var(--px)); border-image: url(assets/panel_paper.png) 6 fill / calc(6 * var(--px)) stretch; padding: 0; }
 .ui-panel-wood  { border-width: calc(6 * var(--px)); border-image: url(assets/panel_wood.png) 6 fill / calc(6 * var(--px)) stretch; color: #f1e3c0; }
 .ui-bubble      { border-width: calc(6 * var(--px)); border-image: url(assets/bubble.png) 6 fill / calc(6 * var(--px)) stretch; position: relative; }

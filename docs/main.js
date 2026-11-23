@@ -45,7 +45,7 @@ class Yard extends Phaser.Scene {
     else { this.arrow = this.add.triangle(480, 40, 0, 0, 36, 0, 18, 26, 0xffd23f).setDepth(999).setStrokeStyle(3, 0x3b2314); this.tweens.add({ targets: this.arrow, y: 56, duration: 500, yoyo: true, repeat: -1 }); $('goalTxt').textContent = 'Ziel: Elternhaus'; }
     this.house.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.enter());
     this.brezel.setInteractive({ useHandCursor: true }).on('pointerdown', () => { toast('Wuff!'); this.tweens.add({ targets: this.brezel, y: this.brezel.y - 26, duration: 150, yoyo: true }); });
-    $('dlg').style.display = 'none'; $('bMap').style.display = ''; $('bMap').onclick = () => { $('bMap').style.display = 'none'; $('bFurn').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Karte')); }; $('bFurn').style.display = ''; $('bFurn').onclick = () => { $('bFurn').style.display = 'none'; $('bMap').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Furnish')); };
+    $('dlg').style.display = 'none'; $('bag').style.display = ''; $('goal').style.display = ''; $('clock').style.display = ''; $('bMap').style.display = ''; $('bMap').onclick = () => { $('bMap').style.display = 'none'; $('bFurn').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Karte')); }; $('bFurn').style.display = ''; $('bFurn').onclick = () => { $('bFurn').style.display = 'none'; $('bMap').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Furnish')); };
     if (state.done && this.registry.get('justDone')) { this.registry.set('justDone', false); this.rewardPop(); }
   }
   rewardPop() { (this.reward || []).forEach((r, i) => { const sx = r.scaleX || 1, sy = r.scaleY || 1; r.setScale(0); this.tweens.add({ targets: r, scaleX: sx, scaleY: sy, duration: 500, delay: 300 + i * 250, ease: 'Back.easeOut' }); }); toast('Die Blumen sind da!', 2500); this.tweens.add({ targets: this.brezel, y: this.brezel.y - 40, duration: 200, yoyo: true, repeat: 3 }); }
@@ -63,7 +63,7 @@ class Room extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x2b1a10); this.cameras.main.fadeIn(300);
     const lay = this.cache.json.get('lay'); this.add.image(0, 0, 'v3_room_bg').setOrigin(0, 0).setDepth(-10);
     this.hero = v3(this, 'v3_hero', lay.room_hero, undefined, lay.origin_hero); this.npc = v3(this, 'v3_npc', lay.room_npc, undefined, lay.origin_npc);
-    this.i = data && data.s === 'Room' && data.i < lesson.lines.length ? data.i : 0; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
+    ['bag', 'bFurn', 'bMap'].forEach(k => $(k).style.display = 'none'); this.i = data && data.s === 'Room' && data.i < lesson.lines.length ? data.i : 0; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
     $('bHear').onclick = () => playLine(lesson.lines[this.i]);
     $('bNext').onclick = () => this.next(); $('bSpeak').onclick = () => this.speak(); $('bSkip').onclick = () => this.skip && this.skip();
   }

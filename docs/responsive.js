@@ -7,41 +7,54 @@
   let portrait = false;
   const isPortrait = () => innerHeight > innerWidth * 1.05;
 
-  function focusX(sc) {
-    if (sc.camFocusX) return sc.camFocusX;
-    if (sc.scene.key === 'Room' && sc.hero && sc.npc) return (sc.hero.x + sc.npc.x) / 2;
-    if (sc.scene.key === 'Yard' && sc.house && sc.hero) return (sc.house.x + sc.hero.x) / 2;
-    return SW / 2;
+  const PAN = ['Yard', 'Room', 'Furnish'];
+  const clampC = (c, half, size) => (half * 2 >= size ? size / 2 : Math.max(half, Math.min(size - half, c)));
+  function focus(sc) {
+    if (sc.camFocus) return sc.camFocus;
+    if (sc.scene.key === 'Room' && sc.hero && sc.npc) return [(sc.hero.x + sc.npc.x) / 2, SH / 2];
+    if (sc.scene.key === 'Yard' && sc.house && sc.hero) return [(sc.house.x + sc.hero.x) / 2, SH / 2];
+    return [SW / 2, SH / 2];
+  }
+  function apply(sc, cx, cy) {                                       // центр камеры в пределах сцены (по обеим осям)
+    const cam = sc.cameras.main, hw = cam.width / cam.zoom / 2, hh = cam.height / cam.zoom / 2;
+    const x = clampC(cx, hw, SW), y = clampC(cy, hh, SH); cam.centerOn(x, y); sc.camFocus = [x, y];
   }
   function fitCam(sc) {
     if (!sc || !sc.cameras || !sc.cameras.main) return;
     const cam = sc.cameras.main, vw = game.scale.width, vh = game.scale.height, furn = sc.scene.key === 'Furnish';
     let top = 0, h = vh;
-    if (furn) {                                          // комната — между верхней плашкой и полкой мебели
+    if (furn) {                                                      // комната — между верхней плашкой и полкой мебели
       const goal = document.getElementById('goal'), bar = document.getElementById('furnBar');
       const gb = goal && goal.offsetParent ? goal.getBoundingClientRect().bottom + 6 : 0, bt = bar && bar.offsetHeight ? bar.getBoundingClientRect().top - 6 : vh;
       top = Math.max(0, Math.round(gb)); h = Math.max(120, Math.round(bt - top));
     }
     cam.setViewport(0, top, vw, h);
-    const whole = !portrait;
-    const z = whole ? Math.min(vw / SW, h / SH) : h / SH;
-    cam.setZoom(z);
-    const halfW = vw / z / 2, fx = whole ? SW / 2 : Math.max(halfW, Math.min(SW - halfW, focusX(sc)));
-    cam.centerOn(fx, SH / 2);
-    if (portrait && (sc.scene.key === 'Yard' || furn) && !sc.__drag) addDrag(sc);
+    sc.__base = portrait ? h / SH : Math.min(vw / SW, h / SH);       // вертикально — по высоте, горизонтально — целиком
+    cam.setZoom(sc.__base * (sc.__uz || 1));
+    const [fx, fy] = focus(sc); apply(sc, fx, fy);
+    if (PAN.includes(sc.scene.key) && !sc.__drag) addDrag(sc);
   }
   window.fitCam = fitCam;
-  function addDrag(sc) {                                            // тянуть пальцем влево-вправо (двор, обустройство)
-    sc.__drag = true; let x0 = null, c0 = 0; sc.events.once('shutdown', () => { sc.__drag = false; sc.__dragged = false; sc.camFocusX = 0; });   // сцена перезапускается — слушатели снимаются, флаг тоже
-    sc.input.on('pointerdown', p => { x0 = p.x; c0 = sc.cameras.main.midPoint.x; sc.__dragged = false; });
+  function addDrag(sc) {                                            // один палец — двигать в любую сторону, два — приблизить/отдалить
+    sc.__drag = true; sc.input.addPointer(1);
+    let start = null, pinch = null;
+    sc.events.once('shutdown', () => { sc.__drag = false; sc.__dragged = false; sc.camFocus = null; sc.__uz = 1; });
+    const pts = () => [sc.input.pointer1, sc.input.pointer2].filter(q => q && q.isDown);
+    sc.input.on('pointerdown', p => { const m = sc.cameras.main.midPoint; start = { x: p.x, y: p.y, cx: m.x, cy: m.y }; sc.__dragged = false;
+      const d = pts(); if (d.length === 2) { pinch = { dist: Math.hypot(d[0].x - d[1].x, d[0].y - d[1].y), uz: sc.__uz || 1 }; sc.__dragged = true; } });
     sc.input.on('pointermove', p => {
-      if (x0 === null || !portrait) return;
-      if (Math.abs(p.x - x0) > 8) sc.__dragged = true; if (!sc.__dragged) return;
-      const cam = sc.cameras.main, halfW = cam.width / cam.zoom / 2;
-      const c = Math.max(halfW, Math.min(SW - halfW, c0 - (p.x - x0) / cam.zoom));
-      cam.centerOn(c, SH / 2); sc.camFocusX = c;
+      const cam = sc.cameras.main, d = pts();
+      if (pinch && d.length === 2) {
+        const uz = Math.max(1, Math.min(3, pinch.uz * Math.hypot(d[0].x - d[1].x, d[0].y - d[1].y) / Math.max(10, pinch.dist)));
+        const m = cam.midPoint; sc.__uz = uz; cam.setZoom(sc.__base * uz); apply(sc, m.x, m.y); return;
+      }
+      if (!start) return;
+      if (Math.hypot(p.x - start.x, p.y - start.y) > 8) sc.__dragged = true; if (!sc.__dragged) return;
+      apply(sc, start.cx - (p.x - start.x) / cam.zoom, start.cy - (p.y - start.y) / cam.zoom);
     });
-    const up = () => { x0 = null; }; sc.input.on('pointerup', up); sc.input.on('pointerupoutside', up);
+    const up = () => { if (pts().length < 2) pinch = null; if (!pts().length) start = null; };
+    sc.input.on('pointerup', up); sc.input.on('pointerupoutside', up);
+    sc.input.on('wheel', (p, o, dx, dy) => { const cam = sc.cameras.main, m = cam.midPoint; sc.__uz = Math.max(1, Math.min(3, (sc.__uz || 1) * (dy > 0 ? 0.9 : 1.1))); cam.setZoom(sc.__base * sc.__uz); apply(sc, m.x, m.y); });
   }
   function layout() {
     const vw = innerWidth, vh = innerHeight; portrait = isPortrait();

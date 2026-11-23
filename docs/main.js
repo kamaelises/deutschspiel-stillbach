@@ -43,8 +43,8 @@ class Yard extends Phaser.Scene {
     this.tweens.add({ targets: this.brezel, scaleY: this.brezel.scaleY * 1.04, duration: 700, yoyo: true, repeat: -1 });
     if (state.done) { this.reward = this.lay.reward.map(xy => v3(this, 'v3_reward_flowers', xy)); $('goalTxt').textContent = 'Ziel: Bäckerei (bald)'; }
     else { this.arrow = this.add.triangle(480, 40, 0, 0, 36, 0, 18, 26, 0xffd23f).setDepth(999).setStrokeStyle(3, 0x3b2314); this.tweens.add({ targets: this.arrow, y: 56, duration: 500, yoyo: true, repeat: -1 }); $('goalTxt').textContent = 'Ziel: Elternhaus'; }
-    this.house.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.enter());
-    this.brezel.setInteractive({ useHandCursor: true }).on('pointerdown', () => { toast('Wuff!'); this.tweens.add({ targets: this.brezel, y: this.brezel.y - 26, duration: 150, yoyo: true }); });
+    this.house.setInteractive({ useHandCursor: true }).on('pointerup', () => { if (!this.__dragged) this.enter(); });
+    this.brezel.setInteractive({ useHandCursor: true }).on('pointerup', () => { if (this.__dragged) return; toast('Wuff!'); this.tweens.add({ targets: this.brezel, y: this.brezel.y - 26, duration: 150, yoyo: true }); });
     $('dlg').style.display = 'none'; $('bag').style.display = ''; $('goal').style.display = ''; $('clock').style.display = ''; $('bMap').style.display = ''; $('bMap').onclick = () => { $('bMap').style.display = 'none'; $('bFurn').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Karte')); }; $('bFurn').style.display = ''; $('bFurn').onclick = () => { $('bFurn').style.display = 'none'; $('bMap').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Furnish')); };
     if (state.done && this.registry.get('justDone')) { this.registry.set('justDone', false); this.rewardPop(); }
   }

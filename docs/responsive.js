@@ -36,7 +36,7 @@
     const [fx, fy] = focus(sc); apply(sc, fx, fy);
     if (PAN.includes(sc.scene.key) && !sc.__drag) addDrag(sc);
   }
-  window.fitCam = fitCam;
+  window.fitCam = fitCam; window.camTo = (sc, x, y) => apply(sc, x, y);
   function addDrag(sc) {                                            // один палец — двигать в любую сторону, два — приблизить/отдалить
     sc.__drag = true; sc.input.addPointer(1);
     let start = null, pinch = null;

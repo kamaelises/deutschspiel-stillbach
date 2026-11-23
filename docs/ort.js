@@ -17,7 +17,8 @@ class Ort extends Room {
       const lay = this.cache.json.get('lay');
       this.hero = this.add.image(o.hero[0], o.hero[1], 'v3_hero').setOrigin(lay.origin_hero ? lay.origin_hero[0] : 0.5, lay.origin_hero ? lay.origin_hero[1] : 1).setDepth(o.hero[1]);
       this.npc = this.add.zone(o.npc[0], o.npc[1], 40, 60);   // продавец/служащий нарисован художником в интерьере
-      this.i = i; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
+      this.i = i; this.coinsEarned = 0; if (window.walkSetup) window.walkSetup(this);
+      if (i > 0 || !this.waitTalk) { $('dlg').style.display = 'block'; this.talking = true; this.show(); } else this.waitTalk();
       $('bHear').onclick = () => playLine(this.L[this.i]);
       $('bNext').onclick = () => this.next(); $('bSpeak').onclick = () => this.speak(); $('bSkip').onclick = () => this.skip && this.skip();
       this.cameras.main.fadeIn(300); if (window.fitCam) window.fitCam(this);

@@ -25,7 +25,7 @@ class Boot extends Phaser.Scene {
   preload() {
     const keys = Object.keys(window.__assets);
     keys.forEach(k => this.load.image(k, 'assets/' + k + '.png'));
-    V3.forEach(k => this.load.image(k, 'assets_v3/' + k.slice(3) + '.png')); this.load.json('lay', 'assets_v3/layout_v3.json');
+    V3.forEach(k => this.load.image(k, 'assets_v3/' + k.slice(3) + '.png')); this.load.json('lay', 'assets_v3/layout_v3.json'); this.load.spritesheet('hero_walk', 'assets_v3/hero_walk.png', { frameWidth: 96, frameHeight: 96 }); this.load.json('fur', 'assets_v3/furnish/furnish.json');
     ['panel_paper'].forEach(k => this.load.image(k, 'assets/' + k + '.png'));
     this.load.on('loaderror', (f) => console.warn('missing', f.key));
   }
@@ -63,7 +63,7 @@ class Room extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x2b1a10); this.cameras.main.fadeIn(300);
     const lay = this.cache.json.get('lay'); this.add.image(0, 0, 'v3_room_bg').setOrigin(0, 0).setDepth(-10);
     this.hero = v3(this, 'v3_hero', lay.room_hero, undefined, lay.origin_hero); this.npc = v3(this, 'v3_npc', lay.room_npc, undefined, lay.origin_npc);
-    ['bag', 'bFurn', 'bMap'].forEach(k => $(k).style.display = 'none'); this.L = lesson.lines; this.i = data && data.s === 'Room' && data.i < this.L.length ? data.i : 0; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
+    ['bag', 'bFurn', 'bMap'].forEach(k => $(k).style.display = 'none'); this.L = lesson.lines; this.i = data && data.s === 'Room' && data.i < this.L.length ? data.i : 0; this.coinsEarned = 0; if (this.i > 0 || !this.waitTalk) { $('dlg').style.display = 'block'; this.talking = true; this.show(); } else this.waitTalk();   // диалог — после тапа по жителю
     $('bHear').onclick = () => playLine(this.L[this.i]);
     $('bNext').onclick = () => this.next(); $('bSpeak').onclick = () => this.speak(); $('bSkip').onclick = () => this.skip && this.skip();
   }

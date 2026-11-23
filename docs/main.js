@@ -39,7 +39,7 @@ class Yard extends Phaser.Scene {
     this.add.image(0, 0, 'v3_yard_bg').setOrigin(0, 0).setDepth(-10); this.add.image(0, 0, 'v3_light_overlay').setOrigin(0, 0).setDepth(2000);
     this.house = v3(this, 'v3_house', lay.house);
     this.hero = v3(this, 'v3_hero', lay.hero, undefined, lay.origin_hero);
-    this.brezel = v3(this, 'v3_brezel', lay.brezel).setVisible(false); // TODO: Brezel in the right scale (no fitting dog in the packs yet)
+    this.brezel = v3(this, 'v3_brezel', lay.brezel, undefined, lay.origin_brezel);
     this.tweens.add({ targets: this.brezel, scaleY: this.brezel.scaleY * 1.04, duration: 700, yoyo: true, repeat: -1 });
     if (state.done) { this.reward = this.lay.reward.map(xy => v3(this, 'v3_reward_flowers', xy)); $('goalTxt').textContent = 'Ziel: Bäckerei (bald)'; }
     else { this.arrow = this.add.triangle(480, 40, 0, 0, 36, 0, 18, 26, 0xffd23f).setDepth(999).setStrokeStyle(3, 0x3b2314); this.tweens.add({ targets: this.arrow, y: 56, duration: 500, yoyo: true, repeat: -1 }); $('goalTxt').textContent = 'Ziel: Elternhaus'; }

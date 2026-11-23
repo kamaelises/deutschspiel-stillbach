@@ -5,7 +5,7 @@ const store = { get() { try { return JSON.parse(localStorage.getItem('ds_proto')
   set(v) { try { localStorage.setItem('ds_proto', JSON.stringify(v)); } catch (e) {} } };
 let state = store.get(), lesson = null, assetKeys = {};
 function fit() { const s = Math.min(innerWidth / W, innerHeight / H); const st = $('stage'); st.style.transform = `scale(${s})`; st.style.left = (innerWidth - W * s) / 2 + 'px'; st.style.top = (innerHeight - H * s) / 2 + 'px'; }
-addEventListener('resize', fit); fit();
+addEventListener('resize', () => window.fit()); fit();
 function setCoins(n) { state.coins = n; store.set(state); $('coins').textContent = n; }
 function toast(t, ms = 1500) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms); }
 function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.style.display = 'none'; /* TODO child portrait */ R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }

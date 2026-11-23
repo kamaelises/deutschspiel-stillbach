@@ -14,9 +14,9 @@ class Furnish extends Phaser.Scene {
     this.add.image(0, 0, 'fur_shell').setOrigin(0, 0).setDepth(-100);
     state.furn = state.furn || []; this.placed = [];
     state.furn.forEach(p => this.spawn(this.item(p.k), p.x, p.y, false));
-    this.sel = null; this.ghost = null; this.makeBar();
-    $('dlg').style.display = 'none'; $('goalTxt').textContent = 'Einrichten: tippe ein Möbel';
-    this.input.on('pointermove', p => this.move(p)); this.input.on('pointerdown', p => this.tap(p));
+    this.sel = null; this.ghost = null; this.makeBar(); if (window.fitCam) setTimeout(() => window.fitCam(this), 0);
+    ['bag', 'bFurn', 'bMap'].forEach(k => $(k).style.display = 'none'); $('dlg').style.display = 'none'; $('goalTxt').textContent = 'Einrichten: tippe ein Möbel';
+    this.input.on('pointermove', p => this.move(p)); this.input.on('pointerdown', p => { this.__down = [p.x, p.y]; }); this.input.on('pointerup', p => { const d = this.__down; this.__down = null; if (d && !this.__dragged && Math.hypot(p.x - d[0], p.y - d[1]) < 10) this.tap(p); });   // тап ставит, протяжка — двигает комнату
     this.events.once('shutdown', () => { const b = $('furnBar'); if (b) b.style.display = 'none'; window.__furn = null; });
   }
   item(k) { return this.d.items.find(i => i.key === k); }
@@ -41,7 +41,7 @@ class Furnish extends Phaser.Scene {
     const fh = it.kind === 'wall' ? Math.max(8, Math.min(12, Math.round(it.h * 0.3))) : Math.max(8, Math.round(it.h * 0.5)), fw = it.w * 0.9; return [x - fw / 2, y - fh, x + fw / 2, y];   // half the height: things may stand behind each other, never inside
   }
   cellFloor(cx, cy) { if ((cy + 1) * this.C * this.S > this.barTop()) return false; const r = this.d.mask[cy]; return !!r && r[cx] === '1'; }   // cells hidden under the bar count as blocked
-  barTop() { const b = $('furnBar'); return b && b.offsetHeight ? 540 - b.offsetHeight - 8 : 540; }
+  barTop() { const b = $('furnBar'); if (!b || !b.offsetHeight) return 540; return Math.min(540, this.cameras.main.getWorldPoint(0, b.getBoundingClientRect().top - 8).y); }   // граница полки — по экрану, с учётом камеры
   check(it, x, y, ignore) {
     const [x0, y0, x1, y1] = this.foot(it, x, y), C = this.C;
     for (let cy = Math.floor(y0 / C); cy <= Math.floor((y1 - 1) / C); cy++) for (let cx = Math.floor(x0 / C); cx <= Math.floor((x1 - 1) / C); cx++) if (!this.cellFloor(cx, cy)) return 'Nur auf den Boden!';
@@ -53,12 +53,12 @@ class Furnish extends Phaser.Scene {
     return null;
   }
   move(p) {
-    if (!this.sel || !this.ghost) return; const [x, y] = this.snap(p.x, p.y), bad = this.check(this.sel, x, y);
+    if (!this.sel || !this.ghost) return; const [x, y] = this.snap(p.worldX, p.worldY), bad = this.check(this.sel, x, y);
     this.ghost.setPosition(x * this.S, y * this.S); if (bad) this.ghost.setTexture('fi_' + this.sel.key).setTint(0xff6666); else this.ghost.setTexture('fo_' + this.sel.key).clearTint();
   }
   tap(p) {
-    if (!this.sel) { const hit = this.placed.slice().reverse().find(q => q.spr.getBounds().contains(p.x, p.y)); if (hit) this.remove(hit); return; }
-    const [x, y] = this.snap(p.x, p.y); this.place(this.sel.key, x, y);
+    if (!this.sel) { const hit = this.placed.slice().reverse().find(q => q.spr.getBounds().contains(p.worldX, p.worldY)); if (hit) this.remove(hit); return; }
+    const [x, y] = this.snap(p.worldX, p.worldY); this.place(this.sel.key, x, y);
   }
   place(k, x, y) {    // also used by tests: returns null when placed, else the reason
     const it = this.item(k), bad = state.coins < it.price ? 'Zu wenig Münzen' : this.check(it, x, y);

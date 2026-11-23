@@ -27,6 +27,14 @@
   }
   function grid(sc) {                                               // клетки, по которым можно ходить
     if (sc.townMask) return { c: sc.townMask.cell, rows: sc.townMask.mask };
+    if (sc.o && sc.o.walk) {                                        // место: пол из прямоугольников -> сетка 12 px, путь в обход стен и мебели
+      if (!sc.__grid || sc.__grid.o !== sc.o) {
+        const c = 12, W = Math.ceil((sc.worldW || 1008) / c), H = Math.ceil((sc.worldH || 672) / c), rows = [];
+        for (let y = 0; y < H; y++) { let r = ''; for (let x = 0; x < W; x++) r += walkable(sc, x * c + c / 2, y * c + c / 2) ? '1' : '0'; rows.push(r); }
+        sc.__grid = { o: sc.o, c, rows };
+      }
+      return { c: sc.__grid.c, rows: sc.__grid.rows };
+    }
     if (sc.scene.key === 'Room') { const d = sc.cache.json.get('fur'); if (d) return { c: d.cell * d.scale, rows: d.mask }; }
     return null;
   }
@@ -115,7 +123,8 @@
     npc.setInteractive({ useHandCursor: true });
     npc.once('pointerup', () => {
       mark.destroy(); const side = sc.walker && sc.walker.x < npc.x ? -60 : 60;
-      walkTo(sc, npc.x + side, npc.y + 4, () => { sc.talking = true; if (sc.exitMarker) sc.exitMarker.setVisible(false); document.getElementById('dlg').style.display = 'block'; sc.show(); });
+      walkTo(sc, npc.x + side, npc.y + 4, () => { sc.talking = true; if (window.camTo) { const c = sc.cameras.main; window.camTo(sc, (sc.walker.x + npc.x) / 2, (sc.walker.y + npc.y) / 2 + c.height / c.zoom * 0.02); }   // both above the dialog box
+        if (sc.exitMarker) sc.exitMarker.setVisible(false); document.getElementById('dlg').style.display = 'block'; sc.show(); });
     });
   }
   (function hook() {

@@ -17,9 +17,10 @@
     return [SW / 2, SH / 2];
   }
   const WW = sc => sc.worldW || SW, WH = sc => sc.worldH || SH;
+  const snap = z => Math.max(1 / 3, Math.floor(z * 3 + 0.02) / 3);   // art is x3: zoom n/3 keeps every art pixel a whole number of screen pixels
   function apply(sc, cx, cy) {                                       // центр камеры в пределах сцены (по обеим осям)
     const cam = sc.cameras.main, hw = cam.width / cam.zoom / 2, hh = cam.height / cam.zoom / 2;
-    const x = clampC(cx, hw, WW(sc)), y = clampC(cy, hh, WH(sc)); cam.centerOn(x, y); sc.camFocus = [x, y];
+    const x = clampC(cx, hw, WW(sc)), y = clampC(cy, hh, WH(sc) + (sc.talking ? hh * 0.45 : 0)); cam.centerOn(x, y);   // while talking the scene may slide up above the dialog box sc.camFocus = [x, y];
   }
   function fitCam(sc) {
     if (!sc || !sc.cameras || !sc.cameras.main) return;
@@ -32,7 +33,7 @@
     }
     cam.setViewport(0, top, vw, h);
     const VW = sc.viewW || WW(sc), VH = sc.viewH || WH(sc); sc.__base = portrait ? h / VH : Math.min(vw / VW, h / VH);   // деревня больше экрана: масштаб как у двора       // вертикально — по высоте, горизонтально — целиком
-    cam.setZoom(sc.__base * (sc.__uz || 1));
+    cam.setZoom(snap(sc.__base * (sc.__uz || 1)));
     const [fx, fy] = focus(sc); apply(sc, fx, fy);
     if (PAN.includes(sc.scene.key) && !sc.__drag) addDrag(sc);
   }
@@ -48,7 +49,7 @@
       const cam = sc.cameras.main, d = pts();
       if (pinch && d.length === 2) {
         const uz = Math.max(1, Math.min(3, pinch.uz * Math.hypot(d[0].x - d[1].x, d[0].y - d[1].y) / Math.max(10, pinch.dist)));
-        const m = cam.midPoint; sc.__uz = uz; cam.setZoom(sc.__base * uz); apply(sc, m.x, m.y); return;
+        const m = cam.midPoint; sc.__uz = uz; cam.setZoom(snap(sc.__base * uz)); apply(sc, m.x, m.y); return;
       }
       if (!start) return;
       if (Math.hypot(p.x - start.x, p.y - start.y) > 8) sc.__dragged = true; if (!sc.__dragged) return;
@@ -56,7 +57,7 @@
     });
     const up = () => { if (pts().length < 2) pinch = null; if (!pts().length) start = null; };
     sc.input.on('pointerup', up); sc.input.on('pointerupoutside', up);
-    sc.input.on('wheel', (p, o, dx, dy) => { const cam = sc.cameras.main, m = cam.midPoint; sc.__uz = Math.max(1, Math.min(3, (sc.__uz || 1) * (dy > 0 ? 0.9 : 1.1))); cam.setZoom(sc.__base * sc.__uz); apply(sc, m.x, m.y); });
+    sc.input.on('wheel', (p, o, dx, dy) => { const cam = sc.cameras.main, m = cam.midPoint; sc.__uz = Math.max(1, Math.min(3, (sc.__uz || 1) * (dy > 0 ? 0.9 : 1.1))); cam.setZoom(snap(sc.__base * sc.__uz)); apply(sc, m.x, m.y); });
   }
   function layout() {
     const vw = innerWidth, vh = innerHeight; portrait = isPortrait();

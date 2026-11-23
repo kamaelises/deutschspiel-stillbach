@@ -35,16 +35,24 @@
         if (window.walkToScene) window.walkToScene(sc, b.door[0], b.door[1] + 30, go); else go();
       });
     });
-    (T.plots || []).forEach(p => {                                  // будущие места: табличка «Bauplatz» — дом появится с его главой
-      const [x0, y0, x1, y1] = p.box, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, [art, ...w] = p.de.split(' ');
-      const post = sc.add.rectangle(cx, cy + 34, 8, 60, 0x6b3f22).setStrokeStyle(2, 0x3b2314).setDepth(cy + 30);
-      const board = sc.add.rectangle(cx, cy, 240, 80, 0xe8d0a0).setStrokeStyle(4, 0x6b3f22).setDepth(cy + 31);
-      const t1 = sc.add.text(cx, cy - 22, 'Bauplatz', { fontFamily: 'Roboto, sans-serif', fontSize: '15px', fontStyle: 'bold', color: '#6b3f22' }).setOrigin(0.5, 0.5).setDepth(cy + 32);
-      const t2 = sc.add.text(cx, cy + 2, p.de, { fontFamily: 'Roboto, sans-serif', fontSize: '20px', fontStyle: 'bold', color: '#2e1e12' }).setOrigin(0.5, 0.5).setDepth(cy + 32);
-      const t3 = sc.add.text(cx, cy + 24, 'ab Kapitel ' + p.chapter + ' · ' + p.ru, { fontFamily: 'Roboto, sans-serif', fontSize: '12px', color: '#6b5640' }).setOrigin(0.5, 0.5).setDepth(cy + 32);
-      t2.setColor(COL[art] || '#2e1e12');
+    const PS = T.plot_sign;                                         // будущие места: пиксельная доска «Bauplatz» (доска craftpix, town/plot_sign.png), текст строго внутри рамки
+    const signs = () => (T.plots || []).forEach(p => {
+      if (!PS || !p.sign) return;
+      const [sx, sy] = p.sign, [ix0, iy0, ix1, iy1] = PS.inner, iw = ix1 - ix0 - 8, ih = iy1 - iy0 - 2, cx = sx + (ix0 + ix1) / 2, dep = sy + PS.h;
+      const board = sc.add.image(sx, sy, 'plot_sign').setOrigin(0, 0).setDepth(dep);
+      const [art, ...w] = p.de.split(' '), st = { fontFamily: 'Roboto, sans-serif', stroke: '#2a170c', strokeThickness: 3 };
+      const t1 = sc.add.text(0, 0, 'Bauplatz', { ...st, fontSize: '13px', fontStyle: 'bold', color: '#f3d9a4' });
+      const ta = sc.add.text(0, 0, art + ' ', { ...st, fontSize: '19px', fontStyle: 'bold', color: COL[art] || '#fff4dc' });
+      const tw = sc.add.text(0, 0, w.join(' '), { ...st, fontSize: '19px', fontStyle: 'bold', color: '#fff4dc' });
+      const t3 = sc.add.text(0, 0, 'ab Kapitel ' + p.chapter + ' · ' + p.ru, { ...st, fontSize: '12px', color: '#f3d9a4', strokeThickness: 2 });
+      const rows = [[t1], [ta, tw], [t3]], wid = r => r.reduce((s, t) => s + t.width, 0), hei = r => Math.max(...r.map(t => t.height));
+      let k = Math.min(1, ih / rows.reduce((s, r) => s + hei(r), 0)); rows.forEach(r => { k = Math.min(k, iw / wid(r)); });
+      let y = sy + iy0 + 1 + (ih - rows.reduce((s, r) => s + hei(r) * k, 0)) / 2;
+      rows.forEach(r => { let x = cx - wid(r) * k / 2; r.forEach(t => { t.setScale(k).setPosition(x, y).setDepth(dep + 1); x += t.width * k; }); y += hei(r) * k; });
       board.setInteractive({ useHandCursor: true }).on('pointerup', () => { if (sc.__dragged) return; if (window.speakDE) speakDE(p.de); toast(p.de + ' — ab Kapitel ' + p.chapter, 1800); });
     });
+    if (sc.textures.exists('plot_sign')) signs();
+    else { sc.load.image('plot_sign', 'assets_v3/town/plot_sign.png'); sc.load.once('complete', signs); sc.load.start(); }
     const sp = sc.registry.get('spawnAt');                         // назад из дома — у его двери
     if (sp) { sc.registry.set('spawnAt', null); sc.camFocus = [sp[0], sp[1] - 60]; sc.__spawn = sp; }
   }

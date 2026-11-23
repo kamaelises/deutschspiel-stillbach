@@ -8,7 +8,7 @@ function fit() { const s = Math.min(innerWidth / W, innerHeight / H); const st =
 addEventListener('resize', fit); fit();
 function setCoins(n) { state.coins = n; store.set(state); $('coins').textContent = n; }
 function toast(t, ms = 1500) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms); }
-function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.src = 'assets_v3/portraits/hero_' + heroE + '.png'; R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }
+function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.style.display = 'none'; /* TODO child portrait */ R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }
 function speakDE(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} }
 const audioEl = new Audio();
 function playLine(l) { if (l.audio) { audioEl.src = 'audio/' + l.audio; audioEl.play().catch(() => speakDE(l.de)); } else speakDE(l.de); }

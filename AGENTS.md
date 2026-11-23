@@ -1,4 +1,4 @@
-# AGENTS.md: DeutschSpiel Stillbach
+﻿# AGENTS.md: DeutschSpiel Stillbach
 
 Rules for Claude Code, Codex and other agents. Based on the shared rules from
 [ai-gamedev-starter-kit](https://github.com/Saneety/ai-gamedev-starter-kit) (Anton Ruban, CC BY-NC-SA 4.0), cut down for this project.
@@ -8,7 +8,7 @@ Rules for Claude Code, Codex and other agents. Based on the shared rules from
 - Never call something fixed without a before | after frame (`tools/shot_proto.cjs` or a screenshot).
 
 ## Start every task
-1. Read `design-doc/concept-doc.md`, then the chapter of `design-doc/game-design.md` you touch.
+1. Read `design-doc/art-rules.md` (the author's art rules, check every frame against them), then `design-doc/concept-doc.md`, then the chapter of `design-doc/game-design.md` you touch.
 2. Check `git status`. Preserve unrelated work.
 3. Run the game: `npx serve docs`, open `/?auto=1` for headless runs (speech is skipped).
 

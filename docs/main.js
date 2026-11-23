@@ -65,7 +65,7 @@ class Room extends Phaser.Scene {
     this.hero = v3(this, 'v3_hero', lay.room_hero, undefined, lay.origin_hero); this.npc = v3(this, 'v3_npc', lay.room_npc, undefined, lay.origin_npc);
     this.i = 0; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
     $('bHear').onclick = () => playLine(lesson.lines[this.i]);
-    $('bNext').onclick = () => this.next(); $('bSpeak').onclick = () => this.speak();
+    $('bNext').onclick = () => this.next(); $('bSpeak').onclick = () => this.speak(); $('bSkip').onclick = () => this.skip && this.skip();
   }
   show() {
     const l = lesson.lines[this.i], mine = l.role === 'A';
@@ -75,13 +75,18 @@ class Room extends Phaser.Scene {
     if (!mine) { this.tweens.add({ targets: this.npc, y: this.npc.y - 10, duration: 160, yoyo: true }); setTimeout(() => playLine(l), 250); }
   }
   speak() {
-    const l = lesson.lines[this.i], target = norm(l.de.replace('{hero_name}', HERO)), SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const ok = () => { this.spell(); setTimeout(() => this.next(), 900); };
-    if (!SR || /[?&]auto/.test(location.search)) { toast('Spracherkennung fehlt: zählt als gesagt', 1800); return ok(); }
-    const r = new SR(); r.lang = 'de-DE'; r.maxAlternatives = 3; toast('Sprich jetzt!', 3000);
-    r.onresult = (e) => { const heard = norm(e.results[0][0].transcript), hit = target.filter(w => heard.includes(w)).length / target.length; if (hit >= 0.6) ok(); else toast('Fast! Nochmal: ' + e.results[0][0].transcript, 2500); };
-    r.onerror = () => { toast('Kein Mikrofon: zählt als gesagt', 1800); ok(); }; r.start();
+    const l = lesson.lines[this.i], target = norm(l.de.replace('{hero_name}', HERO));
+    const ok = () => { $('micHelp').style.display = 'none'; $('bSkip').style.display = 'none'; this.spell(); setTimeout(() => this.next(), 900); };
+    this.skip = ok;
+    if (/[?&]auto/.test(location.search)) { toast('Test: zählt als gesagt', 1200); return ok(); }
+    if (this.listening) return; this.listening = true; $('bSpeak').classList.add('rec'); $('micHelp').style.display = 'none'; toast('Sprich jetzt!', 3000);
+    SpeechG.hear().then(alts => {
+      const score = Math.max(...alts.map(a => { const h = norm(a); return target.filter(w => h.includes(w)).length / target.length; }));
+      if (score >= 0.6) return ok();
+      toast('Fast! Nochmal', 2000); this.help('Услышал: «' + alts[0] + '». Скажи ещё раз: «' + l.de.replace('{hero_name}', HERO) + '»');
+    }).catch(e => this.help(e.message)).finally(() => { this.listening = false; $('bSpeak').classList.remove('rec'); });
   }
+  help(t) { const h = $('micHelp'); h.textContent = t; h.style.display = 'block'; $('bSkip').style.display = ''; }
   spell() {
     const cx = this.hero.x, cy = this.hero.y - 120;
     for (let k = 0; k < 24; k++) { const d = this.add.circle(cx, cy, 5, k % 2 ? 0xffd23f : 0xffffff).setDepth(999), a = k / 24 * Math.PI * 2, r = 80 + Math.random() * 90;

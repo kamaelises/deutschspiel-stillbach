@@ -21,6 +21,8 @@ html, body { margin: 0; height: 100%; background: #1d130b; overflow: hidden; }
 #bubble #ru { font-size: 18px; opacity: .75; margin-top: 4px; min-height: 22px; }
 #btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
 #btns .ui-btn { font-family: inherit; font-size: 22px; padding: 0 18px; min-width: 110px; height: 52px; color: #2e1e12; }
+#micHelp { position: absolute; left: 50%; top: 60px; transform: translateX(-50%); width: 560px; display: none; padding: 10px 14px; font-family: sans-serif; font-size: 16px; line-height: 1.35; color: #2e1e12; background: #f3e3c3; border: 3px solid #3b2314; border-radius: 6px; z-index: 30; }
+#bSpeak.rec { box-shadow: 0 0 0 3px #e24848; }
 #toast { position: absolute; left: 50%; top: 90px; transform: translateX(-50%); font-size: 30px; color: #fff; text-shadow: 2px 2px 0 #3b2314; display: none; }
 #reward { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 380px; display: none; text-align: center; font-size: 26px; padding: 8px 10px 16px; }
 #reward img { height: 72px; margin: 6px 8px; image-rendering: pixelated; }
@@ -51,13 +53,15 @@ html, body { margin: 0; height: 100%; background: #1d130b; overflow: hidden; }
     <button class="ui ui-btn hud" id="bFurn">Einrichten</button>
     <button class="ui ui-btn hud" id="bMap">Karte</button>
     <div id="dlg"><img class="portrait" id="pL" alt=""><img class="portrait" id="pR" alt=""><div class="ui ui-nameplate" id="who"></div><div class="ui ui-bubble" id="bubble"><div id="de"></div><div id="ru"></div></div>
-      <div id="btns"><button class="ui ui-btn" id="bHear">Hören</button><button class="ui ui-btn" id="bSpeak">Sprechen</button><button class="ui ui-btn" id="bNext">Weiter</button></div></div>
+      <div id="btns"><button class="ui ui-btn" id="bHear">Hören</button><button class="ui ui-btn" id="bSpeak">Sprechen</button><button class="ui ui-btn" id="bSkip" style="display:none">Ohne Mikro</button><button class="ui ui-btn" id="bNext">Weiter</button></div></div>
+    <div id="micHelp"></div>
     <div id="toast"></div>
     <div class="ui ui-panel-paper" id="reward"><div>Belohnung!</div><div id="rwItems"></div><div id="rwTxt" style="font-size:20px"></div><button class="ui ui-btn" id="bBack">Zum Hof</button></div>
     <div id="reset">Reset</div>
   </div>
 </div>
 <script src="phaser.min.js"></script>
+<script src="speech_game.js"></script>
 <script src="furnish.js"></script>
 <script src="map.js"></script>
 <script src="main.js"></script>

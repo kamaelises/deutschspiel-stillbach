@@ -22,3 +22,6 @@
 
 - Orte (Innenräume): craftpix Guild Hall «Interior_1st_floor.tmx» — Gildenhaus; Render der Künstler-Karte, x3, warm getönt.
 
+
+- Dorf (eine Karte): Hof des Helden + Straße aus dem Pfad des Hofs + Gebäude-Ebenen der craftpix-Exterior-Karten (Guild Hall, Glassblower, Chapel; ohne Stadtmauer/Drache) + craftpix Bäume (385863) und Büsche (141354) + Grasbüschel (654184). Gebaut von style_pick/build_town.py.
+

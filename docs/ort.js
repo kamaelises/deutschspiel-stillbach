@@ -34,8 +34,8 @@ class Ort extends Room {
   finish() {
     const rep = isRepeat(this), bonus = rep ? 0 : 15; whereSet('Karte');
     if (!rep) { setCoins(state.coins + bonus); markPaid(this); }
-    endCard(this, { title: this.o.title, coins: rep ? 0 : this.coinsEarned + bonus, backLabel: 'Zur Karte', restartData: { place: this.placeKey },
-      back: () => { this.cameras.main.fadeOut(300, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Karte')); } });
+    endCard(this, { title: this.o.title, coins: rep ? 0 : this.coinsEarned + bonus, backLabel: 'Raus', restartData: { place: this.placeKey },
+      back: () => { this.cameras.main.fadeOut(300, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Yard')); } });
   }
 
 }

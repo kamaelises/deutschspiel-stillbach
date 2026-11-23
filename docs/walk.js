@@ -2,17 +2,18 @@
 // В доме и в местах диалог начинается только после тапа по жителю: Max подходит и заговаривает.
 // Выход — стрелка «Raus» у двери: Max идёт к ней и выходит (дом → двор, место → карта).
 (function () {
-  const SPEED = 230;                                                 // px сцены в секунду
+  const SPEED = 300;                                                 // px сцены в секунду
   const ZONES = {                                                    // где можно ходить (прямоугольники сцены); дом — по маске пола обустройства
     Yard: [[40, 395, 920, 525]],
     Ort: [[130, 330, 900, 645]],
   };
-  const EXIT = { Room: { at: [387, 470], to: 'Yard' }, Ort: { at: [548, 640], to: 'Karte' } };
+  const EXIT = { Room: { at: [387, 470], to: 'Yard' }, Ort: { at: [548, 640], to: 'Yard' } };
   function anims(sc) {
     if (sc.anims.exists('w-down')) return;
     ['down', 'left', 'right', 'up'].forEach((d, k) => sc.anims.create({ key: 'w-' + d, frames: sc.anims.generateFrameNumbers('hero_walk', { frames: [k * 3, k * 3 + 1, k * 3 + 2, k * 3 + 1] }), frameRate: 8, repeat: -1 }));
   }
   function walkable(sc, x, y) {
+    if (window.townWalkable) { const t = window.townWalkable(sc, x, y); if (t !== null) return t; }
     if (sc.scene.key === 'Room') {
       const d = sc.cache.json.get('fur'); if (!d) return true;
       const c = d.cell * d.scale, row = d.mask[Math.floor(y / c)]; return !!row && row[Math.floor(x / c)] === '1';
@@ -24,8 +25,44 @@
     for (let r = 12; r <= 240; r += 12) for (let a = 0; a < 16; a++) { const t = a / 16 * Math.PI * 2, px = x + Math.cos(t) * r, py = y + Math.sin(t) * r; if (walkable(sc, px, py)) return [px, py]; }
     return null;
   }
+  function grid(sc) {                                               // клетки, по которым можно ходить
+    if (sc.townMask) return { c: sc.townMask.cell, rows: sc.townMask.mask };
+    if (sc.scene.key === 'Room') { const d = sc.cache.json.get('fur'); if (d) return { c: d.cell * d.scale, rows: d.mask }; }
+    return null;
+  }
+  function findPath(sc, x0, y0, x1, y1) {                             // A* по клеткам, 8 направлений
+    const G = grid(sc); if (!G) return [[x1, y1]];
+    const C = G.c, R = G.rows.length, W = G.rows[0].length, ok = (cx, cy) => cy >= 0 && cy < R && cx >= 0 && cx < W && G.rows[cy][cx] === '1';
+    const sx = Math.floor(x0 / C), sy = Math.floor(y0 / C), tx = Math.floor(x1 / C), ty = Math.floor(y1 / C);
+    if (!ok(tx, ty)) return null; const key = (a, b) => b * W + a, open = [[sx, sy]], g = new Map([[key(sx, sy), 0]]), from = new Map(), h = (a, b) => Math.hypot(a - tx, b - ty);
+    const f = new Map([[key(sx, sy), h(sx, sy)]]); let n = 0;
+    while (open.length && n++ < 40000) {
+      let bi = 0; for (let i = 1; i < open.length; i++) if (f.get(key(...open[i])) < f.get(key(...open[bi]))) bi = i;
+      const [cx, cy] = open.splice(bi, 1)[0];
+      if (cx === tx && cy === ty) { const pts = []; let k = key(cx, cy); while (k !== undefined) { pts.unshift([(k % W) * C + C / 2, Math.floor(k / W) * C + C / 2]); k = from.get(k); } pts[pts.length - 1] = [x1, y1]; return smooth(pts, ok, C); }
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+        const nx = cx + dx, ny = cy + dy; if (!ok(nx, ny) || (dx && dy && (!ok(cx + dx, cy) || !ok(cx, cy + dy)))) continue;
+        const ng = g.get(key(cx, cy)) + (dx && dy ? 1.414 : 1), k = key(nx, ny);
+        if (ng < (g.has(k) ? g.get(k) : Infinity)) { g.set(k, ng); f.set(k, ng + h(nx, ny)); from.set(k, key(cx, cy)); if (!open.some(o => o[0] === nx && o[1] === ny)) open.push([nx, ny]); }
+      }
+    }
+    return [[x1, y1]];
+  }
+  function smooth(pts, ok, C) {                                      // выпрямить путь: пропускать точки, если прямая свободна
+    const clear = (a, b) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / (C / 2)); for (let i = 1; i < n; i++) { const x = a[0] + (b[0] - a[0]) * i / n, y = a[1] + (b[1] - a[1]) * i / n; if (!ok(Math.floor(x / C), Math.floor(y / C))) return false; } return true; };
+    const out = [pts[0]]; let i = 0;
+    while (i < pts.length - 1) { let j = pts.length - 1; while (j > i + 1 && !clear(pts[i], pts[j])) j--; out.push(pts[j]); i = j; }
+    return out.slice(1);
+  }
   function walkTo(sc, x, y, done) {
-    const p = nearestWalkable(sc, x, y); if (!p) return;
+    const p0 = nearestWalkable(sc, x, y); if (!p0) return;
+    const route = sc.walker ? findPath(sc, sc.walker.x, sc.walker.y, p0[0], p0[1]) : [p0];
+    if (!route || !route.length) return;
+    const step = i => { if (i >= route.length) { done && done(); return; } walkStraight(sc, route[i][0], route[i][1], () => step(i + 1)); };
+    step(0);
+  }
+  function walkStraight(sc, x, y, done) {
+    const p = [x, y];
     const h = sc.walker; if (sc.walkTween) sc.walkTween.stop();
     const dx = p[0] - h.x, dy = p[1] - h.y, dist = Math.hypot(dx, dy); if (dist < 4) { done && done(); return; }
     const dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
@@ -38,8 +75,9 @@
     if (!sc.hero || !sc.textures.exists('hero_walk')) return;
     anims(sc);
     const old = sc.hero, x = old.x, y = old.y; old.setVisible(false);
-    sc.heroShadow = sc.add.ellipse(x, y - 2, 40, 12, 0x0f1c08, 0.35).setDepth(y - 1);
-    sc.walker = sc.add.sprite(x, y, 'hero_walk', 1).setOrigin(0.52, 0.97).setDepth(y);
+    sc.heroShadow = sc.add.ellipse(sc.__spawn ? sc.__spawn[0] : x, (sc.__spawn ? sc.__spawn[1] : y) - 2, 40, 12, 0x0f1c08, 0.35).setDepth(y - 1);
+    const sp = sc.__spawn; if (sp) { sc.__spawn = null; old.setPosition(sp[0], sp[1]); }
+    sc.walker = sc.add.sprite(sp ? sp[0] : x, sp ? sp[1] : y, 'hero_walk', 1).setOrigin(0.52, 0.97).setDepth(y);
     sc.hero = sc.walker;                                              // «Zauber» и прочее — от идущего Max
     sc.input.on('pointerup', (p, over) => {
       if (sc.__dragged || (over && over.length) || sc.talking || sc.busy) return;
@@ -60,6 +98,7 @@
       b.onclick = () => { const s = game.scene.getScenes(true)[0]; if (s && s.exitFn) s.exitFn(); };
     }
   }
+  window.walkToScene = (sc, x, y, done) => walkTo(sc, x, y, done);
   window.walkSetup = sc => { if (sc.hero && !sc.walker) setup(sc); };
   function leave(sc, to) {
     if (sc.busy) return; sc.busy = true; window.whereSet && whereSet(to);

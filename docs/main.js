@@ -25,7 +25,7 @@ class Boot extends Phaser.Scene {
   preload() {
     const keys = Object.keys(window.__assets);
     keys.forEach(k => this.load.image(k, 'assets/' + k + '.png'));
-    V3.forEach(k => this.load.image(k, 'assets_v3/' + k.slice(3) + '.png')); this.load.json('lay', 'assets_v3/layout_v3.json'); this.load.spritesheet('hero_walk', 'assets_v3/hero_walk.png', { frameWidth: 96, frameHeight: 96 }); this.load.json('fur', 'assets_v3/furnish/furnish.json');
+    V3.forEach(k => this.load.image(k, 'assets_v3/' + k.slice(3) + '.png')); this.load.json('lay', 'assets_v3/layout_v3.json'); this.load.image('town_bg', 'assets_v3/town/town_bg.png'); this.load.json('town', 'assets_v3/town/town.json'); this.load.spritesheet('hero_walk', 'assets_v3/hero_walk.png', { frameWidth: 96, frameHeight: 96 }); this.load.json('fur', 'assets_v3/furnish/furnish.json');
     ['panel_paper'].forEach(k => this.load.image(k, 'assets/' + k + '.png'));
     this.load.on('loaderror', (f) => console.warn('missing', f.key));
   }
@@ -36,7 +36,7 @@ class Yard extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor(0x5f8c46); this.cameras.main.setZoom(1).centerOn(W / 2, H / 2); this.cameras.main.fadeIn(300);
     const lay = this.cache.json.get('lay'); this.lay = lay;
-    this.add.image(0, 0, 'v3_yard_bg').setOrigin(0, 0).setDepth(-10); this.add.image(0, 0, 'v3_light_overlay').setOrigin(0, 0).setDepth(2000);
+    const town = this.textures.exists('town_bg'); this.add.image(0, 0, town ? 'town_bg' : 'v3_yard_bg').setOrigin(0, 0).setDepth(-10); if (!town) this.add.image(0, 0, 'v3_light_overlay').setOrigin(0, 0).setDepth(2000);   // деревня — одна карта
     this.house = v3(this, 'v3_house', lay.house);
     this.hero = v3(this, 'v3_hero', lay.hero, undefined, lay.origin_hero);
     this.brezel = v3(this, 'v3_brezel', lay.brezel, undefined, lay.origin_brezel);

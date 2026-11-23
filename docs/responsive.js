@@ -31,7 +31,7 @@
       top = Math.max(0, Math.round(gb)); h = Math.max(120, Math.round(bt - top));
     }
     cam.setViewport(0, top, vw, h);
-    sc.__base = portrait ? h / WH(sc) : Math.min(vw / WW(sc), h / WH(sc));       // вертикально — по высоте, горизонтально — целиком
+    const VW = sc.viewW || WW(sc), VH = sc.viewH || WH(sc); sc.__base = portrait ? h / VH : Math.min(vw / VW, h / VH);   // деревня больше экрана: масштаб как у двора       // вертикально — по высоте, горизонтально — целиком
     cam.setZoom(sc.__base * (sc.__uz || 1));
     const [fx, fy] = focus(sc); apply(sc, fx, fy);
     if (PAN.includes(sc.scene.key) && !sc.__drag) addDrag(sc);

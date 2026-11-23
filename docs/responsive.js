@@ -7,17 +7,19 @@
   let portrait = false;
   const isPortrait = () => innerHeight > innerWidth * 1.05;
 
-  const PAN = ['Yard', 'Room', 'Furnish'];
+  const PAN = ['Yard', 'Room', 'Furnish', 'Ort'];
   const clampC = (c, half, size) => (half * 2 >= size ? size / 2 : Math.max(half, Math.min(size - half, c)));
   function focus(sc) {
     if (sc.camFocus) return sc.camFocus;
     if (sc.scene.key === 'Room' && sc.hero && sc.npc) return [(sc.hero.x + sc.npc.x) / 2, SH / 2];
     if (sc.scene.key === 'Yard' && sc.house && sc.hero) return [(sc.house.x + sc.hero.x) / 2, SH / 2];
+    if (sc.scene.key === 'Ort' && sc.o) return [(sc.o.hero[0] + sc.o.npc[0]) / 2, WH(sc) / 2];
     return [SW / 2, SH / 2];
   }
+  const WW = sc => sc.worldW || SW, WH = sc => sc.worldH || SH;
   function apply(sc, cx, cy) {                                       // центр камеры в пределах сцены (по обеим осям)
     const cam = sc.cameras.main, hw = cam.width / cam.zoom / 2, hh = cam.height / cam.zoom / 2;
-    const x = clampC(cx, hw, SW), y = clampC(cy, hh, SH); cam.centerOn(x, y); sc.camFocus = [x, y];
+    const x = clampC(cx, hw, WW(sc)), y = clampC(cy, hh, WH(sc)); cam.centerOn(x, y); sc.camFocus = [x, y];
   }
   function fitCam(sc) {
     if (!sc || !sc.cameras || !sc.cameras.main) return;
@@ -29,7 +31,7 @@
       top = Math.max(0, Math.round(gb)); h = Math.max(120, Math.round(bt - top));
     }
     cam.setViewport(0, top, vw, h);
-    sc.__base = portrait ? h / SH : Math.min(vw / SW, h / SH);       // вертикально — по высоте, горизонтально — целиком
+    sc.__base = portrait ? h / WH(sc) : Math.min(vw / WW(sc), h / WH(sc));       // вертикально — по высоте, горизонтально — целиком
     cam.setZoom(sc.__base * (sc.__uz || 1));
     const [fx, fy] = focus(sc); apply(sc, fx, fy);
     if (PAN.includes(sc.scene.key) && !sc.__drag) addDrag(sc);

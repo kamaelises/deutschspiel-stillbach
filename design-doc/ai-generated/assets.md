@@ -19,3 +19,6 @@
 - Orte auf der Karte: craftpix-Exterior-Karten der Künstler (Main Character's Home, Guild Hall, Glassblower, Chapel), Tiled-Render ohne Änderungen, nur warm getönt; gesperrte Orte entsättigt.
 - icon_coin: TinyPulse «Animated RPG Essentials» Coin-Sheet, Frame 0 (Lizenz: kommerziell erlaubt).
 - icon_bread: glintapps «Cozy Food & Cooking LITE», desserts_cinnamon_roll 16 px (kommerziell erlaubt, keine Weitergabe als Pack).
+
+- Orte (Innenräume): craftpix Guild Hall «Interior_1st_floor.tmx» — Gildenhaus; Render der Künstler-Karte, x3, warm getönt.
+

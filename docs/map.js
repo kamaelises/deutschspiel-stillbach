@@ -20,6 +20,7 @@ class Karte extends Phaser.Scene {
       const p = places.find(q => q.key === el.dataset.k); speakDE(p.de);
       if (el.classList.contains('locked')) return toast(p.de + ': ab Kapitel ' + p.chapter, 1600);
       if (p.key === 'elternhaus') return this.leave();
+      if (window.ORTE && window.ORTE[p.key]) { this.cameras.main.fadeOut(250, 29, 19, 11); return this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Ort', { place: p.key })); }
       if (window.dsGo) return window.dsGo('#/ch/' + p.chapter); toast(p.de + ': Kapitel ' + p.chapter, 1400);
     });
     $('bMapBack').onclick = () => this.leave();

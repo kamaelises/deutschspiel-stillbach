@@ -11,7 +11,7 @@ function toast(t, ms = 1500) { const e = $('toast'); e.textContent = t; e.style.
 function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.style.display = 'none'; /* TODO child portrait */ R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }
 function speakDE(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} }
 const audioEl = new Audio();
-function playLine(l) { if (l.audio) { audioEl.src = 'audio/' + l.audio; audioEl.play().catch(() => speakDE(l.de)); } else speakDE(l.de); }
+function playLine(l) { if (l.audio || l.audioUrl) { audioEl.src = l.audioUrl || ('audio/' + l.audio); audioEl.play().catch(() => speakDE(l.de)); } else speakDE(l.de); }
 function norm(s) { return s.toLowerCase().replace(/[.,!?;:"']/g, '').split(/\s+/).filter(Boolean); }
 function sceneSprite(sc, key, x, y, h, fallbackColor, label) {
   if (sc.textures.exists(key) && sc.textures.get(key).key !== '__MISSING') { const s = sc.add.image(x, y, key).setOrigin(0.5, 1); s.setScale(h / s.height); s.setDepth(y); return s; }
@@ -29,7 +29,7 @@ class Boot extends Phaser.Scene {
     ['panel_paper'].forEach(k => this.load.image(k, 'assets/' + k + '.png'));
     this.load.on('loaderror', (f) => console.warn('missing', f.key));
   }
-  create() { $('icoCoin').src = 'assets_v3/icon_coin.png'; $('icoCoin').onerror = function () { this.style.display = 'none'; }; setCoins(state.coins); const w = window.whereGet ? whereGet() : null; this.scene.start(w && ['Room', 'Karte', 'Furnish'].includes(w.s) ? w.s : 'Yard', w || {}); }
+  create() { $('icoCoin').src = 'assets_v3/icon_coin.png'; $('icoCoin').onerror = function () { this.style.display = 'none'; }; setCoins(state.coins); const w = window.whereGet ? whereGet() : null; this.scene.start(w && ['Room', 'Karte', 'Furnish', 'Ort'].includes(w.s) ? w.s : 'Yard', w || {}); }
 }
 class Yard extends Phaser.Scene {
   constructor() { super('Yard'); }
@@ -58,24 +58,24 @@ class Yard extends Phaser.Scene {
   }
 }
 class Room extends Phaser.Scene {
-  constructor() { super('Room'); }
+  constructor(k) { super(k || 'Room'); }
   create(data) {
     this.cameras.main.setBackgroundColor(0x2b1a10); this.cameras.main.fadeIn(300);
     const lay = this.cache.json.get('lay'); this.add.image(0, 0, 'v3_room_bg').setOrigin(0, 0).setDepth(-10);
     this.hero = v3(this, 'v3_hero', lay.room_hero, undefined, lay.origin_hero); this.npc = v3(this, 'v3_npc', lay.room_npc, undefined, lay.origin_npc);
-    ['bag', 'bFurn', 'bMap'].forEach(k => $(k).style.display = 'none'); this.i = data && data.s === 'Room' && data.i < lesson.lines.length ? data.i : 0; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
-    $('bHear').onclick = () => playLine(lesson.lines[this.i]);
+    ['bag', 'bFurn', 'bMap'].forEach(k => $(k).style.display = 'none'); this.L = lesson.lines; this.i = data && data.s === 'Room' && data.i < this.L.length ? data.i : 0; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
+    $('bHear').onclick = () => playLine(this.L[this.i]);
     $('bNext').onclick = () => this.next(); $('bSpeak').onclick = () => this.speak(); $('bSkip').onclick = () => this.skip && this.skip();
   }
   show() {
-    whereSet('Room', this.i); const l = lesson.lines[this.i], mine = l.role === 'A';
+    whereSet(this.scene.key, this.i); const l = this.L[this.i], mine = l.role === 'A';
     $('who').textContent = mine ? HERO : 'Herr Schmidt'; $('de').textContent = ''; const txt = l.de.replace('{hero_name}', HERO); let n = 0;
     clearInterval(this.tw); this.tw = setInterval(() => { $('de').textContent = txt.slice(0, ++n); if (n >= txt.length) clearInterval(this.tw); }, 28);
     $('ru').textContent = l.ru.replace('{hero_name}', HERO); setPortraits(mine ? 'talk' : 'calm', mine ? 'calm' : 'talk', mine); $('bSpeak').style.display = mine ? '' : 'none'; $('bNext').style.display = mine ? 'none' : '';
     if (!mine) { this.tweens.add({ targets: this.npc, y: this.npc.y - 10, duration: 160, yoyo: true }); setTimeout(() => playLine(l), 250); }
   }
   speak() {
-    const l = lesson.lines[this.i], target = norm(l.de.replace('{hero_name}', HERO));
+    const l = this.L[this.i], target = norm(l.de.replace('{hero_name}', HERO));
     const ok = () => { $('micHelp').style.display = 'none'; $('bSkip').style.display = 'none'; this.spell(); setTimeout(() => this.next(), 900); };
     this.skip = ok;
     if (/[?&]auto/.test(location.search)) { toast('Test: zählt als gesagt', 1200); return ok(); }
@@ -95,7 +95,7 @@ class Room extends Phaser.Scene {
   }
   next() {
     clearInterval(this.tw); this.i++;
-    if (this.i >= lesson.lines.length) { whereSet('Yard'); $('dlg').style.display = 'none'; return this.finish(); }
+    if (this.i >= this.L.length) { whereSet('Yard'); $('dlg').style.display = 'none'; return this.finish(); }
     this.show();
   }
   finish() {
@@ -108,5 +108,5 @@ class Room extends Phaser.Scene {
 $('reset').onclick = () => { store.set({ done: false, coins: 0 }); location.reload(); };
 Promise.all([fetch('lesson.json').then(r => r.json()), fetch('assets.json').then(r => r.json())]).then(([l, a]) => {
   lesson = l; window.__assets = {};
-  window.game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#5f8c46', scene: [Boot, Yard, Room].concat(window.Furnish ? [window.Furnish] : [], window.Karte ? [window.Karte] : []), pixelArt: true, render: { antialias: false, roundPixels: true }, audio: { noAudio: true } });
+  window.game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#5f8c46', scene: [Boot, Yard, Room].concat(window.Furnish ? [window.Furnish] : [], window.Karte ? [window.Karte] : [], window.Ort ? [window.Ort] : []), pixelArt: true, render: { antialias: false, roundPixels: true }, audio: { noAudio: true } });
 });

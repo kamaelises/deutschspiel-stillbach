@@ -44,3 +44,6 @@ FSRS: слова возвращаются «гостями» в деревню �
 
 ## 12. Главы ❌
 Мир открывается главами A1 → C1, после C1 — бесконечная империя.
+
+## 6. Karte ✅ (Prototyp)
+Karte von Stillbach: Orte als Karten mit Artikel in Farbe (der/die/das). Offen: das Elternhaus, die Bäckerei (nach Lektion 1). Gesperrt mit «ab Kapitel N»: das Gildenhaus, die Kirche. Antippen spricht den Namen.

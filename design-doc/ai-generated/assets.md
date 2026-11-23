@@ -14,3 +14,8 @@
 | кухня в room_bg (полка с банками, полка с кружками, бочка) | Frostbrook Town Interiors Free Sample, Chucky Assets (itch.io) | личное и коммерческое OK, правки OK, файлы не распространять, не для обучения ИИ |
 
 Правило выбора: берём только паки с явной лицензией. Medieval Free Pack (a-something) без лицензии на странице — не используем.
+
+## Karte und Icons (23.11)
+- Orte auf der Karte: craftpix-Exterior-Karten der Künstler (Main Character's Home, Guild Hall, Glassblower, Chapel), Tiled-Render ohne Änderungen, nur warm getönt; gesperrte Orte entsättigt.
+- icon_coin: TinyPulse «Animated RPG Essentials» Coin-Sheet, Frame 0 (Lizenz: kommerziell erlaubt).
+- icon_bread: glintapps «Cozy Food & Cooking LITE», desserts_cinnamon_roll 16 px (kommerziell erlaubt, keine Weitergabe als Pack).

@@ -29,7 +29,7 @@ class Boot extends Phaser.Scene {
     ['panel_paper'].forEach(k => this.load.image(k, 'assets/' + k + '.png'));
     this.load.on('loaderror', (f) => console.warn('missing', f.key));
   }
-  create() { $('icoCoin').src = 'assets/icon_coin.png'; $('icoCoin').onerror = function () { this.style.display = 'none'; }; setCoins(state.coins); this.scene.start('Yard'); }
+  create() { $('icoCoin').src = 'assets_v3/icon_coin.png'; $('icoCoin').onerror = function () { this.style.display = 'none'; }; setCoins(state.coins); this.scene.start('Yard'); }
 }
 class Yard extends Phaser.Scene {
   constructor() { super('Yard'); }
@@ -45,12 +45,12 @@ class Yard extends Phaser.Scene {
     else { this.arrow = this.add.triangle(480, 40, 0, 0, 36, 0, 18, 26, 0xffd23f).setDepth(999).setStrokeStyle(3, 0x3b2314); this.tweens.add({ targets: this.arrow, y: 56, duration: 500, yoyo: true, repeat: -1 }); $('goalTxt').textContent = 'Ziel: Elternhaus'; }
     this.house.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.enter());
     this.brezel.setInteractive({ useHandCursor: true }).on('pointerdown', () => { toast('Wuff!'); this.tweens.add({ targets: this.brezel, y: this.brezel.y - 26, duration: 150, yoyo: true }); });
-    $('dlg').style.display = 'none'; $('bFurn').style.display = ''; $('bFurn').onclick = () => { $('bFurn').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Furnish')); };
+    $('dlg').style.display = 'none'; $('bMap').style.display = ''; $('bMap').onclick = () => { $('bMap').style.display = 'none'; $('bFurn').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Karte')); }; $('bFurn').style.display = ''; $('bFurn').onclick = () => { $('bFurn').style.display = 'none'; $('bMap').style.display = 'none'; this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Furnish')); };
     if (state.done && this.registry.get('justDone')) { this.registry.set('justDone', false); this.rewardPop(); }
   }
   rewardPop() { (this.reward || []).forEach((r, i) => { const sx = r.scaleX || 1, sy = r.scaleY || 1; r.setScale(0); this.tweens.add({ targets: r, scaleX: sx, scaleY: sy, duration: 500, delay: 300 + i * 250, ease: 'Back.easeOut' }); }); toast('Die Blumen sind da!', 2500); this.tweens.add({ targets: this.brezel, y: this.brezel.y - 40, duration: 200, yoyo: true, repeat: 3 }); }
   enter() {
-    if (this.busy) return; this.busy = true; $('bFurn').style.display = 'none'; if (this.arrow) this.arrow.destroy();
+    if (this.busy) return; this.busy = true; $('bFurn').style.display = 'none'; $('bMap').style.display = 'none'; if (this.arrow) this.arrow.destroy();
     this.tweens.add({ targets: this.hero, x: this.lay.house[0] + 96, y: this.lay.house[1] + 6, duration: 700 });
     const cam = this.cameras.main; cam.pan(this.lay.house[0] + 96, this.lay.house[1] - 60, 800, 'Sine.easeInOut'); cam.zoomTo(2.2, 800, 'Sine.easeInOut');
     this.time.delayedCall(700, () => cam.fadeOut(300, 29, 19, 11));
@@ -71,7 +71,7 @@ class Room extends Phaser.Scene {
     const l = lesson.lines[this.i], mine = l.role === 'A';
     $('who').textContent = mine ? HERO : 'Herr Schmidt'; $('de').textContent = ''; const txt = l.de.replace('{hero_name}', HERO); let n = 0;
     clearInterval(this.tw); this.tw = setInterval(() => { $('de').textContent = txt.slice(0, ++n); if (n >= txt.length) clearInterval(this.tw); }, 28);
-    $('ru').textContent = l.ru; setPortraits(mine ? 'talk' : 'calm', mine ? 'calm' : 'talk', mine); $('bSpeak').style.display = mine ? '' : 'none'; $('bNext').style.display = mine ? 'none' : '';
+    $('ru').textContent = l.ru.replace('{hero_name}', HERO); setPortraits(mine ? 'talk' : 'calm', mine ? 'calm' : 'talk', mine); $('bSpeak').style.display = mine ? '' : 'none'; $('bNext').style.display = mine ? 'none' : '';
     if (!mine) { this.tweens.add({ targets: this.npc, y: this.npc.y - 10, duration: 160, yoyo: true }); setTimeout(() => playLine(l), 250); }
   }
   speak() {
@@ -95,7 +95,7 @@ class Room extends Phaser.Scene {
   }
   finish() {
     const bonus = 20; setCoins(state.coins + bonus); state.done = true; store.set(state);
-    $('rwItems').innerHTML = ['icon_coin', 'icon_bread'].map(k => `<img src="assets/${k}.png" onerror="this.style.display='none'">`).join('');
+    $('rwItems').innerHTML = ['icon_coin', 'icon_bread'].map(k => `<img src="assets_v3/${k}.png" onerror="this.style.display='none'">`).join('');
     $('rwTxt').textContent = `+${this.coinsEarned + bonus} Münzen · Blumen für den Hof`; $('reward').style.display = 'block';
     $('bBack').onclick = () => { $('reward').style.display = 'none'; this.registry.set('justDone', true); this.cameras.main.fadeOut(300, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Yard')); };
   }
@@ -103,5 +103,5 @@ class Room extends Phaser.Scene {
 $('reset').onclick = () => { store.set({ done: false, coins: 0 }); location.reload(); };
 Promise.all([fetch('lesson.json').then(r => r.json()), fetch('assets.json').then(r => r.json())]).then(([l, a]) => {
   lesson = l; window.__assets = {};
-  new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#5f8c46', scene: [Boot, Yard, Room].concat(window.Furnish ? [window.Furnish] : []), pixelArt: true, render: { antialias: false, roundPixels: true }, audio: { noAudio: true } });
+  new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#5f8c46', scene: [Boot, Yard, Room].concat(window.Furnish ? [window.Furnish] : [], window.Karte ? [window.Karte] : []), pixelArt: true, render: { antialias: false, roundPixels: true }, audio: { noAudio: true } });
 });

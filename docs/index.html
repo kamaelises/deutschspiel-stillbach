@@ -30,6 +30,14 @@ html, body { margin: 0; height: 100%; background: #1d130b; overflow: hidden; }
 #furnBar .ui-btn { font-family: inherit; color: #2e1e12; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 74px; height: 72px; padding: 1px 5px; font-size: 13px; line-height: 1.1; }
 #furnBar .ui-btn img { height: 30px; image-rendering: pixelated; object-fit: contain; max-width: 70px; }
 #furnBar small { font-size: 11px; opacity: .8; }
+#bMap { right: 330px; bottom: 12px; font-size: 20px; padding: 0 14px; color: #2e1e12; }
+#mapPanel { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none; padding: 8px 14px 12px; text-align: center; color: #2e1e12; }
+#mapPanel .mapTitle { font-size: 22px; margin-bottom: 4px; }
+#mapPanel .mapGrid { display: grid; grid-template-columns: 200px 200px; gap: 4px 14px; }
+#mapPanel .place { cursor: pointer; } #mapPanel .place img { width: 200px; height: 160px; image-rendering: pixelated; display: block; border: 2px solid #3b2314; }
+#mapPanel .place.open img { box-shadow: 0 0 0 3px #ffd23f; }
+#mapPanel .pl { font-size: 18px; margin-top: 2px; } #mapPanel .pr { font-size: 13px; opacity: .8; }
+#mapPanel .ui-btn { margin-top: 4px; font-family: inherit; font-size: 20px; height: 44px; padding: 0 18px; color: #2e1e12; }
 #reset { position: absolute; left: 12px; bottom: 6px; font-size: 12px; color: #fff8; pointer-events: auto; cursor: pointer; }
 </style>
 <link rel="stylesheet" href="ui_kit.css">
@@ -41,6 +49,7 @@ html, body { margin: 0; height: 100%; background: #1d130b; overflow: hidden; }
     <div class="hud" id="clock"><div class="ui ui-nameplate">Morgen · Sonne</div></div>
     <button class="ui ui-btn hud" id="bag">Rucksack</button>
     <button class="ui ui-btn hud" id="bFurn">Einrichten</button>
+    <button class="ui ui-btn hud" id="bMap">Karte</button>
     <div id="dlg"><img class="portrait" id="pL" alt=""><img class="portrait" id="pR" alt=""><div class="ui ui-nameplate" id="who"></div><div class="ui ui-bubble" id="bubble"><div id="de"></div><div id="ru"></div></div>
       <div id="btns"><button class="ui ui-btn" id="bHear">Hören</button><button class="ui ui-btn" id="bSpeak">Sprechen</button><button class="ui ui-btn" id="bNext">Weiter</button></div></div>
     <div id="toast"></div>
@@ -48,7 +57,8 @@ html, body { margin: 0; height: 100%; background: #1d130b; overflow: hidden; }
     <div id="reset">Reset</div>
   </div>
 </div>
-<script src="phaser.min.js"></script>
+<script src="node_modules/phaser/dist/phaser.min.js"></script>
 <script src="furnish.js"></script>
+<script src="map.js"></script>
 <script src="main.js"></script>
 </body></html>

@@ -18,7 +18,7 @@
       const d = sc.cache.json.get('fur'); if (!d) return true;
       const c = d.cell * d.scale, row = d.mask[Math.floor(y / c)]; return !!row && row[Math.floor(x / c)] === '1';
     }
-    return (ZONES[sc.scene.key] || []).some(([a, b, c, e]) => x >= a && x <= c && y >= b && y <= e);
+    return ((sc.o && sc.o.walk) || ZONES[sc.scene.key] || []).some(([a, b, c, e]) => x >= a && x <= c && y >= b && y <= e);   // each place may have its own floor
   }
   function nearestWalkable(sc, x, y) {
     if (walkable(sc, x, y)) return [x, y];
@@ -84,7 +84,7 @@
       if (document.getElementById('reward').style.display === 'block') return;
       walkTo(sc, p.worldX, p.worldY);
     });
-    const ex = EXIT[sc.scene.key];
+    const ex = sc.o && sc.o.exit ? { at: sc.o.exit, to: 'Yard' } : EXIT[sc.scene.key];
     if (ex) {                                                         // выход
       const g = sc.add.container(ex.at[0], ex.at[1]).setDepth(5000);
       const arrow = sc.add.triangle(0, 0, -16, -10, 16, -10, 0, 12, 0xffd23f).setStrokeStyle(3, 0x3b2314);

@@ -3,6 +3,7 @@
 // Наследует Room: тот же диалог, «Sprechen», «Zauber», монеты. Uses globals from main.js: Room, $, state, store, setCoins, toast, HERO, whereSet.
 const ORTE = {
   buergeramt: { img: 'assets_v3/places/buergeramt.png', w: 1008, h: 672, hero: [396, 612], npc: [498, 300], ch: 'ch02', dialog: 'ch02_d1', heroRole: 'H', title: 'das Gildenhaus' },
+  baeckerei: { img: 'assets_v3/places/baeckerei.png', w: 864, h: 912, hero: [430, 735], npc: [430, 590], walk: [[255, 655, 610, 750]], exit: [430, 762], ch: 'ch04', dialog: 'ch04_d4', heroRole: 'H', title: 'die Bäckerei' },   // craftpix workshop = bakery (build_baeckerei_b.py)
 };
 class Ort extends Room {
   constructor() { super('Ort'); }

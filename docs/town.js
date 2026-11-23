@@ -1,9 +1,9 @@
-﻿// Деревня Stillbach — одна бесшовная карта (assets_v3/town): двор героя + улица + дома. Max идёт куда тапнули,
+// Деревня Stillbach — одна бесшовная карта (assets_v3/town): двор героя + улица + дома. Max идёт куда тапнули,
 // тап по дому — идёт к двери и входит (Gildenhaus — сцена внутри мира; закрытые дома говорят, с какой главы).
 // Над домами — вывески с артиклем в цвете (der синий, die красный, das зелёный). Город растёт по главам (заглушки — «bald»).
 (function () {
   const HOUSES = {
-    laden: { de: 'die Bäckerei', ru: 'пекарня', chapter: 4, ort: null },
+    laden: { de: 'die Bäckerei', ru: 'пекарня', chapter: 4, ort: 'baeckerei' },
     gildenhaus: { de: 'das Gildenhaus', ru: 'дом гильдии', chapter: 2, ort: 'buergeramt' },
     kirche: { de: 'die Kirche', ru: 'церковь', chapter: 5, ort: null },
   };

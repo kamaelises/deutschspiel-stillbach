@@ -1,10 +1,11 @@
-﻿// Перевод на кнопках и плашках: под немецким словом — мелко по-русски (Hören / слушать). Немецкое остаётся главным.
+// Перевод на кнопках и плашках: под немецким словом — мелко по-русски (Hören / слушать). Немецкое остаётся главным.
 (function () {
   const RU = {
     'Hören': 'слушать', 'Sprechen': 'сказать', 'Weiter': 'дальше', 'Ohne Mikro': 'без микрофона', 'Nochmal': 'ещё раз',
     'Zur Karte': 'к карте', 'Zum Hof': 'во двор', '⟵ Raus': 'выйти', 'Raus': 'выйти', 'Karte': 'карта', 'Einrichten': 'обставить',
     'Rucksack': 'рюкзак', 'Fertig': 'готово', 'Lektionen': 'уроки', 'Wiederholen': 'повтор', 'Spiele': 'игры',
     'Morgen · Sonne': 'утро · солнце', 'Karte von Stillbach': 'карта Штильбаха', 'Geschafft!': 'получилось!',
+    'Keller-Übung': 'тренировка',
   };
   const PRE = [['Ziel: ', 'цель: '], ['Sprich mit ', 'поговори с '], ['Einrichten: tippe ein Möbel', 'обустройство: выбери мебель']];
   const WORD = { 'Elternhaus': 'родительский дом', 'Herrn Schmidt': 'господином Шмидтом', 'den Leuten': 'людьми', 'Bäckerei (bald)': 'пекарня (скоро)' };

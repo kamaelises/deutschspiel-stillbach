@@ -8,6 +8,7 @@
     kirche: { de: 'die Kirche', ru: 'церковь', chapter: 5, ort: null },
   };
   const COL = { der: '#3a7be0', die: '#e24848', das: '#2f9a4f' };
+  window.KELLER_HATCH = { x: 696, y: 440 };                          // люк в подвал (центр, px деревни); Dungeon возвращает Max сюда
   function reach() {
     let ch = []; try { ch = JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) {}
     const started = ch.filter(c => c.done > 0).map(c => c.n);
@@ -53,6 +54,19 @@
     });
     if (sc.textures.exists('plot_sign')) signs();
     else { sc.load.image('plot_sign', 'assets_v3/town/plot_sign.png'); sc.load.once('complete', signs); sc.load.start(); }
+    const K = window.KELLER_HATCH;                                  // временный вход в подземелье (rpg-design шаг 1): люк «der Keller» у дома героя
+    const hatch = () => {
+      const tex = sc.textures.get('dun_anim'); if (!tex.has('hatch')) tex.add('hatch', 0, 160, 159, 17, 17);   // craftpix 436971: деревянный люк с кольцом
+      const img = sc.add.image(Math.round((K.x - 25) / 3) * 3, Math.round((K.y - 25) / 3) * 3, 'dun_anim', 'hatch').setOrigin(0, 0).setScale(3).setDepth(1).setInteractive({ useHandCursor: true });   // на сетке пикселей арта ×3
+      const sign = sc.add.text(K.x, K.y - 30, 'der Keller', { fontFamily: 'Roboto, sans-serif', fontSize: '20px', fontStyle: 'bold', color: '#fff7e0', stroke: '#3b2314', strokeThickness: 6 }).setOrigin(0.5, 1).setDepth(6000);
+      sc.add.text(sign.x - sign.width / 2, sign.y - sign.height, 'der', { fontFamily: 'Roboto, sans-serif', fontSize: '20px', fontStyle: 'bold', color: COL.der, stroke: '#3b2314', strokeThickness: 6 }).setDepth(6001);
+      img.on('pointerup', () => {
+        if (sc.__dragged || sc.busy) return; if (window.speakDE) speakDE('der Keller');
+        const go = () => { sc.busy = true; sc.cameras.main.fadeOut(250, 24, 20, 37); sc.cameras.main.once('camerafadeoutcomplete', () => sc.scene.start('Dungeon', {})); };
+        if (window.walkToScene) window.walkToScene(sc, K.x, K.y + 50, go); else go();
+      });
+    };
+    if (window.Dungeon && K) { if (sc.textures.exists('dun_anim')) hatch(); else { sc.load.image('dun_anim', 'assets_v3/dungeon/anim.png'); sc.load.once('complete', hatch); sc.load.start(); } }
     const sp = sc.registry.get('spawnAt');                         // назад из дома — у его двери
     if (sp) { sc.registry.set('spawnAt', null); sc.camFocus = [sp[0], sp[1] - 60]; sc.__spawn = sp; }
   }

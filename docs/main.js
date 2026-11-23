@@ -26,6 +26,7 @@ class Boot extends Phaser.Scene {
     const keys = Object.keys(window.__assets);
     keys.forEach(k => this.load.image(k, 'assets/' + k + '.png'));
     V3.forEach(k => this.load.image(k, 'assets_v3/' + k.slice(3) + '.png')); this.load.json('lay', 'assets_v3/layout_v3.json'); this.load.image('town_bg', 'assets_v3/town/town_bg.png'); this.load.json('town', 'assets_v3/town/town.json'); this.load.spritesheet('hero_walk', 'assets_v3/hero_walk.png', { frameWidth: 96, frameHeight: 96 }); this.load.json('fur', 'assets_v3/furnish/furnish.json');
+    [['dun_tiles', 'tileset'], ['dun_obj', 'objects'], ['dun_anim', 'anim'], ['dun_det', 'details']].forEach(([k, f]) => this.load.image(k, 'assets_v3/dungeon/' + f + '.png'));   // подземелье Keller (craftpix 436971)
     ['panel_paper'].forEach(k => this.load.image(k, 'assets/' + k + '.png'));
     this.load.on('loaderror', (f) => console.warn('missing', f.key));
   }
@@ -126,5 +127,5 @@ class Room extends Phaser.Scene {
 $('reset').onclick = () => { store.set({ done: false, coins: 0 }); location.reload(); };
 Promise.all([fetch('lesson.json').then(r => r.json()), fetch('assets.json').then(r => r.json())]).then(([l, a]) => {
   lesson = l; window.__assets = {};
-  window.game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#5f8c46', scene: [Boot, Yard, Room].concat(window.Furnish ? [window.Furnish] : [], window.Karte ? [window.Karte] : [], window.Ort ? [window.Ort] : []), pixelArt: true, render: { antialias: false, roundPixels: true }, audio: { noAudio: true } });
+  window.game = new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#5f8c46', scene: [Boot, Yard, Room].concat(window.Furnish ? [window.Furnish] : [], window.Karte ? [window.Karte] : [], window.Ort ? [window.Ort] : [], window.Dungeon ? [window.Dungeon] : []), pixelArt: true, render: { antialias: false, roundPixels: true }, audio: { noAudio: true } });
 });

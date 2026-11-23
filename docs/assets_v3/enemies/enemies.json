@@ -1,0 +1,118 @@
+{
+ "frame": 64,
+ "scale": 3,
+ "rows": [
+  "down",
+  "up",
+  "left",
+  "right"
+ ],
+ "packs": "craftpix 788364 (slimes), 363992 (orcs)",
+ "types": {
+  "slime1": {
+   "name": "Schleim",
+   "hp": 16,
+   "atk": 2,
+   "coins": 5,
+   "xp": 10,
+   "anims": {
+    "idle": {
+     "file": "slime1_idle.png",
+     "frames": 6
+    },
+    "walk": {
+     "file": "slime1_walk.png",
+     "frames": 8
+    },
+    "attack": {
+     "file": "slime1_attack.png",
+     "frames": 10
+    },
+    "hurt": {
+     "file": "slime1_hurt.png",
+     "frames": 5
+    },
+    "death": {
+     "file": "slime1_death.png",
+     "frames": 10
+    }
+   },
+   "box": [
+    24,
+    20,
+    43,
+    42
+   ]
+  },
+  "slime2": {
+   "name": "Knochenschleim",
+   "hp": 20,
+   "atk": 3,
+   "coins": 6,
+   "xp": 12,
+   "anims": {
+    "idle": {
+     "file": "slime2_idle.png",
+     "frames": 6
+    },
+    "walk": {
+     "file": "slime2_walk.png",
+     "frames": 8
+    },
+    "attack": {
+     "file": "slime2_attack.png",
+     "frames": 11
+    },
+    "hurt": {
+     "file": "slime2_hurt.png",
+     "frames": 5
+    },
+    "death": {
+     "file": "slime2_death.png",
+     "frames": 10
+    }
+   },
+   "box": [
+    22,
+    19,
+    45,
+    42
+   ]
+  },
+  "orc1": {
+   "name": "Ork",
+   "hp": 26,
+   "atk": 4,
+   "coins": 9,
+   "xp": 16,
+   "anims": {
+    "idle": {
+     "file": "orc1_idle.png",
+     "frames": 4
+    },
+    "walk": {
+     "file": "orc1_walk.png",
+     "frames": 6
+    },
+    "attack": {
+     "file": "orc1_attack.png",
+     "frames": 8
+    },
+    "hurt": {
+     "file": "orc1_hurt.png",
+     "frames": 6
+    },
+    "death": {
+     "file": "orc1_death.png",
+     "frames": 8
+    }
+   },
+   "box": [
+    10,
+    14,
+    44,
+    46
+   ]
+  }
+ }
+}

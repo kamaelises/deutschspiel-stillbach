@@ -11,3 +11,6 @@
 | v3_hero (Max, ребёнок) | Classic RPG Walking Characters Vol.1 Free Sampler, kovcrewq41 (itch.io), npc_boy | free, коммерция OK |
 | v3_brezel (бордер-колли) | Top-Down Mobs Dog, Admurin (itch.io), перекраска в чёрно-белый | free, коммерция OK, без перепродажи |
 | v3_room_bg | craftpix Main Character's Home, карта Interior1.tmx художника (наши правки: убраны висящие вещи) | craftpix free license |
+| кухня в room_bg (полка с банками, полка с кружками, бочка) | Frostbrook Town Interiors Free Sample, Chucky Assets (itch.io) | личное и коммерческое OK, правки OK, файлы не распространять, не для обучения ИИ |
+
+Правило выбора: берём только паки с явной лицензией. Medieval Free Pack (a-something) без лицензии на странице — не используем.

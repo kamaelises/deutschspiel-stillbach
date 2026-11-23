@@ -35,10 +35,10 @@ class Furnish extends Phaser.Scene {
     this.sel = it; this.ghost = this.add.image(-999, -999, 'fo_' + k).setOrigin(0.5, 1).setAlpha(0.85).setDepth(5000);
     toast(it.art + ' ' + it.de + ' — ' + it.ru, 1400); speakDE(it.art + ' ' + it.de);
   }
-  snap(px, py) { const C = this.C * this.S; return [Math.round(px / C) * C / this.S, Math.round(py / C) * C / this.S]; }   // logical px, bottom-centre
+  snap(px, py) { const C = 4 * this.S; return [Math.round(px / C) * C / this.S, Math.round(py / C) * C / this.S]; }   // logical px, bottom-centre
   foot(it, x, y) {
     if (it.kind === 'decal') return [x - it.w / 2, y - it.h, x + it.w / 2, y];
-    const fh = it.kind === 'wall' ? Math.max(8, Math.min(12, Math.round(it.h * 0.3))) : Math.max(8, Math.round(it.h * 0.5)), fw = it.w * 0.9; return [x - fw / 2, y - fh, x + fw / 2, y];   // half the height: things may stand behind each other, never inside
+    const fh = it.kind === 'wall' ? Math.max(8, Math.min(12, Math.round(it.h * 0.3))) : Math.max(6, Math.round(it.h * 0.25)), fw = it.w * 0.9; return [x - fw / 2, y - fh, x + fw / 2, y];   // half the height: things may stand behind each other, never inside
   }
   cellFloor(cx, cy) { if ((cy + 1) * this.C * this.S > this.barTop()) return false; const r = this.d.mask[cy]; return !!r && r[cx] === '1'; }   // cells hidden under the bar count as blocked
   barTop() { const b = $('furnBar'); if (!b || !b.offsetHeight) return 540; return Math.min(540, this.cameras.main.getWorldPoint(0, b.getBoundingClientRect().top - 8).y); }   // граница полки — по экрану, с учётом камеры

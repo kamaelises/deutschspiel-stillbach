@@ -82,6 +82,7 @@
     #stage{pointer-events:none} #game{position:absolute;left:0;top:0} #game canvas{width:auto!important;height:auto!important;image-rendering:pixelated}
     body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     body.vert #clock{display:none}
+    body.vert #bMap{right:auto;left:12px} body.vert #bFurn{right:auto;left:50%;transform:translateX(-50%)} body.vert #bag{right:12px}
     body.vert #furnBar{flex-wrap:wrap;overflow:visible;justify-content:center}
     body.vert #furnBar .ui-btn{min-width:78px;flex:0 0 auto}
     .appLinks{flex-wrap:wrap}

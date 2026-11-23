@@ -32,10 +32,11 @@ class Ort extends Room {
   }
   show() { super.show(); $('pL').style.display = 'none'; $('pR').style.display = 'none'; const l = this.L[this.i]; if (l.role !== 'A') $('who').textContent = l.who || '…'; }
   finish() {
-    const bonus = 15; setCoins(state.coins + bonus); whereSet('Karte');
-    $('rwItems').innerHTML = '<img src="assets_v3/icon_coin.png">';
-    $('rwTxt').textContent = `+${this.coinsEarned + bonus} Münzen · ${this.o.title}`; $('reward').style.display = 'block'; $('bBack').textContent = 'Zur Karte';
-    $('bBack').onclick = () => { $('reward').style.display = 'none'; $('bBack').textContent = 'Zum Hof'; this.cameras.main.fadeOut(300, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Karte')); };
+    const rep = isRepeat(this), bonus = rep ? 0 : 15; whereSet('Karte');
+    if (!rep) { setCoins(state.coins + bonus); markPaid(this); }
+    endCard(this, { title: this.o.title, coins: rep ? 0 : this.coinsEarned + bonus, backLabel: 'Zur Karte', restartData: { place: this.placeKey },
+      back: () => { this.cameras.main.fadeOut(300, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Karte')); } });
   }
+
 }
 window.Ort = Ort; window.ORTE = ORTE;

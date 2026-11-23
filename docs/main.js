@@ -57,6 +57,22 @@ class Yard extends Phaser.Scene {
     cam.once('camerafadeoutcomplete', () => this.scene.start('Room'));
   }
 }
+
+// конец разговора: карточка «Geschafft!» — фразы Max, монеты (только в первый раз), «Nochmal», дорога назад
+function endCard(sc, o) {
+  const r = $('reward'), mine = sc.L.filter(l => l.role === 'A');
+  r.innerHTML = `<div style="font-size:26px;font-weight:800">Geschafft!</div><div style="font-size:15px;opacity:.8;margin-bottom:6px">${o.title}</div>
+    <div style="text-align:left;max-height:190px;overflow:auto;margin:4px 6px 8px;font-size:16px;line-height:1.3">${mine.map(l => `<div style="margin:3px 0"><b>${l.de.replace('{hero_name}', HERO)}</b><br><span style="font-size:13px;opacity:.75">${(l.ru || '').replace('{hero_name}', HERO)}</span></div>`).join('')}</div>
+    <div style="font-size:18px;margin:4px 0">${o.coins ? '<img src="assets_v3/icon_coin.png" style="height:26px;vertical-align:middle"> +' + o.coins + ' Münzen' : 'Schon geübt — Münzen gibt es nur beim ersten Mal'}</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="ui ui-btn" id="bAgain" style="font-size:18px;height:46px;padding:0 14px">Nochmal</button><button class="ui ui-btn" id="bBack" style="font-size:18px;height:46px;padding:0 14px">${o.backLabel}</button></div>`;
+  r.style.display = 'block';
+  const close = () => { r.style.display = 'none'; };
+  $('bAgain').onclick = () => { close(); whereSet(sc.scene.key, 0); sc.scene.restart(o.restartData || {}); };
+  $('bBack').onclick = () => { close(); o.back(); };
+}
+function paidKey(sc) { return sc.scene.key === 'Ort' ? 'ort:' + sc.placeKey : 'room1'; }
+function isRepeat(sc) { return !!(state.paid && state.paid[paidKey(sc)]); }
+function markPaid(sc) { state.paid = state.paid || {}; state.paid[paidKey(sc)] = true; store.set(state); }
 class Room extends Phaser.Scene {
   constructor(k) { super(k || 'Room'); }
   create(data) {
@@ -91,19 +107,21 @@ class Room extends Phaser.Scene {
     const cx = this.hero.x, cy = this.hero.y - 120;
     for (let k = 0; k < 24; k++) { const d = this.add.circle(cx, cy, 5, k % 2 ? 0xffd23f : 0xffffff).setDepth(999), a = k / 24 * Math.PI * 2, r = 80 + Math.random() * 90;
       this.tweens.add({ targets: d, x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r - 20, alpha: 0, duration: 800, onComplete: () => d.destroy() }); }
-    this.tweens.add({ targets: this.npc, y: this.npc.y - 18, duration: 150, yoyo: true, repeat: 1 }); this.coinsEarned += 5; setCoins(state.coins + 5); toast('Zauber! +5', 1100); setPortraits('smile', 'smile', true);
+    this.tweens.add({ targets: this.npc, y: this.npc.y - 18, duration: 150, yoyo: true, repeat: 1 }); if (isRepeat(this)) toast('Zauber!', 1000); else { this.coinsEarned += 5; setCoins(state.coins + 5); toast('Zauber! +5', 1100); } setPortraits('smile', 'smile', true);
   }
   next() {
     clearInterval(this.tw); this.i++;
-    if (this.i >= this.L.length) { whereSet('Yard'); $('dlg').style.display = 'none'; return this.finish(); }
+    if (this.i >= this.L.length) { this.i = this.L.length - 1; $('bNext').style.display = 'none'; $('bSpeak').style.display = 'none'; $('bSkip').style.display = 'none'; if (this.ending) return; this.ending = true; return setTimeout(() => { $('dlg').style.display = 'none'; this.ending = false; this.finish(); }, 1300); }   // последняя реплика видна до конца
     this.show();
   }
   finish() {
-    const bonus = 20; setCoins(state.coins + bonus); state.done = true; store.set(state);
-    $('rwItems').innerHTML = ['icon_coin', 'icon_bread'].map(k => `<img src="assets_v3/${k}.png" onerror="this.style.display='none'">`).join('');
-    $('rwTxt').textContent = `+${this.coinsEarned + bonus} Münzen · Blumen für den Hof`; $('reward').style.display = 'block';
-    $('bBack').onclick = () => { $('reward').style.display = 'none'; this.registry.set('justDone', true); this.cameras.main.fadeOut(300, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Yard')); };
+    const rep = isRepeat(this), bonus = rep ? 0 : 20; whereSet('Yard');
+    if (!rep) { setCoins(state.coins + bonus); markPaid(this); }
+    state.done = true; store.set(state);
+    endCard(this, { title: 'Herr Schmidt · das Elternhaus', coins: rep ? 0 : this.coinsEarned + bonus, backLabel: 'Zum Hof',
+      back: () => { this.registry.set('justDone', !rep); this.cameras.main.fadeOut(300, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Yard')); } });
   }
+
 }
 $('reset').onclick = () => { store.set({ done: false, coins: 0 }); location.reload(); };
 Promise.all([fetch('lesson.json').then(r => r.json()), fetch('assets.json').then(r => r.json())]).then(([l, a]) => {

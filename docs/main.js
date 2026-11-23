@@ -8,6 +8,7 @@ function fit() { const s = Math.min(innerWidth / W, innerHeight / H); const st =
 addEventListener('resize', fit); fit();
 function setCoins(n) { state.coins = n; store.set(state); $('coins').textContent = n; }
 function toast(t, ms = 1500) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms); }
+function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.src = 'assets_v3/portraits/hero_' + heroE + '.png'; R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }
 function speakDE(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} }
 const audioEl = new Audio();
 function playLine(l) { if (l.audio) { audioEl.src = 'audio/' + l.audio; audioEl.play().catch(() => speakDE(l.de)); } else speakDE(l.de); }
@@ -17,7 +18,7 @@ function sceneSprite(sc, key, x, y, h, fallbackColor, label) {
   const g = sc.add.rectangle(x, y, h * 0.7, h, fallbackColor).setOrigin(0.5, 1).setDepth(y); sc.add.text(x, y - h / 2, label, { fontSize: '14px', color: '#fff' }).setOrigin(0.5).setDepth(y + 1); return g;
 }
 const V3 = ['v3_yard_bg', 'v3_light_overlay', 'v3_house', 'v3_hero', 'v3_npc', 'v3_brezel', 'v3_reward_flowers', 'v3_room_bg'];
-function v3(sc, key, xy, depth) { const s = sc.add.image(xy[0], xy[1], key).setOrigin(0.5, 1); s.setDepth(depth === undefined ? xy[1] : depth); return s; }
+function v3(sc, key, xy, depth, org) { const s = sc.add.image(xy[0], xy[1], key).setOrigin(org ? org[0] : 0.5, org ? org[1] : 1); s.setDepth(depth === undefined ? xy[1] : depth); return s; }
 function foot(sc, xy, w) { return sc.add.ellipse(xy[0] + w * 0.15, xy[1] - 2, w, w * 0.28, 0x0f1c08, 0.35).setDepth(xy[1] - 1); }
 class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
@@ -37,7 +38,7 @@ class Yard extends Phaser.Scene {
     const lay = this.cache.json.get('lay'); this.lay = lay;
     this.add.image(0, 0, 'v3_yard_bg').setOrigin(0, 0).setDepth(-10); this.add.image(0, 0, 'v3_light_overlay').setOrigin(0, 0).setDepth(2000);
     this.house = v3(this, 'v3_house', lay.house);
-    foot(this, lay.hero, 54); this.hero = v3(this, 'v3_hero', lay.hero);
+    this.hero = v3(this, 'v3_hero', lay.hero, undefined, lay.origin_hero);
     this.brezel = v3(this, 'v3_brezel', lay.brezel).setVisible(false); // TODO: Brezel in the right scale (no fitting dog in the packs yet)
     this.tweens.add({ targets: this.brezel, scaleY: this.brezel.scaleY * 1.04, duration: 700, yoyo: true, repeat: -1 });
     if (state.done) { this.reward = this.lay.reward.map(xy => v3(this, 'v3_reward_flowers', xy)); $('goalTxt').textContent = 'Ziel: Bäckerei (bald)'; }
@@ -61,7 +62,7 @@ class Room extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor(0x2b1a10); this.cameras.main.fadeIn(300);
     const lay = this.cache.json.get('lay'); this.add.image(0, 0, 'v3_room_bg').setOrigin(0, 0).setDepth(-10);
-    foot(this, lay.room_hero, 54); this.hero = v3(this, 'v3_hero', lay.room_hero); foot(this, lay.room_npc, 54); this.npc = v3(this, 'v3_npc', lay.room_npc);
+    this.hero = v3(this, 'v3_hero', lay.room_hero, undefined, lay.origin_hero); this.npc = v3(this, 'v3_npc', lay.room_npc, undefined, lay.origin_npc);
     this.i = 0; this.coinsEarned = 0; $('dlg').style.display = 'block'; this.show();
     $('bHear').onclick = () => playLine(lesson.lines[this.i]);
     $('bNext').onclick = () => this.next(); $('bSpeak').onclick = () => this.speak();
@@ -70,7 +71,7 @@ class Room extends Phaser.Scene {
     const l = lesson.lines[this.i], mine = l.role === 'A';
     $('who').textContent = mine ? HERO : 'Herr Schmidt'; $('de').textContent = ''; const txt = l.de.replace('{hero_name}', HERO); let n = 0;
     clearInterval(this.tw); this.tw = setInterval(() => { $('de').textContent = txt.slice(0, ++n); if (n >= txt.length) clearInterval(this.tw); }, 28);
-    $('ru').textContent = l.ru; $('bSpeak').style.display = mine ? '' : 'none'; $('bNext').style.display = mine ? 'none' : '';
+    $('ru').textContent = l.ru; setPortraits(mine ? 'talk' : 'calm', mine ? 'calm' : 'talk', mine); $('bSpeak').style.display = mine ? '' : 'none'; $('bNext').style.display = mine ? 'none' : '';
     if (!mine) { this.tweens.add({ targets: this.npc, y: this.npc.y - 10, duration: 160, yoyo: true }); setTimeout(() => playLine(l), 250); }
   }
   speak() {
@@ -85,7 +86,7 @@ class Room extends Phaser.Scene {
     const cx = this.hero.x, cy = this.hero.y - 120;
     for (let k = 0; k < 24; k++) { const d = this.add.circle(cx, cy, 5, k % 2 ? 0xffd23f : 0xffffff).setDepth(999), a = k / 24 * Math.PI * 2, r = 80 + Math.random() * 90;
       this.tweens.add({ targets: d, x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r - 20, alpha: 0, duration: 800, onComplete: () => d.destroy() }); }
-    this.tweens.add({ targets: this.npc, y: this.npc.y - 18, duration: 150, yoyo: true, repeat: 1 }); this.coinsEarned += 5; setCoins(state.coins + 5); toast('Zauber! +5', 1100);
+    this.tweens.add({ targets: this.npc, y: this.npc.y - 18, duration: 150, yoyo: true, repeat: 1 }); this.coinsEarned += 5; setCoins(state.coins + 5); toast('Zauber! +5', 1100); setPortraits('smile', 'smile', true);
   }
   next() {
     clearInterval(this.tw); this.i++;
@@ -101,6 +102,6 @@ class Room extends Phaser.Scene {
 }
 $('reset').onclick = () => { store.set({ done: false, coins: 0 }); location.reload(); };
 Promise.all([fetch('lesson.json').then(r => r.json()), fetch('assets.json').then(r => r.json())]).then(([l, a]) => {
-  lesson = l; window.__assets = Object.assign({}, a, { icon_coin: 1, icon_bread: 1, mailbox: 1, flowerbed: 1, tree_oak: 1, tree_pine: 1, fence: 1, well: 1, bush: 1 });
+  lesson = l; window.__assets = {};
   new Phaser.Game({ type: Phaser.AUTO, parent: 'game', width: W, height: H, backgroundColor: '#5f8c46', scene: [Boot, Yard, Room], pixelArt: true, render: { antialias: false, roundPixels: true }, audio: { noAudio: true } });
 });

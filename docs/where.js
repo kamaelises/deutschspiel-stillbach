@@ -15,7 +15,7 @@
   addEventListener('resize', smooth); setInterval(smooth, 1000); smooth();
   const st = document.createElement('style'); st.textContent = 'body.asleep #ui{visibility:hidden}'; document.head.appendChild(st);
   addEventListener('message', e => {
-    if (e.origin !== location.origin || !e.data || !window.game) return;
+    if (e.origin !== location.origin || !e.data || !window.game || !game.loop) return;
     if (e.data.ds === 'progress' && Array.isArray(e.data.chapters)) {
       const ch = e.data.chapters.map(c => ({ n: +c.n, title: String(c.title || ''), done: +c.done || 0, total: +c.total || 0 }));
       try { localStorage.setItem('ds_proto.app', JSON.stringify({ chapters: ch, t: Date.now() })); } catch (x) {}

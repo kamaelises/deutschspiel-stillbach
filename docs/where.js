@@ -1,11 +1,12 @@
-// Где игрок в мире: сцена (+ строка урока) в localStorage 'ds_proto.where'; после перезапуска Boot продолжает оттуда.
+﻿// Где игрок в мире: сцена (+ строка урока) в localStorage 'ds_proto.where'; после перезапуска Boot продолжает оттуда.
 // В приложении: {ds:'pause'} усыпляет игру (вкладка скрыта), {ds:'resume'} будит — состояние в памяти не теряется.
 (function () {
   const KEY = 'ds_proto.where';
   window.whereGet = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; } };
   window.whereSet = (s, i) => { try { localStorage.setItem(KEY, JSON.stringify({ s, i: i || 0, t: Date.now() })); } catch (e) {} };
   function hook() {
-    const g = window.game; if (!g || !g.scene) return setTimeout(hook, 100);
+    const g = window.game; if (!g || !g.scene || !g.scene.scenes || !g.scene.scenes.length) return setTimeout(hook, 50);
+    let sent = false; g.scene.scenes.forEach(sc => sc.events.on('create', () => { if (!sent && sc.scene.key !== 'Boot') { sent = true; if (window.parent !== window) window.parent.postMessage({ ds: 'ready' }, location.origin); } }));
     ['Yard', 'Karte', 'Furnish'].forEach(k => { const sc = g.scene.getScene(k); if (sc) sc.events.on('create', () => whereSet(k)); });
   }
   hook();

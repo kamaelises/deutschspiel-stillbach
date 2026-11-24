@@ -206,14 +206,20 @@
       data = data || {};
       this.seed = data.seed != null ? data.seed >>> 0 : (Math.random() * 0x7fffffff) >>> 0;
       this.floorNo = Math.max(0, Math.min(FLOORS - 1, data.floor | 0));
+      try {                                                            // после поражения (combat.js wakeHome) теряется только тот этаж: вход ведёт снова на него
+        const r = JSON.parse(localStorage.getItem('ds_proto.dunResume') || 'null');
+        if (r && (r.from || null) === (data.from || null) && (!r.from || r.seed === data.seed) && !data.noResume) { this.floorNo = Math.max(this.floorNo, Math.min(FLOORS - 1, r.floor | 0)); localStorage.removeItem('ds_proto.dunResume'); }
+      } catch (e) {}
       this.walker = null; this.heroShadow = null; this.busy = false; this.talking = false; this.walkTween = null;
       const d = this.dun = gen(this.seed, this.floorNo);
       this.worldW = d.TW * TS; this.worldH = d.TH * TS; this.viewW = 960; this.viewH = 780;
       this.townMask = { cell: 24, mask: d.mask };                     // walk.js: townWalkable / grid берут эту маску
       this.spawns = d.spawns; this.chests = d.chests; this.boss = d.boss; this.rooms = d.rooms.map(r => ({ id: r.id, x: r.x0 * TS, y: r.y0 * TS, w: (r.x1 - r.x0 + 1) * TS, h: (r.y1 - r.y0 + 1) * TS }));
       this.stairs = d.pit ? { x: (d.pit.tx + 1) * TS, y: (d.pit.ty + 1) * TS, at: d.pit.at } : null;
-      this.o = { exit: d.exit };                                       // walk.js: «Raus» у лестницы входа -> деревня
-      this.registry.set('spawnAt', window.KELLER_HATCH ? [window.KELLER_HATCH.x, window.KELLER_HATCH.y + 60] : null);
+      this.o = { exit: d.exit };                                       // walk.js: «Raus» у лестницы входа -> деревня (или в мир, если пришли из Welt)
+      this.from = data.from || null;
+      if (this.from === 'Welt') this.o.exitTo = 'Welt';                // Welt сам ставит Max у входа (registry weltSpawn)
+      else this.registry.set('spawnAt', window.KELLER_HATCH ? [window.KELLER_HATCH.x, window.KELLER_HATCH.y + 60] : null);
       this.cameras.main.setBackgroundColor(VOID);
       ['bag', 'bFurn', 'bMap'].forEach(k => { const e = document.getElementById(k); if (e) e.style.display = 'none'; });
       const dlg = document.getElementById('dlg'); if (dlg) dlg.style.display = 'none';
@@ -226,7 +232,13 @@
       const place = (key, tx, ty) => { const f = this.textures.get(key).getSourceImage(), w = f.width - 2, h = f.height - 1;
         return this.add.image(tx * TS + Math.round((T - w) / 2) * SC, (ty + 1) * TS - SC - h * SC, key).setOrigin(0, 0).setScale(SC).setDepth((ty + 1) * TS - SC); };
       d.props.forEach(p => place('dp_' + p.t, p.tx, p.ty));
-      d.chests.forEach(c => { c.img = place('dp_chest', c.tx, c.ty); });
+      d.chests.forEach((c, i) => {
+        c.img = place('dp_chest', c.tx, c.ty); c.id = 'dun:' + this.seed + ':' + this.floorNo + ':' + i; c.tier = this.floorNo === FLOORS - 1 ? 'boss' : 'normal';
+        if (c.img && c.img.setInteractive && window.Loot) c.img.setInteractive({ useHandCursor: true }).on('pointerup', () => {   // tap: Max walks up, the chest asks a word
+          if (this.__dragged || this.busy || c.opened) return;
+          const go = () => Loot.open(this, c); if (window.walkToScene) window.walkToScene(this, c.x, c.y + 30, go); else go();
+        });
+      });
       const at = this.textures.get('dun_anim'); for (let i = 0; i < 4; i++) if (!at.has('fl' + i)) at.add('fl' + i, 0, 400 + i * 16, 192, 16, 16);
       if (!this.anims.exists('dun_flame')) this.anims.create({ key: 'dun_flame', frames: [0, 1, 2, 3].map(i => ({ key: 'dun_anim', frame: 'fl' + i })), frameRate: 8, repeat: -1 });
       d.torches.forEach((t, i) => this.add.sprite(t.tx * TS, (t.ty * T - 7) * SC, 'dun_anim', 'fl0').setOrigin(0, 0).setScale(SC).setDepth((t.ty + 1) * TS).play({ key: 'dun_flame', startFrame: i % 4 }));
@@ -241,13 +253,18 @@
       this.hero = this.add.image(d.spawn[0], d.spawn[1], 'v3_hero').setVisible(false);
       this.camFocus = [d.spawn[0], d.spawn[1] - 60];
       if (window.walkSetup) window.walkSetup(this);
+      if (window.Combat) {                                            // step 2: enemies with German words; none in the entry room; deeper = more and tougher
+        const far = this.spawns.filter(p => Math.hypot(p.x - d.spawn[0], p.y - d.spawn[1]) > 320);
+        const n = Math.min(far.length, 3 + this.floorNo * 2);
+        this.enemies = Combat.spawnEnemies(this, far.slice(0, n).map(p => [p.x, p.y]), { entry: d.spawn, types: this.floorNo === 0 ? ['slime1', 'slime2'] : this.floorNo === 1 ? ['slime2', 'orc1'] : ['orc1', 'slime2'] });
+      }
       this.events.once('shutdown', () => { this.walker = null; this.heroShadow = null; this.busy = false; this.walkTween = null; });
       this.cameras.main.fadeIn(300); if (window.fitCam) window.fitCam(this);
       if (window.toast && this.floorNo) toast('Etage ' + (this.floorNo + 1), 1200);
     }
     down() {
       if (this.busy) return; this.busy = true;
-      this.cameras.main.fadeOut(300, 24, 20, 37); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ seed: this.seed, floor: this.floorNo + 1 }));
+      this.cameras.main.fadeOut(300, 24, 20, 37); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ seed: this.seed, floor: this.floorNo + 1, from: this.from }));
     }
   }
   window.Dungeon = Dungeon; window.dunGen = gen; window.DUNGEON = { T, SC, TS, FLOORS };

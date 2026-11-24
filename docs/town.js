@@ -8,6 +8,8 @@
     kirche: { de: 'die Kirche', ru: 'церковь', chapter: 5, ort: null },
   };
   const COL = { der: '#3a7be0', die: '#e24848', das: '#2f9a4f' };
+  window.WELT_GATE = { x: 50, y: 456 };                             // край леса у дома героя: «Hinaus in die Welt»
+  window.WELT_ON = true;                                             // континент Wiesenland готов: checks/overworld_check.cjs PASS (23.11)
   window.KELLER_HATCH = { x: 696, y: 440 };                          // люк в подвал (центр, px деревни); Dungeon возвращает Max сюда
   function reach() {
     let ch = []; try { ch = JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) {}
@@ -67,6 +69,21 @@
       });
     };
     if (window.Dungeon && K) { if (sc.textures.exists('dun_anim')) hatch(); else { sc.load.image('dun_anim', 'assets_v3/dungeon/anim.png'); sc.load.once('complete', hatch); sc.load.start(); } }
+    const WG = window.WELT_GATE;                                    // тропа в лес у дома героя (запад) -> континент Wiesenland (сцена Welt)
+    if (window.Welt && WG && window.WELT_ON) {                     // выход открыт флагом WELT_ON (выше); выключить — false
+      const g = sc.add.container(WG.x, WG.y).setDepth(5000);
+      const arrow = sc.add.triangle(0, 0, 10, -16, 10, 16, -12, 0, 0xffd23f).setStrokeStyle(3, 0x3b2314);
+      const st = { fontFamily: 'Roboto, sans-serif', fontStyle: 'bold', stroke: '#3b2314' };
+      const t1 = sc.add.text(-4, -34, 'Hinaus in die Welt', { ...st, fontSize: '18px', color: '#ffe9b0', strokeThickness: 5 }).setOrigin(0, 1);
+      const t2 = sc.add.text(-4, -18, 'в мир', { ...st, fontSize: '12px', color: '#f3e3c3', strokeThickness: 3 }).setOrigin(0, 1);
+      g.add([arrow, t1, t2]); g.setSize(90, 80); g.setInteractive({ useHandCursor: true });
+      sc.tweens.add({ targets: arrow, x: -6, duration: 500, yoyo: true, repeat: -1 });
+      g.on('pointerup', () => {
+        if (sc.__dragged || sc.busy) return; if (window.speakDE) speakDE('Hinaus in die Welt');
+        const go = () => { sc.busy = true; sc.cameras.main.fadeOut(260, 29, 19, 11); sc.cameras.main.once('camerafadeoutcomplete', () => sc.scene.start('Welt', {})); };
+        if (window.walkToScene) window.walkToScene(sc, WG.x + 6, WG.y + 10, go); else go();
+      });
+    }
     const sp = sc.registry.get('spawnAt');                         // назад из дома — у его двери
     if (sp) { sc.registry.set('spawnAt', null); sc.camFocus = [sp[0], sp[1] - 60]; sc.__spawn = sp; }
   }

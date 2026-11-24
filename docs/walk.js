@@ -47,17 +47,27 @@
     while (open.length && n++ < 40000) {
       let bi = 0; for (let i = 1; i < open.length; i++) if (f.get(key(...open[i])) < f.get(key(...open[bi]))) bi = i;
       const [cx, cy] = open.splice(bi, 1)[0];
-      if (cx === tx && cy === ty) { const pts = []; let k = key(cx, cy); while (k !== undefined) { pts.unshift([(k % W) * C + C / 2, Math.floor(k / W) * C + C / 2]); k = from.get(k); } pts[pts.length - 1] = [x1, y1]; return smooth(pts, ok, C); }
+      if (cx === tx && cy === ty) { const pts = []; let k = key(cx, cy); while (k !== undefined) { pts.unshift([(k % W) * C + C / 2, Math.floor(k / W) * C + C / 2]); k = from.get(k); } if (pts.length < 2) return [[x1, y1]]; pts[pts.length - 1] = [x1, y1]; pts[0] = [x0, y0]; return smooth(pts, ok, C); }   // прямые проверяются от того места, где Max стоит
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
         const nx = cx + dx, ny = cy + dy; if (!ok(nx, ny) || (dx && dy && (!ok(cx + dx, cy) || !ok(cx, cy + dy)))) continue;
         const ng = g.get(key(cx, cy)) + (dx && dy ? 1.414 : 1), k = key(nx, ny);
         if (ng < (g.has(k) ? g.get(k) : Infinity)) { g.set(k, ng); f.set(k, ng + h(nx, ny)); from.set(k, key(cx, cy)); if (!open.some(o => o[0] === nx && o[1] === ny)) open.push([nx, ny]); }
       }
     }
-    return [[x1, y1]];
+    return null;                                                     // пути нет (или слишком далеко) — не идти сквозь стены и воду
   }
   function smooth(pts, ok, C) {                                      // выпрямить путь: пропускать точки, если прямая свободна
-    const clear = (a, b) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / (C / 2)); for (let i = 1; i < n; i++) { const x = a[0] + (b[0] - a[0]) * i / n, y = a[1] + (b[1] - a[1]) * i / n; if (!ok(Math.floor(x / C), Math.floor(y / C))) return false; } return true; };
+    const clear = (a, b) => {                                        // все клетки, которые задевает отрезок (обход сетки, а не выборка точек: угол стены не срезать)
+      let cx = Math.floor(a[0] / C), cy = Math.floor(a[1] / C); const ex = Math.floor(b[0] / C), ey = Math.floor(b[1] / C), dx = b[0] - a[0], dy = b[1] - a[1];
+      const sx = Math.sign(dx), sy = Math.sign(dy), tdx = sx ? C / Math.abs(dx) : Infinity, tdy = sy ? C / Math.abs(dy) : Infinity;
+      let tx = sx ? ((sx > 0 ? (cx + 1) * C - a[0] : a[0] - cx * C) / Math.abs(dx)) : Infinity, ty = sy ? ((sy > 0 ? (cy + 1) * C - a[1] : a[1] - cy * C) / Math.abs(dy)) : Infinity;
+      for (let n = 0; n < 4000; n++) {
+        if (!ok(cx, cy)) return false; if (cx === ex && cy === ey) return true;
+        if (Math.abs(tx - ty) < 1e-9) { if (!ok(cx + sx, cy) || !ok(cx, cy + sy)) return false; cx += sx; cy += sy; tx += tdx; ty += tdy; }   // ровно через угол: обе соседние клетки свободны
+        else if (tx < ty) { cx += sx; tx += tdx; } else { cy += sy; ty += tdy; }
+      }
+      return false;
+    };
     const out = [pts[0]]; let i = 0;
     while (i < pts.length - 1) { let j = pts.length - 1; while (j > i + 1 && !clear(pts[i], pts[j])) j--; out.push(pts[j]); i = j; }
     return out.slice(1);
@@ -92,7 +102,7 @@
       if (document.getElementById('reward').style.display === 'block') return;
       walkTo(sc, p.worldX, p.worldY);
     });
-    const ex = sc.o && sc.o.exit ? { at: sc.o.exit, to: 'Yard' } : EXIT[sc.scene.key];
+    const ex = sc.o && sc.o.exit ? { at: sc.o.exit, to: sc.o.exitTo || 'Yard' } : EXIT[sc.scene.key];   // exitTo: подземелье, в которое вошли из мира, выводит обратно в Welt
     if (ex) {                                                         // выход
       const g = sc.add.container(ex.at[0], ex.at[1]).setDepth(5000);
       const arrow = sc.add.triangle(0, 0, -16, -10, 16, -10, 0, 12, 0xffd23f).setStrokeStyle(3, 0x3b2314);

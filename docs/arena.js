@@ -32,7 +32,7 @@
     const g = window.game; if (!g || !g.scene || !g.isBooted || !g.scene.scenes.length) return setTimeout(hook, 50);
     if (!g.scene.getScene('Arena')) g.scene.add('Arena', Arena, false);
     const k = g.scene.getScene('Karte');                             // временная кнопка на карте (только для проверки боя)
-    if (k) k.events.on('create', () => {
+    if (k && /arena/i.test(location.hash)) k.events.on('create', () => {   // only for tests (#arena); players fight in der Keller
       const back = document.getElementById('bMapBack'); if (!back || document.getElementById('bArena')) return;
       const b = document.createElement('button'); b.id = 'bArena'; b.className = 'ui ui-btn'; b.style.marginLeft = '8px';
       b.innerHTML = '<b style="font-weight:700">Keller-Test</b><small class="cb-ru2">подвал · проба</small>';

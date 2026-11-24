@@ -22,6 +22,7 @@
       { id: 'heilwort', de: 'Heilwort', ru: 'Целебное слово', max: 3, cost: 1, txt: 'Скажи фразу — лечишь 15 % здоровья за уровень.' },
       { id: 'echo', de: 'Echo-Schrei', ru: 'Крик эха', max: 2, cost: 2, need: 'heilwort', txt: 'Слово в микрофон оглушает всех врагов рядом.' },
       { id: 'ueberreden', de: 'Überreden', ru: 'Уговорить', max: 1, cost: 2, need: 'heilwort', txt: 'Вежливая просьба — слабый враг уходит без боя.' },
+      { id: 'flucht', de: 'Flucht', ru: 'Бегство', max: 1, cost: 1, txt: 'Сбежать из боя: 85 % вместо 60 %.' },
       { id: 'haendler', de: 'Händlerlied', ru: 'Песня торговца', max: 2, cost: 2, need: 'ueberreden', txt: 'Скидка 10 % за уровень в лавках деревни.' },
       { id: 'chor', de: 'Chor der Wörter', ru: 'Хор слов', max: 1, cost: 3, need: 'echo', txt: 'Три верно сказанных слова подряд — урон ×3.' },
       { id: 'aussprache', de: 'Klare Aussprache', ru: 'Чистое произношение', max: 2, cost: 2, need: 'chor', txt: 'Микрофон прощает больше ошибок произношения.' }] },
@@ -52,7 +53,7 @@
     #skills .ttl small,#skills .ru{display:block;font-size:13px;font-weight:400;color:#6b4a2e}
     #skills .stat{font-size:15px;margin:6px 0 4px;line-height:1.3}
     #skills .tabs{display:flex;gap:6px;margin:6px 0}
-    #skills .tabs .ui-btn{flex:1 1 0;min-width:0;height:auto;min-height:52px;padding:4px 4px;font-size:16px;line-height:1.05;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#2e1e12;font-family:inherit}
+    #skills .tabs .ui-btn{flex:1 1 0;min-width:0;height:auto;min-height:52px;padding:4px 2px;font-size:14px;overflow-wrap:anywhere;line-height:1.05;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#2e1e12;font-family:inherit}
     #skills .tabs .ui-btn.on{outline:3px solid #ffd23f;outline-offset:-3px}
     #skills .list{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
     #skills .sk{display:flex;gap:10px;align-items:center;border-bottom:2px dashed #c9a877;padding:8px 2px}
@@ -72,7 +73,16 @@
   function render() {
     const st = (typeof state !== 'undefined' ? state : window.state) || {}, lv = st.level || 1, xp = st.xp || 0;
     p.querySelector('#skStat').innerHTML = `Stufe <b>${lv}</b> · Erfahrung ${xp} · <b>Punkte: ${points()}</b><span class="ru">уровень героя растёт от боёв · очки навыков — от уроков (1 за урок, +3 за главу, +2 за босса)</span>`;
-    p.querySelector('#skTabs').innerHTML = BRANCHES.map(b => `<button class="ui ui-btn${b.id === tab ? ' on' : ''}" data-b="${b.id}" style="border-bottom:4px solid ${b.col}">${b.de}<span class="ru">${b.ru}</span></button>`).join('');
+    const TABS = BRANCHES.concat(window.Loot ? [{ id: 'inv', de: 'Beutel', ru: 'сумка', col: '#8a6a2e' }] : []);
+    p.querySelector('#skTabs').innerHTML = TABS.map(b => `<button class="ui ui-btn${b.id === tab ? ' on' : ''}" data-b="${b.id}" style="border-bottom:4px solid ${b.col}">${b.de}<span class="ru">${b.ru}</span></button>`).join('');
+    if (tab === 'inv') {                                             // the bag: what chests gave (potions, materials for the village, word cards)
+      const v = Loot.inv(), row = (de, ru, n, k) => `<div class="sk"><img class="ico" src="${Loot.ICON(k)}" alt=""><div class="info"><div class="nm">${de}<span class="ru">${ru}</span></div></div><div class="nm" style="min-width:56px;text-align:right">× ${n}</div></div>`;
+      const pots = Object.entries(Loot.POTS).map(([k, [de, ru]]) => row(de, ru, v.potions[k] || 0, k)).join('');
+      const mats = Object.entries(Loot.MATS).map(([k, [de, ru]]) => row(de, ru, v.mats[k] || 0, k)).join('');
+      const cards = v.cards.length ? v.cards.slice(-12).reverse().map(c => `<span style="display:inline-block;margin:3px 6px 3px 0;padding:2px 8px;border:2px solid #c9a877;border-radius:6px;font-size:16px">${c}</span>`).join('') : '<span class="ru">пока пусто — открывай сундуки</span>';
+      p.querySelector('#skList').innerHTML = `<div class="stat" style="margin-top:0"><b>Tränke</b><span class="ru">зелья</span></div>${pots}<div class="stat"><b>Baumaterial</b><span class="ru">материалы для зданий деревни</span></div>${mats}<div class="stat" style="display:flex;align-items:center;gap:8px"><img class="ico" src="${Loot.ICON('karte')}" alt=""><span><b>Wortkarten</b> (${v.cards.length})<span class="ru">карточки слов из сундуков</span></span></div><div>${cards}</div>`;
+      return;
+    }
     const b = BRANCHES.find(x => x.id === tab);
     p.querySelector('#skList').innerHTML = `<div class="stat" style="margin-top:0">${b.hint}</div>` + b.skills.map(s => {
       const l = lvl(s.id), locked = s.need && !lvl(s.need), full = l >= s.max, ok = canLearn(s);
@@ -88,7 +98,7 @@
     if (t.dataset.b) { tab = t.dataset.b; render(); return; }
     if (t.dataset.s && learn(t.dataset.s)) { if (window.toast) toast('Neues Talent!', 1200); render(); }
   });
-  const hide = ['bag', 'bFurn', 'bMap']; let was = {};
+  const hide = ['bag', 'bFurn', 'bMap', 'cbHero']; let was = {};
   function open() { render(); hide.forEach(k => { const e = document.getElementById(k); if (e) { was[k] = e.style.display; e.style.display = 'none'; } }); p.style.display = 'flex'; }
   function close() { p.style.display = 'none'; hide.forEach(k => { const e = document.getElementById(k); if (e && was[k] !== undefined) e.style.display = was[k]; }); }
   window.Skills.open = open; window.Skills.close = close;

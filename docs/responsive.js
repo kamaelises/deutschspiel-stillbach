@@ -7,7 +7,7 @@
   let portrait = false;
   const isPortrait = () => innerHeight > innerWidth * 1.05;
 
-  const PAN = ['Yard', 'Room', 'Furnish', 'Ort', 'Dungeon'];
+  const PAN = ['Yard', 'Room', 'Furnish', 'Ort', 'Dungeon', 'Welt'];
   const clampC = (c, half, size) => (half * 2 >= size ? size / 2 : Math.max(half, Math.min(size - half, c)));
   function focus(sc) {
     if (sc.camFocus) return sc.camFocus;

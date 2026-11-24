@@ -16,7 +16,18 @@ class Furnish extends Phaser.Scene {
     state.furn.forEach(p => this.spawn(this.item(p.k), p.x, p.y, false));
     this.sel = null; this.ghost = null; this.makeBar(); if (window.fitCam) setTimeout(() => window.fitCam(this), 0);
     ['bag', 'bFurn', 'bMap'].forEach(k => $(k).style.display = 'none'); $('dlg').style.display = 'none'; $('goalTxt').textContent = 'Einrichten: tippe ein Möbel';
-    this.input.on('pointermove', p => this.move(p)); this.input.on('pointerdown', p => { this.__down = [p.x, p.y]; }); this.input.on('pointerup', p => { const d = this.__down; this.__down = null; if (d && !this.__dragged && Math.hypot(p.x - d[0], p.y - d[1]) < 10) this.tap(p); });   // тап ставит, протяжка — двигает комнату
+    // предмет в руках (this.mode): палец двигает ПРЕДМЕТ (комната стоит, responsive.js __noPan), ставит кнопка «Hinstellen»;
+    // в руках ничего: палец двигает комнату, тап по мебели берёт её в руки (переставить / Wegräumen)
+    this.input.on('pointerdown', p => {
+      this.__down = [p.x, p.y]; this.__grab = null;
+      if (!this.mode || (this.input.pointer2 && this.input.pointer2.isDown)) return;
+      const g = this.ghost; if (!g) return;
+      const b = g.getBounds(); b.x -= 14; b.y -= 14; b.width += 28; b.height += 28;   // палец толще пикселя: зона захвата шире предмета
+      if (b.contains(p.worldX, p.worldY)) this.__grab = [g.x - p.worldX, g.y - p.worldY];
+      else { this.moveTo(p.worldX, p.worldY); this.__grab = [0, 0]; }                 // тап мимо — предмет прыгает под палец
+    });
+    this.input.on('pointermove', p => { if (this.mode && this.__grab && p.isDown) this.moveTo(p.worldX + this.__grab[0], p.worldY + this.__grab[1]); });
+    this.input.on('pointerup', p => { const d = this.__down; this.__down = null; this.__grab = null; if (!this.mode && d && !this.__dragged && Math.hypot(p.x - d[0], p.y - d[1]) < 10) this.tap(p); });
     this.events.once('shutdown', () => { const b = $('furnBar'); if (b) b.style.display = 'none'; window.__furn = null; });
   }
   item(k) { return this.d.items.find(i => i.key === k); }
@@ -24,17 +35,72 @@ class Furnish extends Phaser.Scene {
   makeBar() {
     let b = $('furnBar');
     if (!b) { b = document.createElement('div'); b.id = 'furnBar'; b.className = 'ui ui-panel-wood'; $('ui').appendChild(b); }
-    b.style.display = 'flex';
+    if (!$('furnCss')) { const st = document.createElement('style'); st.id = 'furnCss';
+      st.textContent = '#furnBar .fhint{flex:1 1 100%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff7e0;text-shadow:0 2px 0 #2a170c;padding:2px 6px}'
+        + '#furnBar .fhint small{font-size:13px;font-weight:600;opacity:.9}#furnBar #bFOk,#furnBar #bFNo,#furnBar #bFDel{flex:1 1 28%;font-size:17px;font-weight:700}'
+        + '#furnBar #bFOk{color:#1f5a22}#furnBar #bFOk.off{opacity:.45;filter:grayscale(.7)}#furnBar #bFNo{color:#7a2a1a}';
+      document.head.appendChild(st); }
+    b.style.display = 'flex'; b.style.flexWrap = 'wrap'; b.style.justifyContent = 'center';
     b.innerHTML = this.d.items.map(it => `<button class="ui ui-btn fitem" data-k="${it.key}"><img src="assets_v3/furnish/${it.key}.png"><span>${this.label(it)}</span><small>${it.price} M</small></button>`).join('') + '<button class="ui ui-btn" id="bFurnDone">Fertig</button>';
     b.querySelectorAll('.fitem').forEach(el => el.onclick = (e) => { e.stopPropagation(); this.pick(el.dataset.k); });
     $('bFurnDone').onclick = () => { this.cameras.main.fadeOut(250, 29, 19, 11); this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Yard')); };
   }
   pick(k) {
-    const it = this.item(k); if (this.ghost) this.ghost.destroy();
+    const it = this.item(k); this.endMode(true);
     if (state.coins < it.price) { this.sel = null; return toast('Zu wenig Münzen: ' + it.price + ' M', 1600); }
-    this.sel = it; this.ghost = this.add.image(-999, -999, 'fo_' + k).setOrigin(0.5, 1).setAlpha(0.85).setDepth(5000);
-    toast(it.art + ' ' + it.de + ' — ' + it.ru, 1400); speakDE(it.art + ' ' + it.de);
+    this.sel = it; const m = this.cameras.main.midPoint, at = this.freeNear(it, m.x, m.y);
+    this.startMode({ kind: 'new', it, x: at[0], y: at[1] });
+    speakDE(it.art + ' ' + it.de);
   }
+  freeNear(it, wx, wy) {                                             // ближайшее свободное место к точке (логические px), иначе сама точка
+    const [x0, y0] = this.snap(wx, wy), st = 4;
+    for (let r = 0; r <= 160; r += st) for (let dy = -r; dy <= r; dy += st) for (const dx of (Math.abs(dy) === r ? Array.from({ length: 2 * r / st + 1 }, (_, i) => -r + i * st) : [-r, r])) {
+      if (!this.check(it, x0 + dx, y0 + dy, this.mode && this.mode.q)) return [x0 + dx, y0 + dy];
+    }
+    return [x0, y0];
+  }
+  startMode(mode) {                                                  // предмет в руках: призрак + подпись + кнопки внизу
+    this.mode = mode; this.__noPan = true;
+    this.ghost = this.add.image(0, 0, 'fo_' + mode.it.key).setOrigin(0.5, 1).setAlpha(0.9).setDepth(5000);
+    this.why = this.add.text(0, 0, '', { fontFamily: 'Roboto, sans-serif', fontSize: '15px', fontStyle: 'bold', color: '#fff7e0', stroke: '#2a170c', strokeThickness: 4, align: 'center' }).setOrigin(0.5, 1).setDepth(5001);
+    this.arrows = this.add.text(0, 0, '⇆', { fontFamily: 'Roboto, sans-serif', fontSize: '22px', color: '#ffd23f', stroke: '#2a170c', strokeThickness: 4 }).setOrigin(0.5, 0).setDepth(5001);
+    this.tweens.add({ targets: this.arrows, alpha: 0.35, duration: 600, yoyo: true, repeat: -1 });
+    this.actBar(); this.moveTo(mode.x * this.S, mode.y * this.S);
+  }
+  moveTo(wx, wy) {
+    const M = this.mode; if (!M || !this.ghost) return; const [x, y] = this.snap(wx, wy); M.x = x; M.y = y;
+    const bad = this.check(M.it, x, y, M.q); M.bad = bad;
+    this.ghost.setPosition(x * this.S, y * this.S); if (bad) this.ghost.setTexture('fi_' + M.it.key).setTint(0xff6666); else this.ghost.setTexture('fo_' + M.it.key).clearTint();
+    const RU = { 'Nur auf den Boden!': 'только на пол', 'Das muss an die Wand!': 'это ставят к стене', 'Da steht schon etwas!': 'тут уже что-то стоит' };
+    this.why.setText(bad ? bad + '\n' + (RU[bad] || '') : M.it.art + ' ' + M.it.de).setColor(bad ? '#ff9a8a' : this.d.colors[M.it.art] || '#fff7e0');
+    const top = this.ghost.getBounds().top; this.why.setPosition(x * this.S, top - 4); this.arrows.setPosition(x * this.S, y * this.S + 2);
+    const ok = document.getElementById('bFOk'); if (ok) ok.classList.toggle('off', !!bad);
+  }
+  actBar() {                                                         // полка мебели -> кнопки действия той же высоты (комната не прыгает)
+    const b = $('furnBar'), M = this.mode, h = b.offsetHeight; b.style.minHeight = h + 'px';
+    b.innerHTML = `<div class="fhint"><span><b style="color:${this.d.colors[M.it.art]}">${M.it.art}</b> ${M.it.de} <i style="font-style:normal;font-size:13px;opacity:.85">${M.it.ru || ''}</i></span><small>${M.kind === 'move' ? 'Zieh es woandershin · тяни в другое место' : 'Zieh es mit dem Finger · тяни пальцем'}</small></div>`
+      + `<button class="ui ui-btn" id="bFOk">✓ Hinstellen<small>поставить${M.kind === 'new' ? ' · ' + M.it.price + ' M' : ''}</small></button>`
+      + (M.kind === 'move' ? `<button class="ui ui-btn" id="bFDel">Wegräumen<small>убрать · +${M.it.price} M</small></button>` : '')
+      + `<button class="ui ui-btn" id="bFNo">✗ Abbrechen<small>отмена</small></button>`;
+    $('bFOk').onclick = e => { e.stopPropagation(); this.confirm(); };
+    $('bFNo').onclick = e => { e.stopPropagation(); this.endMode(); };
+    if ($('bFDel')) $('bFDel').onclick = e => { e.stopPropagation(); const q = this.mode.q; this.endMode(true); this.remove(q); this.makeBar(); };
+  }
+  confirm() {
+    const M = this.mode; if (!M) return;
+    if (M.bad) { toast(M.bad, 1400); return; }
+    if (M.kind === 'new') { const k = M.it.key, x = M.x, y = M.y; this.endMode(true); this.place(k, x, y); this.makeBar(); return; }
+    const q = M.q; q.x = M.x; q.y = M.y; q.spr.setPosition(q.x * this.S, q.y * this.S).setDepth(q.it.kind === 'decal' ? -50 : q.y);
+    if (q.sh) q.sh.setPosition(q.x * this.S + q.it.w * 0.5, q.y * this.S - 2).setDepth(q.y - 1);
+    this.save(); toast(q.it.art + ' ' + q.it.de + ' steht jetzt hier', 1400); this.endMode();
+  }
+  endMode(keepBar) {                                                 // предмет из рук: переставляемая мебель возвращается на своё место
+    const M = this.mode; this.mode = null; this.sel = null; this.__noPan = false; this.__grab = null;
+    if (M && M.q) { M.q.spr.setVisible(true); if (M.q.sh) M.q.sh.setVisible(true); }
+    ['ghost', 'why', 'arrows'].forEach(k => { if (this[k]) { this[k].destroy(); this[k] = null; } });
+    if (!keepBar) this.makeBar();
+  }
+  save() { state.furn = this.placed.map(r => ({ k: r.it.key, x: r.x, y: r.y })); store.set(state); }
   snap(px, py) { const C = 4 * this.S; return [Math.round(px / C) * C / this.S, Math.round(py / C) * C / this.S]; }   // logical px, bottom-centre
   foot(it, x, y) {
     if (it.kind === 'decal') return [x - it.w / 2, y - it.h, x + it.w / 2, y];
@@ -52,13 +118,10 @@ class Furnish extends Phaser.Scene {
     }
     return null;
   }
-  move(p) {
-    if (!this.sel || !this.ghost) return; const [x, y] = this.snap(p.worldX, p.worldY), bad = this.check(this.sel, x, y);
-    this.ghost.setPosition(x * this.S, y * this.S); if (bad) this.ghost.setTexture('fi_' + this.sel.key).setTint(0xff6666); else this.ghost.setTexture('fo_' + this.sel.key).clearTint();
-  }
-  tap(p) {
-    if (!this.sel) { const hit = this.placed.slice().reverse().find(q => q.spr.getBounds().contains(p.worldX, p.worldY)); if (hit) this.remove(hit); return; }
-    const [x, y] = this.snap(p.worldX, p.worldY); this.place(this.sel.key, x, y);
+  tap(p) {                                                           // в руках ничего: тап по мебели — взять её в руки (переставить бесплатно / убрать)
+    const hit = this.placed.slice().reverse().find(q => q.spr.getBounds().contains(p.worldX, p.worldY)); if (!hit) return;
+    hit.spr.setVisible(false); if (hit.sh) hit.sh.setVisible(false); speakDE(hit.it.art + ' ' + hit.it.de);
+    this.startMode({ kind: 'move', it: hit.it, x: hit.x, y: hit.y, q: hit });
   }
   place(k, x, y) {    // also used by tests: returns null when placed, else the reason
     const it = this.item(k), bad = state.coins < it.price ? 'Zu wenig Münzen' : this.check(it, x, y);
@@ -75,7 +138,7 @@ class Furnish extends Phaser.Scene {
   }
   remove(q) {
     q.spr.destroy(); if (q.sh) q.sh.destroy(); this.placed = this.placed.filter(r => r !== q);
-    state.furn = this.placed.map(r => ({ k: r.it.key, x: r.x, y: r.y })); setCoins(state.coins + q.it.price); toast(q.it.art + ' ' + q.it.de + ' weggeräumt', 1400);
+    setCoins(state.coins + q.it.price); this.save(); toast(q.it.art + ' ' + q.it.de + ' weggeräumt', 1400);
   }
 }
 window.Furnish = Furnish;

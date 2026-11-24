@@ -52,8 +52,8 @@
     #skills .ttl{font-size:24px;font-weight:700;line-height:1.05}
     #skills .ttl small,#skills .ru{display:block;font-size:13px;font-weight:400;color:#6b4a2e}
     #skills .stat{font-size:15px;margin:6px 0 4px;line-height:1.3}
-    #skills .tabs{display:flex;gap:6px;margin:6px 0}
-    #skills .tabs .ui-btn{flex:1 1 0;min-width:0;height:auto;min-height:52px;padding:4px 2px;font-size:14px;overflow-wrap:anywhere;line-height:1.05;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#2e1e12;font-family:inherit}
+    #skills .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+    #skills .tabs .ui-btn{flex:1 1 30%;min-width:0;height:auto;min-height:52px;padding:4px 2px;font-size:14px;overflow-wrap:anywhere;line-height:1.05;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#2e1e12;font-family:inherit}
     #skills .tabs .ui-btn.on{outline:3px solid #ffd23f;outline-offset:-3px}
     #skills .list{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
     #skills .sk{display:flex;gap:10px;align-items:center;border-bottom:2px dashed #c9a877;padding:8px 2px}
@@ -73,8 +73,9 @@
   function render() {
     const st = (typeof state !== 'undefined' ? state : window.state) || {}, lv = st.level || 1, xp = st.xp || 0;
     p.querySelector('#skStat').innerHTML = `Stufe <b>${lv}</b> · Erfahrung ${xp} · <b>Punkte: ${points()}</b><span class="ru">уровень героя растёт от боёв · очки навыков — от уроков (1 за урок, +3 за главу, +2 за босса)</span>`;
-    const TABS = BRANCHES.concat(window.Loot ? [{ id: 'inv', de: 'Beutel', ru: 'сумка', col: '#8a6a2e' }] : []);
+    const TABS = BRANCHES.concat(window.Loot ? [{ id: 'inv', de: 'Beutel', ru: 'сумка', col: '#8a6a2e' }] : [], window.Album ? [{ id: 'album', de: 'Album', ru: 'альбом', col: '#b0701a' }] : []);
     p.querySelector('#skTabs').innerHTML = TABS.map(b => `<button class="ui ui-btn${b.id === tab ? ' on' : ''}" data-b="${b.id}" style="border-bottom:4px solid ${b.col}">${b.de}<span class="ru">${b.ru}</span></button>`).join('');
+    if (tab === 'album' && window.Album) { Album.render(p.querySelector('#skList')); return; }   // альбом находок (album.js): 8 разделов, редкость, бестиарий
     if (tab === 'inv') {                                             // the bag: what chests gave (potions, materials for the village, word cards)
       const v = Loot.inv(), row = (de, ru, n, k) => `<div class="sk"><img class="ico" src="${Loot.ICON(k)}" alt=""><div class="info"><div class="nm">${de}<span class="ru">${ru}</span></div></div><div class="nm" style="min-width:56px;text-align:right">× ${n}</div></div>`;
       const pots = Object.entries(Loot.POTS).map(([k, [de, ru]]) => row(de, ru, v.potions[k] || 0, k)).join('');

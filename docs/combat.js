@@ -102,15 +102,19 @@
     const m = C.meta || (sc.cache.json.exists('cb_meta') ? sc.cache.json.get('cb_meta') : null);
     if (m) sheets(sc, m); else sc.load.once('filecomplete-json-cb_meta', (k, t, d) => { sheets(sc, d); });
   }
+  const QUEUED = new Set();                                          // листы врагов, которые уже грузятся (любой сценой): второй раз не ставить — иначе «Texture key already in use»
   function sheets(sc, m) {
+    const mine = [];
     Object.entries(m.types).forEach(([t, d]) => Object.entries(d.anims).forEach(([a, v]) => {
-      const key = `en_${t}_${a}`; if (!sc.textures.exists(key)) sc.load.spritesheet(key, BASE + v.file, { frameWidth: m.frame, frameHeight: m.frame });
+      const key = `en_${t}_${a}`; if (sc.textures.exists(key) || QUEUED.has(key)) return;
+      QUEUED.add(key); mine.push(key); sc.load.spritesheet(key, BASE + v.file, { frameWidth: m.frame, frameHeight: m.frame });
     }));
+    if (mine.length) { const free = () => mine.splice(0).forEach(k => QUEUED.delete(k)); sc.load.once('complete', free); sc.events.once('shutdown', free); }
   }
-  function ready(sc, fn) {
+  function ready(sc, fn, n) {                                         // n: попытки подождать листы, которые грузит другая сцена (≈ 6 с)
     const ok = () => sc.cache.json.exists('cb_meta') && sc.cache.json.exists('cb_nouns') && Object.entries(sc.cache.json.get('cb_meta').types).every(([t, d]) => Object.keys(d.anims).every(a => sc.textures.exists(`en_${t}_${a}`)));
-    if (ok()) return fn();
-    preload(sc); sc.load.once('complete', () => { if (!ok()) { preload(sc); sc.load.once('complete', fn); sc.load.start(); } else fn(); }); sc.load.start();
+    if (ok() || (n || 0) > 60) return fn();
+    preload(sc); sc.load.once('complete', () => { if (ok()) fn(); else sc.time.delayedCall(100, () => ready(sc, fn, (n || 0) + 1)); }); sc.load.start();
   }
   function anims(sc) {
     const m = C.meta;
@@ -508,6 +512,7 @@
   function kill(sc, e) {
     const F = sc.__cb.fight; e.dead = true; F.coins += e.m.coins; F.xp += e.m.xp; F.won.push(e.word);
     e.burn = null; e.slow = 0; e.tangle = 0; e.stun = 0; reveal(e); frame(e); e.lhp.clear();
+    try { if (window.Album) Album.onDefeat(e.type, e.word); } catch (err) { console.warn('Album', err); }   // бестиарий альбома (album.js): тип врага + слово с артиклем
     playE(e, 'death', () => sc.tweens.add({ targets: [e.spr, e.label], alpha: 0, delay: 500, duration: 400, onComplete: () => { e.spr.setVisible(false); e.label.setVisible(false); } }));
     if (F.ring && F.target === e) { F.ring.destroy(); F.ring = null; }
   }

@@ -51,7 +51,7 @@
         const uz = Math.max(1, Math.min(3, pinch.uz * Math.hypot(d[0].x - d[1].x, d[0].y - d[1].y) / Math.max(10, pinch.dist)));
         const m = cam.midPoint; sc.__uz = uz; cam.setZoom(snap(sc.__base * uz)); apply(sc, m.x, m.y); return;
       }
-      if (!start) return;
+      if (!start || sc.__noPan) return;                               // Einrichten: пока предмет в руках, палец двигает предмет, а не комнату
       if (Math.hypot(p.x - start.x, p.y - start.y) > 8) sc.__dragged = true; if (!sc.__dragged) return;
       apply(sc, start.cx - (p.x - start.x) / cam.zoom, start.cy - (p.y - start.y) / cam.zoom);
     });

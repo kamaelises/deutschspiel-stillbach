@@ -219,11 +219,12 @@
       this.o = { exit: d.exit };                                       // walk.js: «Raus» у лестницы входа -> деревня (или в мир, если пришли из Welt)
       this.from = data.from || null;
       if (this.from === 'Welt') this.o.exitTo = 'Welt';                // Welt сам ставит Max у входа (registry weltSpawn)
+      else if (this.from === 'Uhrturm' && window.ERINNERUNG_HATCH) this.registry.set('spawnAt', [window.ERINNERUNG_HATCH.x, window.ERINNERUNG_HATCH.y]);   // Erinnerungskeller (Код A1): назад к люку у Uhrturm
       else this.registry.set('spawnAt', window.KELLER_HATCH ? [window.KELLER_HATCH.x, window.KELLER_HATCH.y + 60] : null);
       this.cameras.main.setBackgroundColor(VOID);
       ['bag', 'bFurn', 'bMap'].forEach(k => { const e = document.getElementById(k); if (e) e.style.display = 'none'; });
       const dlg = document.getElementById('dlg'); if (dlg) dlg.style.display = 'none';
-      const gt = document.getElementById('goalTxt'); if (gt) gt.textContent = 'der Keller · Etage ' + (this.floorNo + 1) + '/' + FLOORS;
+      const gt = document.getElementById('goalTxt'); if (gt) gt.textContent = (this.from === 'Uhrturm' ? 'der Erinnerungskeller' : 'der Keller') + ' · Etage ' + (this.floorNo + 1) + '/' + FLOORS;
       const key = 'dun_map'; if (this.textures.exists(key)) this.textures.remove(key);
       this.textures.addCanvas(key, paint(this, d));
       this.add.image(0, 0, key).setOrigin(0, 0).setScale(SC).setDepth(-10);

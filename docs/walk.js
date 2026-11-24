@@ -20,9 +20,14 @@
     }
     return ((sc.o && sc.o.walk) || ZONES[sc.scene.key] || []).some(([a, b, c, e]) => x >= a && x <= c && y >= b && y <= e);   // each place may have its own floor
   }
+  function cellOk(sc, x, y) {                                        // точка годится для A*: её клетка сетки проходима (не только сама точка)
+    const G = grid(sc); if (!G) return true; const cx = Math.floor(x / G.c), cy = Math.floor(y / G.c);
+    return cy >= 0 && cy < G.rows.length && cx >= 0 && cx < G.rows[0].length && G.rows[cy][cx] === '1';
+  }
   function nearestWalkable(sc, x, y) {
-    if (walkable(sc, x, y)) return [x, y];
-    for (let r = 12; r <= 240; r += 12) for (let a = 0; a < 16; a++) { const t = a / 16 * Math.PI * 2, px = x + Math.cos(t) * r, py = y + Math.sin(t) * r; if (walkable(sc, px, py)) return [px, py]; }
+    const good = (px, py) => walkable(sc, px, py) && cellOk(sc, px, py);
+    if (good(x, y)) return [x, y];
+    for (let r = 12; r <= 240; r += 12) for (let a = 0; a < 16; a++) { const t = a / 16 * Math.PI * 2, px = x + Math.cos(t) * r, py = y + Math.sin(t) * r; if (good(px, py)) return [px, py]; }
     return null;
   }
   function grid(sc) {                                               // клетки, по которым можно ходить
@@ -73,11 +78,11 @@
     return out.slice(1);
   }
   function walkTo(sc, x, y, done) {
-    const p0 = nearestWalkable(sc, x, y); if (!p0) return;
+    const p0 = nearestWalkable(sc, x, y); if (!p0) return false;
     const route = sc.walker ? findPath(sc, sc.walker.x, sc.walker.y, p0[0], p0[1]) : [p0];
-    if (!route || !route.length) return;
+    if (!route || !route.length) return false;
     const step = i => { if (i >= route.length) { done && done(); return; } walkStraight(sc, route[i][0], route[i][1], () => step(i + 1)); };
-    step(0);
+    step(0); return true;
   }
   function walkStraight(sc, x, y, done) {
     const p = [x, y];
@@ -109,7 +114,11 @@
       const lbl = sc.add.text(0, 22, 'Raus', { fontFamily: 'Roboto, sans-serif', fontSize: '18px', fontStyle: 'bold', color: '#ffe9b0', stroke: '#3b2314', strokeThickness: 4 }).setOrigin(0.5, 0);
       g.add([arrow, lbl]); g.setSize(80, 70); sc.exitMarker = g; g.setInteractive({ useHandCursor: true });
       sc.tweens.add({ targets: arrow, y: 6, duration: 500, yoyo: true, repeat: -1 });
-      sc.exitFn = () => { sc.talking = false; document.getElementById('dlg').style.display = 'none'; walkTo(sc, ex.at[0], ex.at[1] - 20, () => leave(sc, ex.to)); };
+      sc.exitFn = () => {                                            // «Raus» не запирает никогда: нет пути к двери — выходим сразу; идёт дольше 6 с — тоже выходим
+        sc.talking = false; document.getElementById('dlg').style.display = 'none';
+        if (!walkTo(sc, ex.at[0], ex.at[1] - 20, () => leave(sc, ex.to))) return leave(sc, ex.to);
+        sc.time.delayedCall(6000, () => { if (sc.sys.isActive() && !sc.busy) leave(sc, ex.to); });
+      };
       g.on('pointerup', () => { if (!sc.__dragged) sc.exitFn(); });
       let b = document.getElementById('bOut');   // «Raus» и во время разговора (стрелка у двери тогда под окном диалога)
       if (!b) { b = document.createElement('button'); b.id = 'bOut'; b.className = 'ui ui-btn'; b.textContent = '⟵ Raus'; document.getElementById('dlg').appendChild(b); }

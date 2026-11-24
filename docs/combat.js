@@ -109,11 +109,12 @@
       const key = `en_${t}_${a}`; if (sc.textures.exists(key) || QUEUED.has(key)) return;
       QUEUED.add(key); mine.push(key); sc.load.spritesheet(key, BASE + v.file, { frameWidth: m.frame, frameHeight: m.frame });
     }));
-    if (mine.length) { const free = () => mine.splice(0).forEach(k => QUEUED.delete(k)); sc.load.once('complete', free); sc.events.once('shutdown', free); }
+    // снимать отметку только когда загрузка правда кончилась (или через 8 с): сцену могли закрыть, а файл в сети всё равно догрузится и займёт ключ
+    if (mine.length) { const free = () => mine.splice(0).forEach(k => QUEUED.delete(k)); sc.load.once('complete', free); setTimeout(free, 8000); }
   }
-  function ready(sc, fn, n) {                                         // n: попытки подождать листы, которые грузит другая сцена (≈ 6 с)
+  function ready(sc, fn, n) {                                         // n: попытки подождать листы, которые грузит другая сцена (≈ 10 с)
     const ok = () => sc.cache.json.exists('cb_meta') && sc.cache.json.exists('cb_nouns') && Object.entries(sc.cache.json.get('cb_meta').types).every(([t, d]) => Object.keys(d.anims).every(a => sc.textures.exists(`en_${t}_${a}`)));
-    if (ok() || (n || 0) > 60) return fn();
+    if (ok() || (n || 0) > 100) return fn();
     preload(sc); sc.load.once('complete', () => { if (ok()) fn(); else sc.time.delayedCall(100, () => ready(sc, fn, (n || 0) + 1)); }); sc.load.start();
   }
   function anims(sc) {

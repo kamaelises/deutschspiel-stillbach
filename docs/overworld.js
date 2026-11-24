@@ -236,6 +236,29 @@
     for (let y = 1; y < LH - 1; y++) for (let x = 1; x < LW - 1; x++) { const j = y * LW + x;   // кромка: травяной пиксель рядом с песком -> тёмно-зелёный
       if (sandPix[j] || d.kind[(y >> 4) * MW + (x >> 4)] || !(sandPix[j - 1] || sandPix[j + 1] || sandPix[j - LW] || sandPix[j + LW])) continue;
       const k = j * 4; p[k] = GDARK[0]; p[k + 1] = GDARK[1]; p[k + 2] = GDARK[2]; }
+    {   // Полировка (локации) 24.11: пятна тона травы (2 октавы шума + комки 3 px) и мелкие декали (цветы, клевер, камешки) — свои пиксели, 1x, один раз в текстуру карты
+      const Rn = rng(d.seed * 31 + 7), sm = t => t * t * (3 - 2 * t), grid = s => { const w = Math.ceil(LW / s) + 2, h = Math.ceil(LH / s) + 2, G = new Float32Array(w * h); for (let i = 0; i < G.length; i++) G[i] = Rn(); return { G, w, s }; };
+      const N1 = grid(40), N2 = grid(13), vn = (N, x, y) => { const fx = x / N.s, fy = y / N.s, x0 = fx | 0, y0 = fy | 0, u = sm(fx - x0), v = sm(fy - y0), i = y0 * N.w + x0, G = N.G; const a = G[i] + (G[i + 1] - G[i]) * u, b = G[i + N.w] + (G[i + N.w + 1] - G[i + N.w]) * u; return a + (b - a) * v; };
+      const isG = k => p[k + 1] > p[k] + 18 && p[k + 1] > p[k + 2] + 40;
+      for (let by = 0; by < LH; by += 2) for (let bx = 0; bx < LW; bx += 2) {   // шум на блок 2x2 (1x) — дёшево; край пятен комками 3 px (хэш)
+        const n0 = 0.62 * vn(N1, bx, by) + 0.26 * vn(N2, bx, by);
+        for (let y = by; y < by + 2; y++) for (let x = bx; x < bx + 2; x++) { const j = y * LW + x, k = j * 4; if (sandPix[j] || !isG(k)) continue;
+          const n = n0 + 0.12 * (((((x / 3) | 0) * 73856093 ^ ((y / 3) | 0) * 19349663 ^ d.seed) >>> 0) % 1000 / 1000) - 0.06;
+          if (n > 0.57) { p[k] = Math.min(255, p[k] + 14); p[k + 1] = Math.min(255, p[k + 1] + 12); p[k + 2] = Math.max(0, p[k + 2] - 5); }
+          else if (n < 0.43) { p[k] -= 16; p[k + 1] -= 8; p[k + 2] -= 13; } }
+      }
+      const PC = { w: [250, 248, 236], y: [247, 206, 72], o: [226, 150, 52], b: [112, 146, 232], B: [80, 102, 196], p: [240, 132, 172], P: [196, 86, 128], g: [84, 136, 60], G: [104, 158, 70], l: [150, 196, 96], s: [170, 168, 160], S: [124, 122, 118], h: [214, 212, 202], k: [60, 88, 44] };
+      const DEC = [['.w.|wyw|.w.', 9], ['.b.|bBb|.g.', 6], ['p.p|.P.|pgp', 5], ['y.|oy|.g', 7], ['G.G|.gG|Gg.', 10], ['.hs|sSS', 8], ['l.l.l|g.g.g|.ggg.', 10], ['.l.|lgl|gkg', 9], ['.w...b.|wyw.bBb|.w.y.g.|..oy...', 6], ['.G..G.|GgG.gG|.g.Gg.|..GgG.', 5]].map(([s, w]) => [s.split('|'), w]);
+      const WS = DEC.reduce((a, q) => a + q[1], 0), used = new Uint8Array(LW * LH);
+      for (let gy = 0; gy < LH - 8; gy += 9) for (let gx = 0; gx < LW - 8; gx += 9) {
+        if (Rn() < 0.2) continue; const x = gx + Math.floor(Rn() * 9), y = gy + Math.floor(Rn() * 9); let r = Rn() * WS, q = DEC[0]; for (const e of DEC) { if ((r -= e[1]) < 0) { q = e; break; } }
+        const pat = q[0], ph = pat.length, pw = pat[0].length; if (x + pw + 1 >= LW || y + ph + 1 >= LH || !grassAt(x - 1, y - 1) || !grassAt(x + pw + 1, y + ph + 1)) continue;
+        let ok = true; for (let j = -1; j <= ph && ok; j++) for (let i = -1; i <= pw; i++) { const jj = (y + j) * LW + x + i; if (used[jj] || sandPix[jj] || !isG(jj * 4)) { ok = false; break; } }
+        if (!ok) continue;
+        pat.forEach((row, j) => { for (let i = 0; i < pw; i++) { const c = PC[row[i]]; if (!c) continue; const k = ((y + j) * LW + x + i) * 4; p[k] = c[0]; p[k + 1] = c[1]; p[k + 2] = c[2]; } });
+        for (let j = -1; j <= ph; j++) used.fill(1, (y + j) * LW + x - 1, (y + j) * LW + x + pw + 1);
+      }
+    }
     g.putImageData(img, 0, 0);
     // берег: тайл island kit по 4 углам (у краёв два варианта — чередуются по месту)
     for (let ty = 0; ty < MH; ty++) for (let tx = 0; tx < MW; tx++) { const m = d.tm[ty * MW + tx]; if (!m || m === 15) continue;

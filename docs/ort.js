@@ -36,7 +36,8 @@ class Ort extends Room {
     if (this.textures.exists('ort_' + key)) ready(); else { this.load.image('ort_' + key, o.img); this.load.once('complete', ready); this.load.start(); }
   }
   show() { super.show(); const l = this.L[this.i]; $('pL').style.display = 'none';   // portrait of the person you talk to (craftpix Free 39 Portraits); dimmed while Max speaks
-    const R = $('pR'); if (this.o.portrait) { R.src = 'assets_v3/portraits/' + this.o.portrait + '.png'; R.style.display = ''; R.style.opacity = l.role === 'A' ? .55 : 1; } else R.style.display = 'none'; if (l.role !== 'A') $('who').textContent = l.who || '…'; }
+    const R = $('pR'), pu = window.Portraits && (Portraits.get(l.who) || Portraits.get(this.o.portrait, l.role === 'A' ? 'neutral' : 'talk'));   // Полировка (портреты) 24.11: портрет того, кто говорит (Olga, Frau Becker, Frau Schulz…), portraits.js
+    if (pu || this.o.portrait) { R.src = pu || 'assets_v3/portraits/' + this.o.portrait + '.png'; R.style.display = ''; R.style.opacity = l.role === 'A' ? .55 : 1; } else R.style.display = 'none'; if (l.role !== 'A') $('who').textContent = l.who || '…'; }
   finish() {
     const rep = isRepeat(this), bonus = rep ? 0 : 15; whereSet('Karte');
     if (!rep) { setCoins(state.coins + bonus); markPaid(this); }

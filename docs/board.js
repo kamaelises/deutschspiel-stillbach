@@ -173,7 +173,7 @@
       return;
     }
     const id = W.mode, n = NPC()[id]; if (!n) return close();
-    const pt = n.portrait ? `<img class="pt" src="${BASE}portraits/${n.portrait}.png" alt="">` : '';
+    const pu = window.Portraits && (Portraits.get(n.name) || Portraits.get(n.portrait)), pt = pu ? `<img class="pt" src="${pu}" alt="">` : n.portrait ? `<img class="pt" src="${BASE}portraits/${n.portrait}.png" alt="">` : '';   // Полировка (портреты) 24.11
     const hd = `<div class="hd">${pt}<div class="t">${n.name}<span class="ru">${n.ru}</span></div></div>`;
     if (W.thanks) { const t = W.thanks; W.thanks = null; return show(`${hd}<div class="say">${t.de}<span class="ru">${t.ru}</span></div><div class="rw" style="font-size:16px;font-weight:700;color:#7a4f12">+${t.coins} Münzen${t.xp ? ' · +' + t.xp + ' XP' : ''} <span class="ru" style="display:inline">· награда</span></div><div class="btns"><button class="ui ui-btn" data-x="1">Weiter<span class="ru">дальше</span></button></div>`); }
     const off = npcOffer(id); if (!off) return close();

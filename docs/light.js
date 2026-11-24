@@ -51,10 +51,17 @@
       const im = sc.add.image(0, 0, shadowTex(sc, c.img.displayWidth / 3 + 2, 4)).setOrigin(0, 0).setScale(3).setDepth(c.img.depth - 1); im.__lfx = 1;
       put3(im, c.img.x + c.img.displayWidth / 2, c.img.y + c.img.displayHeight - 4); });
   }
+  // 24.11 (анимации/свет): тень по солнцу WorldTime — утром падает на запад (влево), вечером на восток, до 3 пикселей арта; ночью — короткая и бледнее
+  function sunShift(sc) {
+    const n = window.WorldTime && WorldTime.now(), L = sc.__tfx ? sc.__tfx.L : 1; if (!n || OUT[sc.scene.key] !== 1) return [0, 1];
+    const h = n.hour + n.minute / 60, s = Math.max(-1, Math.min(1, (h - 13) / 6));
+    return L < 0.35 ? [0, 0.6] : [R3(s * 9), 1];
+  }
   function syncShadows(sc, st) {
+    const [sdx, sa] = sunShift(sc);
     st.sh = st.sh.filter(s => {
       if (!s.t.active || !s.t.scene) { s.im.destroy(); return false; }
-      const t = s.t; put3(s.im, t.x, t.y + s.dy); s.im.setVisible(t.visible && t.alpha > 0.05).setAlpha(s.depthOf === 'same' ? 1 : t.alpha).setDepth(s.depthOf === 'same' ? t.depth : t.depth - 1);
+      const t = s.t; put3(s.im, t.x + sdx, t.y + s.dy); s.im.setVisible(t.visible && t.alpha > 0.05).setAlpha((s.depthOf === 'same' ? 1 : t.alpha) * sa).setDepth(s.depthOf === 'same' ? t.depth : t.depth - 1);
       return true;
     });
   }

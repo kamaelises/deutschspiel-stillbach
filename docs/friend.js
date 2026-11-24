@@ -166,7 +166,7 @@
     #fWin .m .tip{font-size:13px;color:#7a4f12;font-weight:600;margin-top:2px}#fWin .m .src{font-size:10px;color:#9b6a2e}
     #fWin .m .hr{float:right;margin:0 0 2px 8px;width:32px;height:30px;min-height:0;padding:0;font-size:14px}
     #fWin .chips{display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto;flex:0 0 auto;padding-bottom:2px}#fWin .chips .ui-btn{min-height:38px;font-size:15px;padding:1px 8px}#fWin .chips .ui-btn .ru{font-size:10px}
-    #fWin .hd img.pt{width:48px;height:48px}#fWin .hd .t{font-size:20px}#fWin .turn{display:flex;gap:6px;justify-content:flex-end;margin-top:4px}#fWin .turn .ui-btn{min-height:34px;font-size:15px;padding:1px 10px}
+    #fWin .hd img.pt{width:96px;height:96px}body.vert #fWin .hd img.pt{width:48px;height:48px}#fWin .hd .t{font-size:20px}#fWin .turn{display:flex;gap:6px;justify-content:flex-end;margin-top:4px}#fWin .turn .ui-btn{min-height:34px;font-size:15px;padding:1px 10px}
     #fWin .inp{display:flex;gap:6px;align-items:center}#fWin .inp .ui-btn{min-height:42px}#fWin .ui-btn.rec{box-shadow:0 0 0 3px #e24848}
     #fWin .hd .ui-btn{min-height:40px;padding:1px 9px;font-size:15px}#fWin .ui-btn.on{outline:3px solid #ffd23f;outline-offset:-3px}
     #fWin .set{display:flex;flex-direction:column;gap:8px}#fWin .set .opts{display:flex;gap:8px;flex-wrap:wrap}#fWin .set .opts .ui-btn{font-size:19px;min-width:130px}`;
@@ -196,7 +196,7 @@
   // выбор пола и имени (первая встреча и «Einstellungen»)
   function setupWin(first) {
     const F = ld() || {}, e = show(); W.setup = true; W.first = !!first; W.draft = { g: F.g || 'f', name: F.name || '' };
-    const pt = g => `${BASE}portraits/friend_${g}_neutral.png`;
+    const pt = g => (window.Portraits && Portraits.get('friend_' + g)) || `${BASE}portraits/friend_${g}_neutral.png`;   // Полировка (портреты) 24.11
     const draw = () => {
       const g = W.draft.g, n = noun(g);
       e.innerHTML = `<div class="hd"><img class="pt" src="${pt(g)}" alt=""><div class="t">${first ? 'Hallo! Wie heißt du?' : 'Einstellungen'}<span class="ru">${first ? 'Привет! Как тебя зовут? — выбери, кто будет твоим другом в Stillbach' : 'настройки друга: пол и имя'}</span></div>${first ? '' : '<button class="ui ui-btn" data-x="1">Zurück<span class="ru">назад</span></button>'}</div>
@@ -221,7 +221,7 @@
     const F = ld(); if (!F || !F.met) return setupWin(true);
     const e = show(); W.setup = false; const n = noun(F.g);
     e.className = 'ui ui-panel-paper' + (W.ru ? ' ru' : '');
-    e.innerHTML = `<div class="hd"><img class="pt" src="${BASE}portraits/friend_${F.g}_happy.png" alt=""><div class="t">${esc(F.name)} <span style="font-size:16px"><b style="color:${COL[n.art]}">${n.art}</b> ${n.w}</span><span class="ru">${n.ru} · немецкий на твоём уровне</span><span class="ai" id="fAi">ИИ: проверяю…</span></div>
+    e.innerHTML = `<div class="hd"><img class="pt" src="${(window.Portraits && Portraits.get('friend_' + F.g, 'happy')) || BASE + 'portraits/friend_' + F.g + '_happy.png'}" alt=""><div class="t">${esc(F.name)} <span style="font-size:16px"><b style="color:${COL[n.art]}">${n.art}</b> ${n.w}</span><span class="ru">${n.ru} · немецкий на твоём уровне</span><span class="ai" id="fAi">ИИ: проверяю…</span></div>
         <button class="ui ui-btn${W.ru ? ' on' : ''}" data-ru="1">RU<span class="ru">перевод</span></button><button class="ui ui-btn" data-set="1">⚙<span class="ru">настр.</span></button><button class="ui ui-btn" data-x="1">Tschüss<span class="ru">пока</span></button></div>
       <div class="log" id="fLog"></div>
       <div class="chips">${Object.entries(TOPICS).map(([k, t]) => `<button class="ui ui-btn" data-topic="${k}">${t.de}<span class="ru">${t.ru}</span></button>`).join('')}<button class="ui ui-btn" data-dlg="1">Mini-Dialog<span class="ru">сценка урока</span></button></div>

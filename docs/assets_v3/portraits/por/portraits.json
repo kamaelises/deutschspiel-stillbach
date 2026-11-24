@@ -1,0 +1,102 @@
+{
+ "becker": {
+  "src": "cobralad_32x32_fantasy/portraits.png",
+  "cell": [
+   5,
+   73,
+   32
+  ],
+  "scale": 3,
+  "what": "CobraLad r3c1 grey-haired woman"
+ },
+ "olga": {
+  "src": "charlesgabriel_48x48_faces/48x48_Faces_2nd_Sheet_Update_CharlesGabriel_OGA_0.png",
+  "cell": [
+   192,
+   240,
+   48
+  ],
+  "scale": 2,
+  "what": "CharlesGabriel 2nd sheet Y.NPC f (col 5)"
+ },
+ "ahmad": {
+  "src": "charlesgabriel_48x48_faces/48x48_Faces_2nd_Sheet_Update_CharlesGabriel_OGA_0.png",
+  "cell": [
+   192,
+   192,
+   48
+  ],
+  "scale": 2,
+  "what": "CharlesGabriel 2nd sheet Y.NPC m (col 5)"
+ },
+ "beamter": {
+  "src": "charlesgabriel_48x48_faces/48x48_Faces_1st_Sheet_Update_CharlesGabriel_OGA_0.png",
+  "cell": [
+   240,
+   144,
+   48
+  ],
+  "scale": 2,
+  "what": "CharlesGabriel 1st sheet A.NPC m (bald, goatee)"
+ },
+ "schulz": {
+  "src": "charlesgabriel_48x48_faces/48x48_Faces_1st_Sheet_Update_CharlesGabriel_OGA_0.png",
+  "cell": [
+   240,
+   192,
+   48
+  ],
+  "scale": 2,
+  "what": "CharlesGabriel 1st sheet A.NPC f (long dark hair)"
+ },
+ "kassiererin": {
+  "src": "charlesgabriel_48x48_faces/48x48_Faces_2nd_Sheet_Update_CharlesGabriel_OGA_0.png",
+  "cell": [
+   240,
+   240,
+   48
+  ],
+  "scale": 2,
+  "what": "CharlesGabriel 2nd sheet Y.NPC f (col 6, blonde)"
+ },
+ "jonas": {
+  "src": "cobralad_32x32_fantasy/portraits.png",
+  "cell": [
+   5,
+   7,
+   32
+  ],
+  "scale": 3,
+  "what": "CobraLad r1c1 bearded man"
+ },
+ "taras": {
+  "src": "cobralad_32x32_fantasy/portraits.png",
+  "cell": [
+   38,
+   7,
+   32
+  ],
+  "scale": 3,
+  "what": "CobraLad r1c2 man"
+ },
+ "weber": {
+  "src": "cobralad_32x32_fantasy/portraits.png",
+  "cell": [
+   104,
+   40,
+   32
+  ],
+  "scale": 3,
+  "what": "CobraLad r2c4 red-haired woman"
+ },
+ "schmidt_cg": {
+  "src": "charlesgabriel_48x48_faces/48x48_Faces_1st_Sheet_Update_CharlesGabriel_OGA_0.png",
+  "cell": [
+   240,
+   144,
+   48
+  ],
+  "scale": 2,
+  "what": "CharlesGabriel A.NPC m - candidate for Herr Schmidt (compared, not used)"
+ }
+}

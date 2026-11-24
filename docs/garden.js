@@ -108,10 +108,12 @@
       G.crateO = prop('saatgutkiste', G.crate, 'die Saatgutkiste', 'ящик с семенами', () => crateTap());
       G.fassO = prop('regenfass', G.fass, 'das Regenfass', 'бочка с дождевой водой', () => fassTap());
       const st = { fontFamily: 'Roboto, sans-serif', fontStyle: 'bold', stroke: '#3b2314' };
-      const t1 = s.add.text(x0 + G.w / 2, y0 - 22, 'der Gemüsegarten', { ...st, fontSize: '21px', color: '#fff7e0', strokeThickness: 6 }).setOrigin(0.5, 1).setDepth(6000);
-      s.add.text(t1.x - t1.width / 2, t1.y - t1.height, 'der', { ...st, fontSize: '21px', color: COL.der, strokeThickness: 6 }).setDepth(6001);
+      // анимации/свет 24.11: артикль и слово — два текста рядом (раньше артикль вторым текстом поверх полной надписи)
+      const t0 = s.add.text(0, y0 - 22, 'der ', { ...st, fontSize: '21px', color: COL.der, strokeThickness: 6 }).setOrigin(0, 1).setDepth(6001);
+      const t1 = s.add.text(0, y0 - 22, 'Gemüsegarten', { ...st, fontSize: '21px', color: '#fff7e0', strokeThickness: 6 }).setOrigin(0, 1).setDepth(6000);
+      t0.x = Math.round(x0 + G.w / 2 - (t0.width + t1.width) / 2); t1.x = t0.x + t0.width;
       G.sign = t1; G.seasonTxt = s.add.text(x0 + G.w / 2, y0 - 6, '', { fontFamily: 'Roboto, sans-serif', fontSize: '12px', color: '#f3e3c3', stroke: '#3b2314', strokeThickness: 4 }).setOrigin(0.5, 1).setDepth(6000);
-      G.ruTxt = s.add.text(x0 + G.w / 2 + t1.width / 2 + 6, y0 - 26, 'огород', { fontFamily: 'Roboto, sans-serif', fontSize: '12px', color: '#f3e3c3', stroke: '#3b2314', strokeThickness: 4 }).setOrigin(0, 1).setDepth(6000);
+      G.ruTxt = s.add.text(t1.x + t1.width + 6, y0 - 26, 'огород', { fontFamily: 'Roboto, sans-serif', fontSize: '12px', color: '#f3e3c3', stroke: '#3b2314', strokeThickness: 4 }).setOrigin(0, 1).setDepth(6000);
       ROWS.forEach((ry, r) => COLS.forEach((cxp, c) => {
         const i = r * 3 + c, [cx, by] = P(cxp, ry);
         const sh = SIL(s.add.image(cx, by, 'life_karotte_0').setOrigin(0, 1).setScale(3)).setDepth(by - 1);
@@ -148,9 +150,11 @@
       const st = { fontFamily: 'Roboto, sans-serif', fontStyle: 'bold', stroke: '#3b2314' };
       // подпись под доской по центру (Max встаёт ниже, FB.stand; на телефоне край комнаты обрезан — не слева)
       // -16 px: справа над Herr Schmidt стоит «!» (x 529..544)
-      const lb = s.add.text(FB.sill[0] + sill.displayWidth / 2 - 16, FB.sill[1] + sill.displayHeight + 14, 'die Fensterbank', { ...st, fontSize: '16px', color: '#fff7e0', strokeThickness: 5 }).setOrigin(0.5, 1).setDepth(5000);
-      s.add.text(lb.x - lb.width / 2, lb.y - lb.height, 'die', { ...st, fontSize: '16px', color: COL.die, strokeThickness: 5 }).setDepth(5001);
-      G2.ru = s.add.text(lb.x, lb.y + 15, 'подоконник', { fontFamily: 'Roboto, sans-serif', fontSize: '11px', color: '#f3e3c3', stroke: '#3b2314', strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000); G2.label = lb;
+      const cxF = FB.sill[0] + sill.displayWidth / 2 - 16, yF = FB.sill[1] + sill.displayHeight + 14;   // артикль и слово рядом, без наложения (анимации/свет 24.11)
+      const la = s.add.text(0, yF, 'die ', { ...st, fontSize: '16px', color: COL.die, strokeThickness: 5 }).setOrigin(0, 1).setDepth(5001);
+      const lb = s.add.text(0, yF, 'Fensterbank', { ...st, fontSize: '16px', color: '#fff7e0', strokeThickness: 5 }).setOrigin(0, 1).setDepth(5000);
+      la.x = Math.round(cxF - (la.width + lb.width) / 2); lb.x = la.x + la.width;
+      G2.ru = s.add.text(cxF, yF + 15, 'подоконник', { fontFamily: 'Roboto, sans-serif', fontSize: '11px', color: '#f3e3c3', stroke: '#3b2314', strokeThickness: 3 }).setOrigin(0.5, 1).setDepth(5000); G2.label = lb;
       FB.pots.forEach((cx, i) => {
         const img = s.add.image(cx, FB.base, 'life_pot_kresse_0').setOrigin(0, 1).setScale(3).setDepth(FB.sill[1] + 49);
         const tag = s.add.text(cx, FB.base - 40, '', { ...st, fontSize: '13px', strokeThickness: 4 }).setOrigin(0.5, 1).setDepth(5002).setVisible(false);

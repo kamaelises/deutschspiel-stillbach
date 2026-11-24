@@ -108,8 +108,9 @@
   }
   function label(sc, x, y, de, ru) {                                 // подпись: артикль в цвете рода, по-русски мелко
     const [a, ...w] = de.split(' '), st = { fontFamily: 'Roboto, sans-serif', fontStyle: 'bold', stroke: '#3b2314', strokeThickness: 6, fontSize: '19px' };
-    const t1 = sc.add.text(x, y, de, { ...st, color: '#fff7e0' }).setOrigin(0.5, 1).setDepth(6000);
-    const t2 = sc.add.text(t1.x - t1.width / 2, t1.y - t1.height, a, { ...st, color: COL[a] || '#fff7e0' }).setDepth(6001);
+    const t2 = sc.add.text(0, y, a + ' ', { ...st, color: COL[a] || '#fff7e0' }).setOrigin(0, 1).setDepth(6001);   // артикль и слово рядом, без наложения (анимации/свет 24.11)
+    const t1 = sc.add.text(0, y, w.join(' '), { ...st, color: '#fff7e0' }).setOrigin(0, 1).setDepth(6000);
+    t2.x = Math.round(x - (t2.width + t1.width) / 2); t1.x = t2.x + t2.width;
     return [t1, t2, sc.add.text(x, y + 16, ru, { fontFamily: 'Roboto, sans-serif', fontSize: '12px', color: '#f3e3c3', stroke: '#3b2314', strokeThickness: 4 }).setOrigin(0.5, 1).setDepth(6000)];
   }
   const fade = (s, a) => (s && s.lbl || []).forEach(t => t.active && t.setAlpha(a));   // пока рыбачим — подпись места бледнее (не закрывает поплавок)

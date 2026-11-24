@@ -1,0 +1,29 @@
+{
+ "about": "Calciumtrice Medieval tileset exterior (CC-BY 3.0), x3; style_pick/ground/build_plus.py",
+ "size": {
+  "box": [
+   36,
+   27
+  ],
+  "planter": [
+   42,
+   54
+  ],
+  "planter_long": [
+   93,
+   54
+  ],
+  "board": [
+   108,
+   42
+  ],
+  "sign_bag": [
+   42,
+   42
+  ],
+  "sign_mug": [
+   42,
+   42
+  ]
+ }
+}

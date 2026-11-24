@@ -24,8 +24,11 @@
       const h = HOUSES[key]; if (!h) return;
       const [x0, y0, x1, y1] = b.box, zone = sc.add.zone((x0 + x1) / 2, (y0 + y1) / 2, x1 - x0, y1 - y0).setInteractive({ useHandCursor: true });
       const [art, ...w] = h.de.split(' '), locked = h.chapter > open;
-      const sign = sc.add.text((x0 + x1) / 2, y0 - 6, `${art} ${w.join(' ')}${locked ? '  🔒' : ''}`, { fontFamily: 'Roboto, sans-serif', fontSize: '22px', fontStyle: 'bold', color: '#fff7e0', stroke: '#3b2314', strokeThickness: 6 }).setOrigin(0.5, 1).setDepth(6000);
-      sign.setTint(0xffffff); sign.setColor('#fff7e0'); sc.add.text(sign.x - sign.width / 2 + 2, sign.y - sign.height + 6, art, { fontFamily: 'Roboto, sans-serif', fontSize: '22px', fontStyle: 'bold', color: COL[art], stroke: '#3b2314', strokeThickness: 6 }).setDepth(6001);
+      // анимации/свет 24.11: артикль и слово — два текста рядом (раньше белое «die Bäckerei» + красное «die» поверх со сдвигом -> артикль двоился)
+      const st0 = { fontFamily: 'Roboto, sans-serif', fontSize: '22px', fontStyle: 'bold', stroke: '#3b2314', strokeThickness: 6 };
+      const ta = sc.add.text(0, y0 - 6, art + ' ', { ...st0, color: COL[art] || '#fff7e0' }).setOrigin(0, 1).setDepth(6001);
+      const sign = sc.add.text(0, y0 - 6, `${w.join(' ')}${locked ? '  🔒' : ''}`, { ...st0, color: '#fff7e0' }).setOrigin(0, 1).setDepth(6000);
+      ta.x = Math.round((x0 + x1) / 2 - (ta.width + sign.width) / 2); sign.x = ta.x + ta.width; ta.a1sign = sign.a1sign = h.de;
       zone.on('pointerup', () => {
         if (sc.__dragged || sc.busy) return;
         if (window.speakDE) speakDE(h.de);
@@ -142,8 +145,9 @@
     const hatch = () => {
       const tex = sc.textures.get('dun_anim'); if (!tex.has('hatch')) tex.add('hatch', 0, 160, 159, 17, 17);   // craftpix 436971: деревянный люк с кольцом
       const img = sc.add.image(Math.round((K.x - 25) / 3) * 3, Math.round((K.y - 25) / 3) * 3, 'dun_anim', 'hatch').setOrigin(0, 0).setScale(3).setDepth(1).setInteractive({ useHandCursor: true });   // на сетке пикселей арта ×3
-      const sign = sc.add.text(K.x, K.y - 30, 'der Keller', { fontFamily: 'Roboto, sans-serif', fontSize: '20px', fontStyle: 'bold', color: '#fff7e0', stroke: '#3b2314', strokeThickness: 6 }).setOrigin(0.5, 1).setDepth(6000);
-      sc.add.text(sign.x - sign.width / 2, sign.y - sign.height, 'der', { fontFamily: 'Roboto, sans-serif', fontSize: '20px', fontStyle: 'bold', color: COL.der, stroke: '#3b2314', strokeThickness: 6 }).setDepth(6001);
+      const stK = { fontFamily: 'Roboto, sans-serif', fontSize: '20px', fontStyle: 'bold', stroke: '#3b2314', strokeThickness: 6 };   // артикль и слово рядом, без наложения (анимации/свет 24.11)
+      const kA = sc.add.text(0, K.y - 30, 'der ', { ...stK, color: COL.der }).setOrigin(0, 1).setDepth(6001), sign = sc.add.text(0, K.y - 30, 'Keller', { ...stK, color: '#fff7e0' }).setOrigin(0, 1).setDepth(6000);
+      kA.x = Math.round(K.x - (kA.width + sign.width) / 2); sign.x = kA.x + kA.width; kA.a1sign = sign.a1sign = 'der Keller';
       img.on('pointerup', () => {
         if (sc.__dragged || sc.busy) return; if (window.speakDE) speakDE('der Keller');
         const go = () => { sc.busy = true; sc.cameras.main.fadeOut(250, 24, 20, 37); sc.cameras.main.once('camerafadeoutcomplete', () => sc.scene.start('Dungeon', {})); };

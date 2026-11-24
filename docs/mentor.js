@@ -8,6 +8,7 @@
 // Звёзды не тратятся, ошибка в тренировке ничего не отнимает. API: Mentor.open(tab), Mentor.close(), Mentor.next(), Mentor.why(), MF (общее для friend.js).
 (function () {
   const COL = { der: '#3a7be0', die: '#e24848', das: '#2f9a4f' }, BASE = 'assets_v3/';
+  const PTB = () => (window.Portraits && Portraits.get('becker')) || BASE + 'portraits/becker.png';   // Полировка (портреты) 24.11: портрет из portraits.js
   const MENTOR_IN = { box: [400, 222, 525, 302], at: [462, 300], stand: [470, 430] };   // buergeramt.png: Frau Becker = служащая за столом (как в board.js PLACE_NPC/квестах);
                                                                      // «?» наставницы — слева над столом («!» заданий — справа от головы), Max встаёт перед столом
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -83,7 +84,7 @@
     #mWin .goal{font-size:12px;color:#6b4a2e;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     #mWin .ru,#fWin .ru{display:block;font-size:13px;font-weight:400;color:#6b4a2e;line-height:1.15}
     #mWin .hd,#fWin .hd{display:flex;align-items:center;gap:10px}#mWin .hd .t,#fWin .hd .t{flex:1;min-width:0;font-size:22px;font-weight:800;line-height:1.05}
-    #mWin img.pt,#fWin img.pt{width:56px;height:56px;image-rendering:pixelated;border:2px solid #3b2314;border-radius:4px;background:#e8d3a8;flex:0 0 auto}
+    #mWin img.pt,#fWin img.pt{width:96px;height:96px;image-rendering:pixelated;border:2px solid #3b2314;border-radius:4px;background:#e8d3a8;flex:0 0 auto}
     #mWin .ai,#fWin .ai{font-size:11px;font-weight:700;color:#5f7a3a}#mWin .ai.off,#fWin .ai.off{color:#9b6a2e}
     #mWin .ui-btn,#fWin .ui-btn{font-family:inherit;color:#2e1e12;height:auto;min-height:44px;padding:2px 12px;font-size:17px;line-height:1.05;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 auto}
     #mWin .tabs{display:flex;gap:6px}#mWin .tabs .ui-btn{flex:1 1 0;min-width:0;padding:2px 4px;font-size:16px}#mWin .tabs .ui-btn.on{outline:3px solid #ffd23f;outline-offset:-3px}
@@ -135,7 +136,7 @@
   }
   function render() {
     const e = el();
-    e.innerHTML = `<div class="hd"><img class="pt" src="${BASE}portraits/becker.png" alt=""><div class="t"><b style="color:${COL.die}">die</b> Mentorin · Frau Becker<span class="ru">наставница · учительница курса и мастер гильдии</span><span class="ai">ИИ: проверяю…</span></div><button class="ui ui-btn" data-x="1">Zurück<span class="ru">назад</span></button></div>
+    e.innerHTML = `<div class="hd"><img class="pt" src="${PTB()}" alt="Frau Becker"><div class="t"><b style="color:${COL.die}">die</b> Mentorin · Frau Becker<span class="ru">наставница · учительница курса и мастер гильдии</span><span class="ai">ИИ: проверяю…</span></div><button class="ui ui-btn" data-x="1">Zurück<span class="ru">назад</span></button></div>
       <div class="tabs">${TABS.map(([k, de, ru]) => `<button class="ui ui-btn${k === W.tab ? ' on' : ''}" data-tab="${k}">${de}<span class="ru">${ru}</span></button>`).join('')}</div>
       <div class="body" id="mBody"></div>`;
     head();
@@ -297,7 +298,7 @@
   (function hookHud() {
     const goal = $('goal'); if (!goal || !$('ui')) return setTimeout(hookHud, 100);
     if ($('bMentor')) return; const b = document.createElement('button'); b.id = 'bMentor'; b.className = 'ui ui-btn'; b.title = 'die Mentorin · наставница';
-    b.innerHTML = `<img src="${BASE}portraits/becker.png" alt="Mentorin">`; b.onclick = e => { e.stopPropagation(); isOpen() ? close() : open('next'); };
+    b.innerHTML = `<img src="${PTB()}" alt="Mentorin">`; b.onclick = e => { e.stopPropagation(); isOpen() ? close() : open('next'); };
     const sys = $('bSys'); if (sys && sys.parentNode === goal) sys.after(b); else goal.appendChild(b);
     if (!$('bSys')) setTimeout(() => { const s = $('bSys'); if (s && s.parentNode === goal && s.nextSibling !== b) s.after(b); }, 600);   // System появится позже — встать после него
   })();

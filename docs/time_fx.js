@@ -100,7 +100,7 @@
         st.glowN = st.lamps.length + st.spots.length;
       }
       const lampA = Math.max(0, Math.min(1, (0.97 - s.L) / 0.45));   // праздничные фонари зажигают раньше окон — уже в сумерках (Sankt Martin в 17 ч)
-      st.glows.forEach((g, i) => { const a = g.__lamp ? lampA : glowA; g.setAlpha(a * (0.85 + 0.15 * Math.sin(sc.time.now / 380 + i * 1.7))).setVisible(a > 0.02); });
+      st.glows.forEach((g, i) => { const a = g.__lamp ? lampA : glowA; g.setAlpha(a * (window.AnimFX && AnimFX.less() ? 0.92 : [1, 0.9, 1, 0.82, 0.95, 0.88][Math.floor(sc.time.now / 170 + i * 3) % 6])).setVisible(a > 0.02); });   // огонь мерцает ступенями (анимации/свет 24.11)
       if (st.season !== n.season || force) {
         st.season = n.season; const t = SEASON_TINT[n.season];
         (sc.children.list || []).filter(o => o.type === 'Image' && /^(town_bg|v3_yard_bg|welt_map_|lfx_edge_)/.test(o.texture && o.texture.key)).forEach(o => { if (t === 0xffffff) o.clearTint(); else o.setTint(t); });

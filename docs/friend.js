@@ -119,14 +119,37 @@
   function pool() {                                                  // реплики уроков (DE+RU): короткие фразы и строки мини-диалогов пройденных уроков
     const P = window.MF ? MF.passedLessons() : [], D = window.MF && MF.D(); const src = P.length ? P.map(p => p.les) : D ? [D.chapters[1][0]] : [];
     const out = []; src.forEach(l => { (l.say || []).forEach(x => out.push({ de: x.de, ru: x.ru, lid: l.id })); (l.dlg || []).forEach(d => d.lines.forEach((x, i) => out.push({ de: x.de, ru: x.ru, lid: l.id, dlg: d, i }))); });
-    return out.filter(x => x.de && toks(x.de).length <= 8);
+    return out.filter(x => x.de && toks(x.de).length <= 8 && friendOk(x));
   }
+  // 24.11 Код (Max/Olga): отбор реплик под друга. Годится, если нет чужих имён/фамилий (роли диалогов уроков + список), себя друг называет только своим
+  // именем (по умолчанию Olga), её имя в чужих устах (обращение к ней) — нет; нет «Sie/Ihr/Ihnen» и «Herr/Frau X»; нет взрослых тем (работа, адрес,
+  // телефон, e-mail, бланки, приём/термин, аренда, алкоголь, брак, отель). Проверка — app\checks\olga_lines_check.cjs.
+  const ADULT = /arbeit|beruf|firma|büro|\bchef|kolleg|\bstelle\b|erfahrung|lagerist|gehalt|\blohn|\bjob|bewerb|adress|straße|hausnummer|postleitzahl|telefon|handy|nummer|e-?mail|@|\d{3,}|termin|miete|versicher|konto|\bbank|formular|anmeld|vorname|familienname|nachname|verheiratet|\bledig|geschieden|\bbier|\bwein|zigarett|rechnung|reservier|rezeption|doppelzimmer|elternabend|hotel|nachtportier|elektroniker|steuer|visum|ausweis|pass\b/i;
+  const NAME0 = ['Schmidt', 'Becker', 'Wagner', 'Schulz', 'Müller', 'Weber', 'Anna', 'Maria', 'Sofia', 'Ahmad', 'Artem', 'Adita', 'Nico', 'Petrenko', 'Kai', 'Lena', 'Lukas', 'Taras', 'Jonas', 'Tom', 'Olga'];
+  let NAMESET = null;
+  const nameSet = () => { if (NAMESET) return NAMESET; const s = new Set(NAME0), D = window.MF && MF.D(); if (!D) return s;
+    Object.values(D.chapters).forEach(c => c.forEach(l => (l.dlg || []).forEach(d => Object.values(d.roles || {}).forEach(v => String(v).split(/\s+|und/).forEach(w => {
+      if (/^[A-ZÄÖÜ][a-zäöüß]{2,}$/.test(w) && !/^(Herr|Frau|Max|Verkäuferin|Kassiererin|Gastgeberin|Apothekerin|Reporterin)$/.test(w)) s.add(w); })))));
+    return (NAMESET = s); };
+  const sieForm = s => /\b(Ihre?[mnrs]?|Ihnen)\b/.test(s) || /\b(Herr|Frau|Dr\.)\s+[A-ZÄÖÜ]/.test(s)
+    || [...s.matchAll(/(^|[.!?:]\s*)?\bSie\b\s*([A-Za-zäöüß]*)/g)].some(m => !(m[1] !== undefined || m.index === 0) || /(en|sind)$/.test(m[2]) || !m[2]);   // «Sie ist/hat…» в начале = «она» — можно
+  function friendOk(x) {
+    const s = x.de || '', me = (ld() || {}).name || 'Olga', N = nameSet(), sp = x.dlg && x.dlg.lines[x.i] ? (x.dlg.roles || {})[x.dlg.lines[x.i].r] : null;
+    if (!kidOk(s) || sieForm(s) || ADULT.test(s)) return false;
+    for (const m of s.matchAll(/\b[A-ZÄÖÜ][a-zäöüß]+\b/g)) { const w = m[0];
+      if (w === me) { if (sp && sp !== me) return false; continue; }               // «Das ist Olga.» говорит Max — не её реплика
+      if (w === 'Max') { if (/(bin|heiße|heisse|ist)\s+Max\b/.test(s)) return false; continue; }   // «Ich bin Max.» — друг так себя не называет
+      if (N.has(w)) return false; }
+    return true;
+  }
+  // друг — ровесник-ребёнок: реплики уроков на «Sie» (Ihre/Ihnen, Sie не в начале фразы) и вопросы о личных данных (номер, адрес, e-mail) ему не подходят
+  const kidOk = s => !/\b(Ihre?[mnrs]?|Ihnen)\b/.test(s) && !/[^.!?\s]\s+Sie\b/.test(s) && !/nummer|adresse|e-?mail|telefon/i.test(s);
   function canned(topic, said) {
     const P = pool(); if (!P.length) return { de: 'Hallo!', ru: 'Привет!' };
     if (said) {                                                      // ответ на фразу игрока: та же строка мини-диалога -> следующая строка; иначе — похожая фраза
       const t = new Set(toks(said)); let best = null, bs = 0;
       P.forEach(x => { const s = toks(x.de).filter(w => t.has(w)).length / Math.max(1, toks(x.de).length); if (s > bs) { bs = s; best = x; } });
-      if (best && bs >= 0.5 && best.dlg && best.dlg.lines[best.i + 1]) { const n = best.dlg.lines[best.i + 1]; return { de: n.de, ru: n.ru, lid: best.lid }; }
+      if (best && bs >= 0.5 && best.dlg && best.dlg.lines[best.i + 1] && friendOk({ de: best.dlg.lines[best.i + 1].de, dlg: best.dlg, i: best.i + 1 })) { const n = best.dlg.lines[best.i + 1]; return { de: n.de, ru: n.ru, lid: best.lid }; }
     }
     const kw = topic && TOPICS[topic] ? TOPICS[topic].kw : null, hit = kw ? P.filter(x => toks(x.de).some(w => kw.some(k => w.startsWith(k)))) : [];
     const L = hit.length ? hit : P, k = Math.floor(Math.random() * L.length); return L[k];
@@ -223,9 +246,11 @@
     const bad = text.substr(m.offset, m.length); return `проверь «${bad}»${m.rep[0] ? ' — может, «' + m.rep[0] + '»?' : ''}`;
   }
   function sysPrompt(F, lex, ctx) {
-    const n = noun(F.g);
-    return [`Ты — ${F.name}, ${F.g === 'm' ? 'друг' : 'подруга'} (${n.art} ${n.w}) героя Max в игре-деревне Stillbach. Max — ученик: взрослый, родной язык русский, учит немецкий, уровень A1.`,
-      'Говори по-немецки ТОЛЬКО 1–2 короткие простые фразы (3–7 слов), на «du», только словами из списка ниже (и имена). Часто задавай короткий вопрос.',
+    const n = noun(F.g), H = (window.MF && MF.hero) ? MF.hero() : { level: 'A1.1', child: true, age_ru: 'ребёнок' };   // A1: Max — ребёнок (AR 14), друг — ровесник
+    return [`Ты — ${F.name}, ${F.g === 'm' ? 'друг' : 'подруга'} (${n.art} ${n.w}) героя Max в игре-деревне Stillbach. Max — ${H.age_ru}, ты тоже ${H.age_ru}: вы ровесники. Родной язык Max — русский, он учит немецкий, уровень ${H.level}.`,
+      `Говори по-немецки ТОЛЬКО 1–2 короткие простые фразы (${H.child ? '3–6' : '3–7'} слов), на «du», только словами из списка ниже (и имена). Часто задавай короткий вопрос.`,
+      H.child ? 'Говори как ребёнок с ребёнком: просто и весело — про игры, животных, еду, погоду, деревню, огород, рыбалку, задания. Никаких взрослых тем (работа, деньги, офис).'
+        : 'Говори как подросток с подростком: просто и весело — про школу, игры, друзей, деревню.',
       'Ты друг: дружелюбно и весело. Никакой романтики, флирта, комплиментов внешности и свиданий — только дружба.',
       'Не говори об опасном и взрослом (насилие, оружие, наркотики, алкоголь, болезни и лекарства, политика, религия, деньги и кредиты, секс). Если просят — мягко предложи тему из мира игры.',
       'Не спрашивай и не повторяй личные данные (настоящее имя, фамилия, адрес, телефон, e-mail, где живёт в реальности).',
@@ -309,7 +334,7 @@
       if (d.ok) return setupOk();
       return;
     }
-    if (d.ru) { W.ru = !W.ru; W.el.classList.toggle('ru', W.ru); t.classList.toggle('on', W.ru); return; }
+    if (d.ru) { W.ru = !W.ru; W.el.classList.toggle('ru', W.ru); t.classList.toggle('on', W.ru); const lg = $('fLog'); if (lg) lg.scrollTop = 1e6; return; }   // перевод удлиняет реплики — последняя остаётся видна
     if (d.set) return setupWin(false);
     if (d.hear) { const m = t.closest('.m'); if (m && window.speakDE) speakDE(m.dataset.de); return; }
     if (d.topic) { if (W.busy) return; W.dlg = null; add('me', `<div class="de">· ${TOPICS[d.topic].de} ·</div><span class="ru">${TOPICS[d.topic].ru}</span>`); return reply(null, d.topic); }
@@ -331,5 +356,5 @@
   })();
   window.Friend = { open, close, isOpen, setup: () => setupWin(!ld()), get: ld, set: (g, name) => { const F = { g, name: cleanName(name, g), met: true, at: Date.now() }; save(F); const sc = scene(); if (sc) { meetDone(sc); detach(sc); attach(sc); } return F; },
     reset: () => { try { localStorage.removeItem(KEY); } catch (e) {} syncParty(null); const sc = scene(); if (sc) { detach(sc); attach(sc); } },
-    sprite: () => { const sc = scene(); return sc ? sc.__friend || sc.__friendMeet || null : null; }, send, reply, levelFilter, lexicon, canned, pool, redact, dlgStart, view: () => W, TOPICS };
+    sprite: () => { const sc = scene(); return sc ? sc.__friend || sc.__friendMeet || null : null; }, send, reply, levelFilter, lexicon, prompt: () => { const F = ld() || { g: 'f', name: 'Olga' }, ctx = worldCtx(); return sysPrompt(F, lexicon(ctx.de), ctx); }, canned, pool, redact, dlgStart, view: () => W, TOPICS };
 })();

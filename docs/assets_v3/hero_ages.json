@@ -57,5 +57,6 @@
   "kid": "max_<emotion>.png (reodesuxz hero_boy)",
   "teen": "same (no better yet)",
   "adult": "same (no better yet)"
- }
+ },
+ "face": "style_pick/max_kid/add_face.py: 1 px eyes (43,29,40) in the middle skin row under the cap brim; down/left/right, not up (24.11)"
 }

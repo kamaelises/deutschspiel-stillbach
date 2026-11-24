@@ -1,5 +1,5 @@
 {
-  "_note": "24.11 Код (навыки). die Forschung — чертежи и улучшения. Идёт по таймеру реального времени (часы мира WorldTime, иначе устройство), переживает перезагрузку; один слот. Ускорения нет (решение: стройку нельзя ускорить; звёзды не тратятся). Стоимость: монеты + материалы из Beutel (тратятся) + Wortkarten (слова-Baustoffe: нужно знать, НЕ тратятся). economy.json пока нет — числа свои [предлагаю]; если появится economy.json с research.<id>.cost, research.js возьмёт цену оттуда.",
+  "_note": "24.11 Код (навыки). die Forschung — чертежи и улучшения. Идёт по таймеру реального времени (часы мира WorldTime, иначе устройство), переживает перезагрузку; один слот. Ускорения нет (решение: стройку нельзя ускорить; звёзды не тратятся). Стоимость: монеты + материалы из Beutel (тратятся) + Wortkarten (слова-Baustoffe: нужно знать, НЕ тратятся). Числа свои [предлагаю]; монеты можно переопределить в economy.json research.<id> (число) — research.js берёт Eco.price('research', id, cost.coins). fx читают: garden.js (garden.rain, garden.fruehbeet), fishing.js (fish.rare, fish.wait), restore.js (restore.variants); cook.rec.* — для будущей кухни (Koch), пока только запись.",
   "slots": 1,
   "items": [
     { "id": "giesskanne", "art": "die", "de": "Gießkanne", "ru": "лейка", "branch": "gaertner", "stage": "A1", "need": [],
@@ -8,7 +8,7 @@
     { "id": "fruehbeet", "art": "das", "de": "Frühbeet", "ru": "парник", "branch": "gaertner", "stage": "A1", "need": [ "skill:gruener_daumen", "research:giesskanne" ],
       "req": [ { "t": "harvest", "n": 3 } ], "cost": { "coins": 30, "mats": { "holz": 3 } }, "words": 8, "min": 45,
       "fx": { "garden.fruehbeet": 1 }, "hint": { "de": "Glas über dem Beet …", "ru": "стекло над грядкой…" },
-      "txt_de": "Zwei Beete unter Glas: auch im Winter.", "txt": "Две грядки под стеклом: растут и зимой, редиску можно сеять круглый год." },
+      "txt_de": "Zwei Beete unter Glas: sie wachsen auch im Winter.", "txt": "Две грядки (первые две) под стеклом: посаженное растёт и зимой." },
     { "id": "angel2", "art": "die", "de": "Angel · Stufe 2", "ru": "удочка, уровень 2", "branch": "angler", "stage": "A1", "need": [ "skill:ruhige_hand" ],
       "req": [ { "t": "fish", "n": 2 } ], "cost": { "coins": 25, "mats": { "holz": 2, "eisen": 1 } }, "words": 6, "min": 40,
       "fx": { "fish.rare": 0.2, "fish.wait": -0.1 }, "hint": { "de": "Eine bessere Angel …", "ru": "удочка получше…" },
@@ -16,7 +16,7 @@
     { "id": "musterbuch", "art": "das", "de": "Musterbuch", "ru": "книга узоров", "branch": "handwerker", "stage": "A1", "need": [ "skill:geschickt" ],
       "req": [ { "t": "quests", "n": 1 } ], "cost": { "coins": 20, "mats": { "stein": 2 } }, "words": 6, "min": 30,
       "fx": { "restore.variants": 1 }, "hint": { "de": "Neue Formen für die Restaurierung …", "ru": "новые формы для реставрации…" },
-      "txt_de": "Mehr Aussehen für Zaun, Beet, Brunnen.", "txt": "+1 вариант вида при реставрации." },
+      "txt_de": "Mehr Aussehen für Schild, Beet, Brunnen.", "txt": "+1 вариант вида при реставрации." },
     { "id": "rezept_salat", "art": "das", "de": "Rezept: Salat und Brot", "ru": "рецепт: салат и хлеб", "branch": "koch", "stage": "A1", "need": [ "skill:erste_rezepte" ],
       "req": [ { "t": "harvest", "n": 2 } ], "cost": { "coins": 5 }, "words": 4, "min": 15,
       "fx": { "cook.rec.karottensalat": 1, "cook.rec.radieschenbrot": 1 }, "hint": { "de": "Aufschreiben, was schmeckt …", "ru": "записать, что вкусно…" },

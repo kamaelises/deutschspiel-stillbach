@@ -13,7 +13,7 @@
 (function () {
   const SIL = im => { im.setTint(0x1e2c14); if (window.Phaser && Phaser.TintModes && im.setTintMode) im.setTintMode(Phaser.TintModes.FILL); else if (im.setTintFill) im.setTintFill(0x1e2c14); return im.setAlpha(0.3); };   // тень-силуэт (Phaser 4)
   const KEY = 'ds_proto.garden2', BASE = 'assets_v3/', COL = { der: '#3a7be0', die: '#e24848', das: '#2f9a4f' };
-  const CROPS = ['radieschen', 'karotte', 'paprika', 'kuerbis', 'blumenkohl'], INDOOR = ['kresse', 'radieschen'], BAGC = ['kresse', 'radieschen', 'karotte', 'paprika', 'kuerbis', 'blumenkohl'];
+  const CROPS = ['radieschen', 'karotte', 'paprika', 'kuerbis', 'blumenkohl', 'feldsalat'], INDOOR = ['kresse', 'radieschen'], BAGC = ['kresse', 'radieschen', 'karotte', 'paprika', 'kuerbis', 'blumenkohl', 'feldsalat'];   // feldsalat: Арт (Uhrturm) 24.11
   const FB = { sill: [417, 123], pots: [450, 510], base: 144, stand: 296 };   // Room (room_bg 960x540): доска под правым окном (x 462..500), две Schalen, Max стоит ниже на полу
   const COLS = [18, 38, 58], ROWS = [40, 62];                        // грядки внутри забора (px пака x1 от угла участка): 3 колонки x 2 ряда, справа — дорожка к ящику
   const MON = ['', 'Jan', 'Feb', 'März', 'Apr', 'Mai', 'Juni', 'Juli', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
@@ -23,7 +23,9 @@
   const meta = id => window.Album && Album.item(id);
   const C = id => CJ && (CJ.crops[id] || CJ.indoor[id]), CI = id => CJ && CJ.indoor[id];
   const speed = () => { const v = +localStorage.getItem('ds_proto.gardenSpeed'); return v > 0 ? v : 1; };
-  const stepMs = (id, inside) => { const c = inside ? CI(id) : C(id); return c ? c.days * CJ.game.secPerDay * 1000 / 3 / speed() : 60000; };   // 3 перехода: gesät -> Keim -> Pflanze -> reif
+  const SKF = k => { try { return window.Skills && Skills.fx ? +Skills.fx(k) || 0 : 0; } catch (e) { return 0; } };   // навыки и Forschung (skills.js / research.js, Код навыки 24.11)
+  const fb = i => i < 2 && SKF('garden.fruehbeet') > 0;               // das Frühbeet (Forschung): грядки 1–2 под стеклом растут и зимой
+  const stepMs = (id, inside) => { const c = inside ? CI(id) : C(id); return c ? c.days * CJ.game.secPerDay * 1000 / 3 / speed() / Math.max(0.2, 1 + SKF('garden.speed')) : 60000; };   // 3 перехода: gesät -> Keim -> Pflanze -> reif
   function now() {                                                    // дата мира: WorldTime («Код (время)»), иначе debugDate, иначе устройство
     try { if (window.WorldTime && WorldTime.now) { const w = WorldTime.now(); if (w && w.date) return new Date(w.date); } } catch (e) {}
     const d = localStorage.getItem('ds_proto.debugDate'); return d && !isNaN(Date.parse(d)) ? new Date(d) : new Date();
@@ -48,9 +50,9 @@
   }
   function tick() {                                                   // рост: только политая грядка, не зимой; после стадии снова нужен полив
     const v = load(), t = Date.now(), wint = season() === 'winter'; let ch = false;
-    v.beds.forEach(b => { if (!b || b.stage >= 3 || !b.wet) return;
-      if (wint) { b.t = t; ch = true; return; }
-      if (t - b.t >= stepMs(b.crop)) { b.stage++; b.wet = false; b.t = t; ch = true; } });
+    v.beds.forEach((b, i) => { if (!b || b.stage >= 3 || !b.wet) return;
+      if (wint && !fb(i) && !(C(b.crop) || {}).hardy) { b.t = t; ch = true; return; }   // hardy (crops.json, der Feldsalat): winterhart — растёт и зимой
+      if (t - b.t >= stepMs(b.crop)) { b.stage++; const keep = SKF('garden.rain') > 0 && !b.kept; b.wet = keep; b.kept = keep; b.t = t; ch = true; } });   // die Gießkanne: полив держится две стадии
     v.pots.forEach(b => { if (!b || b.stage >= 3 || !b.wet) return; if (t - b.t >= stepMs(b.crop, true)) { b.stage++; b.wet = false; b.t = t; ch = true; } });   // drinnen: auch im Winter
     if (ch) save(v); return v;
   }
@@ -60,8 +62,9 @@
   function potWater(i) { const v = load(), b = v.pots[i]; if (!b || b.stage >= 3 || b.wet) return false; b.wet = true; b.t = Date.now(); save(v); refreshRoom(); return true; }
   function potHarvest(i) { const v = load(), b = v.pots[i]; if (!b || b.stage < 3) return null; v.pots[i] = null; v.bag[b.crop] = (v.bag[b.crop] || 0) + 1; save(v); refreshRoom();
     try { window.dispatchEvent(new CustomEvent('ds:harvest', { detail: { crop: b.crop, n: 1, where: 'fensterbank' } })); } catch (e) {} return b.crop; }
-  function harvest(i) { const v = load(), b = v.beds[i]; if (!b || b.stage < 3) return null; v.beds[i] = null; v.bag[b.crop] = (v.bag[b.crop] || 0) + 1; save(v); refresh();
-    try { window.dispatchEvent(new CustomEvent('ds:harvest', { detail: { crop: b.crop, n: 1 } })); } catch (e) {} return b.crop; }
+  function harvest(i) { const v = load(), b = v.beds[i]; if (!b || b.stage < 3) return null; const n = Math.random() < SKF('garden.double') ? 2 : 1;   // die doppelte Ernte (навык)
+    v.beds[i] = null; v.bag[b.crop] = (v.bag[b.crop] || 0) + n; save(v); refresh(); if (n > 1 && window.toast) toast('Doppelte Ernte! ×2', 1400);
+    try { window.dispatchEvent(new CustomEvent('ds:harvest', { detail: { crop: b.crop, n } })); } catch (e) {} return b.crop; }
 
   // ---------- сцена: забор, ящик, бочка, грядки, вывеска
   let sc = null, view = [], G = null;
@@ -222,7 +225,7 @@
     }
     const it = meta(b.crop);
     if (b.stage >= 3) { const c = harvest(i); say(`Ich ernte ${it.art === 'der' ? 'den' : it.art} ${it.w}.`); harvestCard(c); return 'harvest'; }
-    if (wint) { if (window.toast) toast('Winter: das Beet ruht', 1800); return 'winter'; }
+    if (wint && !fb(i)) { if (window.toast) toast('Winter: das Beet ruht', 1800); return 'winter'; }
     if (!b.wet) { cur = { i };
       show(`<div class="card">${icon(b.crop, 2)}<div><div class="t">${name(b.crop)} · ${b.stage + 1}/4<span class="ru">${it.ru} · стадия ${b.stage + 1} из 4 — нужна вода</span></div>
         <div class="row" style="margin-top:6px"><button class="ui ui-btn" data-w="1">gießen<span class="ru">полить</span></button><button class="ui ui-btn x" data-x="1">Zurück<span class="ru">назад</span></button></div></div></div>`);
@@ -237,7 +240,7 @@
   function probieren(c) {
     const v = load(); if (!(v.bag[c] > 0)) { if (window.toast) toast('Nichts zum Probieren', 1500); return null; }
     const it = meta(c), cr = C(c); v.bag[c]--; const first = !v.tasted[c]; v.tasted[c] = true; save(v);
-    let add = 0; if (window.Combat && Combat.heroHp) { const h = Combat.heroHp(), m = Combat.hpMax(); add = Math.min(m - h, Math.max(1, Math.round(m * 0.1))); Combat.heroHp(h + add); }
+    let add = 0; if (window.Combat && Combat.heroHp) { const h = Combat.heroHp(), m = Combat.hpMax(); add = Math.min(m - h, Math.max(1, Math.round(m * 0.1 * (1 + SKF('cook.taste'))))); Combat.heroHp(h + add); }
     if (first && window.Album) Album.add(c, true);
     const Art = it.art[0].toUpperCase() + it.art.slice(1), line = `${Art} ${it.w} ist ${cr.adj[0]} und ${cr.adj[1]}.`; say(line);
     cur = { crop: c };

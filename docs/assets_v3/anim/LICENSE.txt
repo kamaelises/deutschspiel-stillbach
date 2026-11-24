@@ -1,0 +1,2 @@
+farm animals: craftpix.net free "Farm Animals" pack, license https://craftpix.net/file-licenses/ (refs/free_assets/craftpix/farm_animals/license.txt)
+wind.png: pixels cut from town/town_bg.png (craftpix 654184 hero-home pack), masks = that pack's own sprites

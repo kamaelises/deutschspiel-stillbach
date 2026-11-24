@@ -46,3 +46,38 @@ class Ort extends Room {
 
 }
 window.Ort = Ort; window.ORTE = ORTE;
+// Арт (Uhrturm) 24.11: сезонный декор интерьеров по данным assets_v3/places/decor.json (сейчас: der Adventskranz в das Café).
+// Время — window.WorldTime (time.js, отладка ?date= / ds_proto.debugDate), иначе дата устройства. Тап по венку: «Zwei Kerzen brennen.»
+(function () {
+  const DAY = 864e5, d0 = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const today = () => { try { const n = window.WorldTime && WorldTime.now(); if (n && n.date) return new Date(n.date); } catch (e) {} return new Date(); };
+  const adventN = d => {                                           // сколько воскресений Адвента уже наступило; null — венка ещё/уже нет
+    const y = d.getFullYear(); let A = null;
+    try { const D = WorldTime.datesOf(y); A = [1, 2, 3, 4].map(k => D['advent_' + k][0]); } catch (e) { const x = new Date(y, 11, 24), a4 = new Date(y, 11, 24 - x.getDay()); A = [3, 2, 1, 0].map(k => new Date(a4.getTime() - k * 7 * DAY)); }
+    const t = d0(d).getTime(); if (t < d0(A[0]).getTime() - DAY || t > new Date(y, 11, 26).getTime()) return null;
+    return A.filter(a => t >= d0(a).getTime()).length;
+  };
+  function put(sc, DJ) {
+    (DJ[sc.placeKey] || []).forEach(it => {
+      const n = it.show === 'advent' ? adventN(today()) : 0; if (n == null) return;
+      const go = () => {
+        if (!sc.sys.isActive()) return; const k = 'dc_' + it.key, f0 = n * it.flicker;
+        const s = sc.add.sprite(it.at[0] - it.cx, it.at[1] - it.foot, k, f0).setOrigin(0, 0).setDepth(it.at[1]); s.decor = { key: it.key, state: n };
+        const ak = k + '_' + n; if (!sc.anims.exists(ak)) sc.anims.create({ key: ak, frames: sc.anims.generateFrameNumbers(k, { start: f0, end: f0 + it.flicker - 1 }), frameRate: 5, repeat: -1 });
+        if (n > 0) s.play(ak);
+        s.setInteractive({ useHandCursor: true }).on('pointerup', () => { if (window.speakDE) speakDE(it.de + '. ' + it.say[n]); if (window.toast) toast(it.de + ' — ' + it.say[n] + ' · ' + it.say_ru[n], 2400); });
+      };
+      if (sc.textures.exists('dc_' + it.key)) go(); else { sc.load.spritesheet('dc_' + it.key, it.img, { frameWidth: it.frame[0], frameHeight: it.frame[1] }); sc.load.once('complete', go); sc.load.start(); }
+    });
+  }
+  function setup(sc) {
+    const t0 = Date.now(), wait = () => { if (!sc.sys.isActive() || Date.now() - t0 > 15000) return; if (!sc.hero) return setTimeout(wait, 100);
+      const DJ = sc.cache.json.get('decor'); if (DJ) return put(sc, DJ);
+      sc.load.json('decor', 'assets_v3/places/decor.json'); sc.load.once('complete', () => { const J = sc.cache.json.get('decor'); if (J) put(sc, J); }); sc.load.start(); };
+    wait();
+  }
+  (function hook() {
+    const g = window.game; if (!g || !g.scene || !g.scene.scenes || !g.scene.scenes.length) return setTimeout(hook, 50);
+    const o = g.scene.getScene('Ort'); if (o) o.events.on('create', () => setup(o));
+  })();
+})();

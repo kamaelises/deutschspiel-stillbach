@@ -1,0 +1,8 @@
+﻿{
+ "about": "Арт (Uhrturm) 24.11: сезонный декор в интерьерах Ort (читает хук в конце ort.js). at = низ-центр предмета (px интерьера); frame = кадр листа; states x flicker: кадр = state*flicker + (0..flicker-1). show 'advent': с субботы перед 1-м Адвентом по 26.12; state = сколько воскресений Адвента уже было (WorldTime.datesOf). Арт: style_pick/uhrturm/build_adventskranz.py (хвоя karsiori CC0 + свечи craftpix Chapel).",
+ "cafe": [
+  { "key": "adventskranz", "de": "der Adventskranz", "ru": "адвентский венок (4 свечи)", "img": "assets_v3/places/adventskranz.png", "frame": [90, 66], "states": 5, "flicker": 3, "cx": 46, "foot": 63, "at": [618, 334], "show": "advent",
+    "say": ["Noch brennt keine Kerze.", "Eine Kerze brennt.", "Zwei Kerzen brennen.", "Drei Kerzen brennen.", "Vier Kerzen brennen."],
+    "say_ru": ["Ещё ни одна свеча не горит.", "Горит одна свеча.", "Горят две свечи.", "Горят три свечи.", "Горят четыре свечи."] }
+ ]
+}

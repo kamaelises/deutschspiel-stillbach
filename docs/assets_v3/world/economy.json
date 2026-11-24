@@ -15,10 +15,13 @@
     "lessonEnd": 5,
     "ortEnd": 5,
     "weekCheck": 5,
-    "fishBonus": { "h": 2, "s": 3, "ss": 5, "l": 8 }
+    "fishBonus": { "h": 2, "s": 3, "ss": 5, "l": 8 },
+    "help": 2
   },
   "scale": { "quest": 0.4, "fight": 0.5, "chest": 0.5 },
-  "caps_day": { "fish": 10, "fight": 15, "sell": 15 },
+  "caps_day": { "fish": 10, "fight": 15, "sell": 15, "help": 6 },
+  "restore": { "schild": 3, "beet": 5, "brunnen": 4, "note": "A1 = Max-ребёнок: маленькие дела сам за Taschengeld; der Uhrturm — помощь взрослым (earn.help, до caps_day.help в день). Смена вида после «Fertig» бесплатна. restore.js: Eco.price('restore', id, cost_fb)" },
+  "defeat": { "coins": 0, "items": 0, "stars": 0, "note": "решение автора 23.11: поражение без потерь — Eco.onDefeat() всегда {lost: 0}" },
   "stars": { "perLesson": 1, "note": "пока приложение не шлёт оценку урока (1★ ≥60 %, 2★ ≥80 %, 3★ ≥95 %), каждый пройденный урок = 1★; приложение может прислать ds_proto.app.stars — тогда берётся оно; звёзды только растут" },
   "sell": {
     "buyer": { "place": "cafe", "de": "Frau Schulz (das Café)", "ru": "Фрау Шульц из кафе покупает овощи для супа и рыбу для Fischbrötchen" },

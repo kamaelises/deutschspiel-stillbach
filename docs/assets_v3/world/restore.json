@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "about": "Реставрация Stillbach (как Gardenscapes, Код экономика 24.11). Читает proto/restore.js (window.Restore). Уровень A1 = Max-ребёнок: маленькие дела сам (табличка, клумба, уборка у колодца) за карманные монеты; большие объекты (der Uhrturm) — только помогает взрослым (+Taschengeld). Цены и начисления — economy.json (restore, earn.help, caps_day.help). Звёзды не тратятся: только порог. Арт — style_pick/restore/build_restore.py (craftpix 654184/504452/141354/865357, x3). Координаты — px деревни (town.json), at = низ-центр картинки.",
+  "img": "assets_v3/world/restore/",
+  "variants_base": 3,
+  "tasks": [
+    {
+      "id": "schild", "kind": "kid", "de": "das Namensschild", "ru": "табличка с именем на доме Max",
+      "do_de": "Max malt ein Schild für das Haus.", "do_ru": "Max сам рисует табличку для дома.",
+      "stars": 1, "sec": 20, "cost_fb": 3,
+      "before": [ { "img": "schild_brett", "at": [612, 418] } ],
+      "at": [606, 380], "over": "house", "stand": [612, 436],
+      "variants": [
+        { "id": "amboss", "img": "schild_amboss", "de": "der Amboss", "ru": "наковальня" },
+        { "id": "schwert", "img": "schild_schwert", "de": "das Schwert", "ru": "меч" },
+        { "id": "helm", "img": "schild_helm", "de": "der Helm", "ru": "шлем" }
+      ]
+    },
+    {
+      "id": "beet", "kind": "kid", "de": "das Blumenbeet", "ru": "клумба под окном",
+      "do_de": "Max pflanzt Blumen.", "do_ru": "Max сам сажает цветы.",
+      "stars": 2, "sec": 30, "cost_fb": 5,
+      "before": [ { "img": "beet_erde", "at": [420, 502] } ],
+      "at": [420, 502], "stand": [500, 500],
+      "variants": [
+        { "id": "rose", "img": "beet_rose", "de": "die Rose", "ru": "розы" },
+        { "id": "nelke", "img": "beet_nelke", "de": "die Nelke", "ru": "гвоздики" },
+        { "id": "ringelblume", "img": "beet_ringelblume", "de": "die Ringelblume", "ru": "календула" },
+        { "id": "sonnenblume", "img": "beet_sonnenblume", "de": "die Sonnenblume", "ru": "подсолнухи" }
+      ]
+    },
+    {
+      "id": "brunnen", "kind": "kid", "de": "der Brunnen", "ru": "колодец на площади",
+      "do_de": "Max räumt auf und schmückt den Brunnen.", "do_ru": "Max убирает мусор и украшает колодец.",
+      "stars": 3, "sec": 30, "cost_fb": 4,
+      "before": [ { "img": "muell_steine", "at": [1488, 778] }, { "img": "muell_kiesel", "at": [1614, 716] }, { "img": "muell_ast", "at": [1574, 810] } ],
+      "at": [1632, 708], "stand": [1600, 774],
+      "variants": [
+        { "id": "busch", "img": "brunnen_busch", "de": "der Busch", "ru": "куст с синими цветами" },
+        { "id": "fass", "img": "brunnen_fass", "de": "das Fass", "ru": "бочка" },
+        { "id": "laterne", "img": "brunnen_laterne", "de": "die Laterne", "ru": "фонарь" },
+        { "id": "strauch", "img": "brunnen_orange", "de": "der Strauch", "ru": "куст с оранжевыми цветами" }
+      ]
+    },
+    {
+      "id": "uhrturm", "kind": "help", "de": "der Uhrturm", "ru": "часовая башня",
+      "do_de": "Der Uhrturm ist zu groß für Max. Max hilft den Bauarbeitern.", "do_ru": "Башня слишком большая для ребёнка: Max помогает взрослым строителям и получает карманные деньги.",
+      "stars": 1, "sec": 40, "plot": "uhrturm", "min_stage": 2,
+      "worker": { "img": "arbeiter", "frame": 144, "frames": 6, "foot": 96, "at": [1828, 1150] },
+      "stand": [1890, 1152]
+    }
+  ]
+}

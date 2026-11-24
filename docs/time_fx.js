@@ -90,22 +90,22 @@
     if (!sc.sys || !sc.sys.isActive() || !st.over) return;
     const n = WT.now(), key = sc.scene.key, out = !!OUT[key];
     const W = sc.worldW || 960, H = sc.worldH || 540;
-    st.over.setPosition(-200, -200).setSize(W + 400, H + 400);
+    st.over.setPosition(-6400, -6400).setSize(W + 12800, H + 12800);   // свет/камера 24.11: и фон за краями карты (light.js, зум наружу)
     if (out) {
       const s = skyColor(n); st.L = s.L; st.over.setFillStyle(s.color, 1); st.over.setVisible(s.color !== 0xffffff);
       const glowA = Math.max(0, Math.min(1, (0.75 - s.L) / 0.55));
       if (force || st.glowN !== (st.lamps.length + st.spots.length)) {
         st.glows.forEach(g => g.destroy()); st.glows = [];
-        st.spots.concat(st.lamps).forEach(([x, y, k], i) => { const g = sc.add.image(x, y, 'tfx_glow').setBlendMode(Phaser.BlendModes.ADD).setScale(1.6 * k).setDepth(OVER_D + 1); g.__tfx = 1; g.__lamp = i >= st.spots.length; st.glows.push(g); });
+        st.spots.concat(st.lamps).forEach(([x, y, k], i) => { const LF = window.LightFX, g = sc.add.image(LF ? Math.round(x / 3) * 3 : x, LF ? Math.round(y / 3) * 3 : y, LF ? LF.glowTex(sc, Math.round(30 * k)) : 'tfx_glow').setBlendMode(Phaser.BlendModes.ADD).setScale(LF ? 3 : 1.6 * k).setDepth(OVER_D + 1); g.__tfx = 1; g.__lamp = i >= st.spots.length; st.glows.push(g); });
         st.glowN = st.lamps.length + st.spots.length;
       }
       const lampA = Math.max(0, Math.min(1, (0.97 - s.L) / 0.45));   // праздничные фонари зажигают раньше окон — уже в сумерках (Sankt Martin в 17 ч)
       st.glows.forEach((g, i) => { const a = g.__lamp ? lampA : glowA; g.setAlpha(a * (0.85 + 0.15 * Math.sin(sc.time.now / 380 + i * 1.7))).setVisible(a > 0.02); });
       if (st.season !== n.season || force) {
         st.season = n.season; const t = SEASON_TINT[n.season];
-        (sc.children.list || []).filter(o => o.type === 'Image' && /^(town_bg|v3_yard_bg|welt_map_)/.test(o.texture && o.texture.key)).forEach(o => { if (t === 0xffffff) o.clearTint(); else o.setTint(t); });
+        (sc.children.list || []).filter(o => o.type === 'Image' && /^(town_bg|v3_yard_bg|welt_map_|lfx_edge_)/.test(o.texture && o.texture.key)).forEach(o => { if (t === 0xffffff) o.clearTint(); else o.setTint(t); });
         if (st.frost) { st.frost.destroy(); st.frost = null; }
-        if (n.season === 'winter') { st.frost = sc.add.rectangle(-200, -200, W + 400, H + 400, 0xffffff, 0.16).setOrigin(0, 0).setDepth(-9); st.frost.__tfx = 1; }
+        if (n.season === 'winter') { st.frost = sc.add.rectangle(-6400, -6400, W + 12800, H + 12800, 0xffffff, 0.16).setOrigin(0, 0).setDepth(-9); st.frost.__tfx = 1; }
       }
     } else {
       const c = indoorColor(n); st.over.setFillStyle(c, 1); st.over.setVisible(c !== 0xffffff);

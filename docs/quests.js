@@ -41,7 +41,8 @@
     return true;
   }
   function pay(q) {                                                  // монеты + опыт; уровень как в бою (combat.js: 50 × Stufe, максимум 50)
-    const coins = +q.reward || 0, xp = +q.xp || 0;
+    let bonus = 0; try { bonus = window.Skills && Skills.fx ? +Skills.fx('quest.reward') || 0 : 0; } catch (e) {}   // die Plaudertasche: награда больше (Код навыки 24.11)
+    const coins = Math.round((+q.reward || 0) * (1 + Math.max(0, bonus))), xp = +q.xp || 0;
     if (typeof state === 'undefined') return { coins: 0, xp: 0 };
     if (xp) { state.xp = (state.xp || 0) + xp; const C = window.Combat; if (C && C.lvl && C.xpNeed) { let k = 0; while (C.lvl() < 50 && state.xp >= C.xpNeed(C.lvl()) && k++ < 60) { state.xp -= C.xpNeed(C.lvl()); state.level = C.lvl() + 1; } } }
     if (typeof setCoins === 'function') setCoins(state.coins + coins); else if (typeof store !== 'undefined') store.set(state);

@@ -34,6 +34,10 @@
   }
   function curChapter() { const nl = nextLesson(); if (!nl) return null; if (nl.all) { const ns = chNums(); return { n: ns[ns.length - 1], upto: D.chapters[ns[ns.length - 1]].length - 1 }; } return { n: nl.n, upto: nl.i }; }
   const reviewList = () => { const r = ld('ds_proto.review', []); return Array.isArray(r) ? r : []; };
+  function hero() {                                                  // уровень и возраст героя: правило system.js (главы 1–8 = A1.1, 9–16 = A1.2); A1 — ребёнок (AR 14, 23.11), A2 — подросток (GD §2)
+    const full = appCh().filter(c => +c.total > 0 && +c.done >= +c.total).length, level = full < 8 ? 'A1.1' : full < 16 ? 'A1.2' : 'A2.1', child = /^A1/.test(level);
+    return { name: 'Max', level, child, age_ru: child ? 'ребёнок' : 'подросток' };
+  }
 
   // ---------- ИИ: тот же путь, что app/src/core/ai.js (route pc|off), без облака
   const AI = { MODEL: 'gemma4:12b', KEEP: '30m', st: null, at: 0, warming: null };
@@ -67,7 +71,7 @@
   };
   AI.LABEL = { pc: 'ИИ: ПК', off: 'ИИ выкл.' };
   const go = h => { if (window.dsGo) return window.dsGo(h); if (window.toast) toast('В приложении: вкладка «Мир» · nur in der App', 1800); };
-  window.MF = { data, nouns, nextLesson, passedLessons, knownWords, curChapter, reviewList, appCh, AI, esc, artC, ld, sv, go, COL, D: () => D };
+  window.MF = { data, nouns, nextLesson, passedLessons, knownWords, curChapter, reviewList, appCh, hero, AI, esc, artC, ld, sv, go, COL, D: () => D };
 
   // ---------- окно наставницы (#mWin) — как окно доски (#qWin): бумажная панель, немецкий крупно, русский мелко
   const css = document.createElement('style');
@@ -152,8 +156,15 @@
     else if (window.Board && Q) out.push({ k: 'board', de: 'Nimm eine Aufgabe am Schwarzen Brett!', ru: 'возьми задание на доске — у Gildenhaus (с главы 2)' });
     return out;
   }
+  function hello() {                                                 // приветствие наставницы — простые слова A1 (Max — ребёнок): «du», 3–5 слов
+    const nl = nextLesson(), H = hero();
+    if (nl && nl.all) return { de: 'Super, Max! Du kannst viel!', ru: 'Супер, Макс! Ты много умеешь!' };
+    return H.child ? { de: 'Hallo, Max! Was machen wir jetzt?', ru: 'Привет, Макс! Что будем делать?' } : { de: 'Hallo, Max! Was machst du jetzt?', ru: 'Привет, Макс! Что ты делаешь дальше?' };
+  }
   function viewNext(b) {
-    b.innerHTML = nextItems().map(it => `<div class="row" data-k="${it.k}"${it.les ? ` data-les="${it.les}"` : ''}><div class="tx"><div class="de">${artC(it.de)}</div><span class="ru">${esc(it.ru)}</span>${it.goal ? `<div class="goal">${esc(it.goal)}</div>` : ''}</div>${
+    const hi = hello(); W.hi = hi;
+    b.innerHTML = `<div class="card" data-k="hi" style="display:flex;align-items:center;gap:8px;border-style:dashed"><div class="tx" style="flex:1"><div class="de">${esc(hi.de)}</div><span class="ru">${esc(hi.ru)}</span></div><button class="ui ui-btn" data-act="hi" style="min-height:36px;width:40px;padding:0">🔊</button></div>`
+      + nextItems().map(it => `<div class="row" data-k="${it.k}"${it.les ? ` data-les="${it.les}"` : ''}><div class="tx"><div class="de">${artC(it.de)}</div><span class="ru">${esc(it.ru)}</span>${it.goal ? `<div class="goal">${esc(it.goal)}</div>` : ''}</div>${
       it.btn ? `<button class="ui ui-btn" data-go="${it.btn[2]}">${it.btn[0]}<span class="ru">${it.btn[1]}</span></button>` : it.act ? `<button class="ui ui-btn" data-act="${it.act[0]}">${it.act[1]}<span class="ru">${it.act[2]}</span></button>` : ''}</div>`).join('')
       + `<div class="btns"><button class="ui ui-btn" data-go="#/lessons">Lektionen<span class="ru">уроки</span></button><button class="ui ui-btn" data-go="#/review">Wiederholen<span class="ru">повтор в приложении</span></button></div>`;
   }
@@ -176,25 +187,31 @@
       <div class="card ans" id="mAns" style="display:none"></div>`;
     W.cur = w;
   }
+  function mentorPrompt(H, ctx) {                                   // A1: Max — ребёнок -> как добрая учительница с ребёнком: «ты», очень коротко, простыми словами
+    return ['Ты — Frau Becker, добрая учительница немецкого и наставница героя Max в игре-деревне Stillbach.',
+      `Max — ${H.age_ru} (уровень ${H.level}), родной язык русский. Говори с ним на «ты», ${H.child ? 'как добрая учительница с ребёнком' : 'как учительница с подростком'}.`,
+      `Отвечай ТОЛЬКО по карточкам урока ниже: по-русски, ${H.child ? '1–2 очень коротких предложения (до 12 слов), простыми словами, как ребёнку' : '1–3 коротких предложения'}.`,
+      'Без грамматических терминов (не говори «инверсия», «спряжение», «подлежащее», «сказуемое», «порядок слов»): объясняй на примере из карточки.',
+      'Немецкие примеры бери только дословно из карточек. Ничего не выдумывай: если в карточках нет ответа — скажи «Этого в уроке нет».',
+      'Ласково и весело, без личных вопросов. Вопросы не про немецкий — мягко верни к уроку.', '', 'Карточки урока:', ctx].join('\n');
+  }
   const latin = s => (String(s).match(/[A-Za-zÄÖÜäöüß]+(?:[ \-'][A-Za-zÄÖÜäöüß]+)*/g) || []);
   function ask() {
     const inp = $('mAsk'), a = $('mAns'), w = W.cur; if (!inp || !a || !w) return; const q = inp.value.trim().slice(0, 200); if (!q) { inp.focus(); return; }
-    a.style.display = 'block'; a.innerHTML = 'думаю…'; a.dataset.src = 'wait';
-    const fallback = why => { a.dataset.src = 'data'; a.innerHTML = `<span class="ru" style="display:inline">${esc(why)}</span><br>${artC(w.text)}${w.why_ru ? '<br>' + artC(w.why_ru) : ''}<div class="src">ответ из урока ${w.lid}</div>`; };
+    const toAns = () => { const bd = $('mBody'); if (bd && a.isConnected) bd.scrollTop = bd.scrollHeight; };   // ответ — последний блок окна: прокрутить к нему, иначе он под краем
+    a.style.display = 'block'; a.innerHTML = 'думаю…'; a.dataset.src = 'wait'; toAns();
+    const fallback = why => { a.dataset.src = 'data'; a.innerHTML = `<span class="ru" style="display:inline">${esc(why)}</span><br>${artC(w.text)}${w.why_ru ? '<br>' + artC(w.why_ru) : ''}<div class="src">ответ из урока ${w.lid}</div>`; toAns(); };
     AI.status().then(st => {
       if (st.route !== 'pc') return fallback('ИИ выкл. — правило из урока:');
       const cards = whyCards().slice(0, 6), first = [w].concat(cards.filter(c => c.pid !== w.pid)).slice(0, 5);
       const ctx = first.map(c => `Фраза: ${c.de} — ${c.ru}\nПравило: ${c.text}${c.why_ru ? ' ' + c.why_ru : ''}\nПримеры: ${c.ex.map(x => x.de + ' — ' + x.ru).join('; ')}`).join('\n\n');
-      const sys = ['Ты — Frau Becker, учительница немецкого и наставница героя Max в игре. Ученик — взрослый, родной язык русский, уровень A1.',
-        'Отвечай ТОЛЬКО по карточкам урока ниже: по-русски, 1–3 коротких предложения, без школьных терминов.',
-        'Немецкие примеры бери только дословно из карточек. Ничего не выдумывай: если в карточках нет ответа — скажи «Этого в уроке нет».',
-        'Вежливо и дружелюбно, без личных вопросов. Вопросы не про немецкий — мягко верни к уроку.', '', 'Карточки урока:', ctx].join('\n');
+      const H = hero(), sys = mentorPrompt(H, ctx), maxS = H.child ? 2 : 3;
       const p = AI.warm(); return Promise.race([p, new Promise(r => setTimeout(r, 400))]).then(() => AI.chat([{ role: 'system', content: sys }, { role: 'user', content: q }], 150000, 180)).then(txt => {
-        txt = String(txt).replace(/^(RU|DE):\s*/gim, '').replace(/\*\*/g, '').trim(); const ss = txt.split(/(?<=[.!?:])\s+/); let n = Math.min(3, ss.length); while (n < ss.length && n < 5 && /:$/.test(ss[n - 1])) n++;   // фраза с «:» — вместе с примером после неё
+        txt = String(txt).replace(/^(RU|DE):\s*/gim, '').replace(/\*\*/g, '').trim(); const ss = txt.split(/(?<=[.!?:])\s+/); let n = Math.min(maxS, ss.length); while (n < ss.length && n < maxS + 2 && /:$/.test(ss[n - 1])) n++;   // фраза с «:» — вместе с примером после неё
         const sents = ss.slice(0, n).join(' ').slice(0, 480);
         const ctxL = ctx.toLowerCase(), bad = latin(sents).filter(x => !ctxL.includes(x.toLowerCase()) && !/^(A1|Max|ok)$/i.test(x));
         if (!sents || bad.length) return fallback(bad.length ? `ИИ взял немецкое не из урока (${bad.slice(0, 2).join(', ')}) — показываю правило урока:` : 'ИИ промолчал — правило урока:');
-        a.dataset.src = 'ai'; a.innerHTML = `${artC(sents)}<div class="src">${AI.LABEL.pc} · по карточкам урока ${w.lid}</div>`;
+        a.dataset.src = 'ai'; a.innerHTML = `${artC(sents)}<div class="src">${AI.LABEL.pc} · по карточкам урока ${w.lid}</div>`; toAns();
       });
     }).catch(e => fallback('ИИ не ответил (' + (e && e.name === 'AbortError' ? 'долго' : 'нет связи') + ') — правило урока:'));
   }
@@ -205,7 +222,7 @@
   function viewRev(b) {
     if (!NOUNS) { b.innerHTML = '<div class="card">…</div>'; nouns().then(() => { if (isOpen() && W.tab === 'rev') render(); }); return; }
     if (!W.rv) rvStart(); const R = W.rv;
-    if (!R.list.length) { b.innerHTML = `<div class="card" data-rv="empty"><div class="de">Der Wiederholen-Korb ist leer.</div><span class="ru">«Повтор» пуст: слова попадают сюда, когда в бою ошибаешься в артикле.</span></div><div class="btns"><button class="ui ui-btn" data-go="#/review">Wiederholen<span class="ru">повтор в приложении</span></button></div>`; return; }
+    if (!R.list.length) { b.innerHTML = `<div class="card" data-rv="empty"><div class="de">Super! Keine Wörter zum Wiederholen.</div><span class="ru">«Повтор» пуст: слова попадают сюда, когда в бою ошибаешься в артикле.</span></div><div class="btns"><button class="ui ui-btn" data-go="#/review">Wiederholen<span class="ru">повтор в приложении</span></button></div>`; return; }
     if (R.i >= R.list.length) { b.innerHTML = `<div class="card" data-rv="end"><div class="de">Fertig! ${R.ok} / ${R.list.length}</div><span class="ru">готово: верно ${R.ok} из ${R.list.length}; верные слова ушли из «Повтора». Ошибки ничего не отнимают.</span></div><div class="btns"><button class="ui ui-btn" data-act="rvAgain">Nochmal<span class="ru">ещё раз</span></button><button class="ui ui-btn" data-go="#/review">Wiederholen<span class="ru">повтор в приложении</span></button></div>`; return; }
     const s = R.list[R.i], [art, ...ws] = s.split(' '), w = ws.join(' '), ru = nounMap()[s], M = nounMap();
     if (R.stage === 'art') {
@@ -255,6 +272,7 @@
       case 'skills': close(); if (window.Skills && Skills.open) Skills.open(); return;
       case 'whyNext': W.why++; return render();
       case 'hear': if (W.cur && window.speakDE) speakDE(W.cur.de); return;
+      case 'hi': if (W.hi && window.speakDE) speakDE(W.hi.de); return;
       case 'qa': { const a = $('mQa'); if (a) a.style.display = 'block'; return; }
       case 'ask': return ask();
     }
@@ -290,5 +308,5 @@
     s.events.on('shutdown', () => { if (W.sc === s) close(); s.__mentorZone = null; });
     if (s.sys.isActive()) setupOrt(s);
   })();
-  window.Mentor = { open, close, isOpen, next: nextItems, nextLesson, why: () => (D ? whyCards() : []), ask, MENTOR_IN, view: () => W };
+  window.Mentor = { open, close, isOpen, next: nextItems, nextLesson, why: () => (D ? whyCards() : []), ask, hello, prompt: ctx => mentorPrompt(hero(), ctx || ''), MENTOR_IN, view: () => W };
 })();

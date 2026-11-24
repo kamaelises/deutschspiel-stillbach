@@ -1,13 +1,39 @@
 ﻿// DeutschSpiel vertical slice: Yard -> tap house (zoom) -> lesson inside the scene -> spell (speech) -> reward visible in yard.
 const W = 960, H = 540, HERO = 'Max';
 const $ = (id) => document.getElementById(id);
+// 24.11 главный: один ключ картинки грузится один раз. Несколько модулей (garden/album/anim) ставят в очередь те же life_* в одной сцене
+// до окончания загрузки -> Phaser «Texture key already in use». Уже есть в текстурах или уже в очереди/загрузке — пропуск (complete всё равно придёт).
+(function () {
+  const LP = Phaser.Loader.LoaderPlugin.prototype, img = LP.image;
+  LP.image = function (key, url, xhr) {
+    if (typeof key === 'string') {
+      const tm = this.textureManager || (this.systems && this.systems.textures);
+      if (tm && tm.exists(key)) return this;
+      if ([this.list, this.inflight, this.queue].some(s => s && [...s].some(f => f.type === 'image' && f.key === key))) return this;
+    }
+    return img.call(this, key, url, xhr);
+  };
+})();
 const store = { get() { try { return JSON.parse(localStorage.getItem('ds_proto')) || { done: false, coins: 0 }; } catch (e) { return { done: false, coins: 0 }; } },
   set(v) { try { localStorage.setItem('ds_proto', JSON.stringify(v)); } catch (e) {} } };
 let state = store.get(), lesson = null, assetKeys = {};
 function fit() { const s = Math.min(innerWidth / W, innerHeight / H); const st = $('stage'); st.style.transform = `scale(${s})`; st.style.left = (innerWidth - W * s) / 2 + 'px'; st.style.top = (innerHeight - H * s) / 2 + 'px'; }
 addEventListener('resize', () => window.fit()); fit();
 function setCoins(n) { state.coins = n; store.set(state); $('coins').textContent = n; }
-function toast(t, ms = 1500) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms); }
+function toast(t, ms = 1500) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; toastPlace(e); clearTimeout(toast.t); clearInterval(toast.iv);
+  toast.iv = setInterval(() => { if (e.style.display === 'none') clearInterval(toast.iv); else toastPlace(e); }, 250);   // часы переставляются раз в 700 мс (time_fx) — тост следом
+  toast.t = setTimeout(() => { e.style.display = 'none'; clearInterval(toast.iv); }, ms); }
+// 24.11 Код (Max/Olga): тост («Heute: der Weihnachtsmarkt», time_fx.js) не налезает на верхний HUD — часы #clock, плашку героя #cbHero, цель #goal, кнопки:
+// при пересечении опускается под нижний край задетого элемента (+6 px). #ui масштабирован: px экрана -> логические px, как time_fx.js clock().
+function toastPlace(e) {
+  e.style.top = ''; const ids = ['clock', 'cbHero', 'goal', 'qTrack', 'coins', 'bMap', 'bMentor'];
+  for (let k = 0; k < 4; k++) {
+    const r = e.getBoundingClientRect(), s = (e.offsetHeight / r.height) || 1;
+    const hit = ids.map(id => $(id)).filter(x => x && x.offsetParent && getComputedStyle(x).visibility !== 'hidden').map(x => x.getBoundingClientRect())
+      .filter(q => q.width > 2 && q.left < r.right + 4 && q.right > r.left - 4 && q.top < r.bottom + 2 && q.bottom > r.top - 2);
+    if (!hit.length) break; e.style.top = Math.round(e.offsetTop + (Math.max(...hit.map(q => q.bottom)) - r.top) * s + 6) + 'px';
+  }
+}
 function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.onerror = () => { L.style.display = 'none'; }; L.style.display = ''; L.src = 'assets_v3/portraits/max_' + (heroE === 'talk' ? 'happy' : 'neutral') + '.png';   /* Max: reodesuxz hero_boy 64x64 (Код Max); нет файла — портрет скрыт */ R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }
 function speakDE(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} }
 const audioEl = new Audio();
@@ -24,7 +50,7 @@ function foot(sc, xy, w) { return sc.add.ellipse(xy[0] + w * 0.15, xy[1] - 2, w,
 // (craftpix pixel_characters_4dir/2, ряды туловища/ног вырезаны, без ресемпла). Лист ступени подменяет текстуру hero_walk; нет файла — остаётся hero_walk.png.
 function maxAge() { let n = 0; try { (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).forEach(c => { if (+c.done > 0) n = Math.max(n, +c.n); }); } catch (e) {} return n >= 33 ? 'adult' : n >= 17 ? 'teen' : 'kid'; }
 window.maxAge = maxAge;
-window.MAX_SHEETS = false;   // 24.11 главный: автор ещё не выбрал вид Max — листы hero_walk_{kid,teen,adult}.png вне сборки (app\_wip_2411\max_sheets), остаётся hero_walk.png; выбран вид → true + вернуть листы
+window.MAX_SHEETS = true;    // 24.11 главный выбрал вид: листы craftpix + лицо по пикселям (style_pick/max_kid/add_face.py, Код Max/Olga); false — снова только hero_walk.png
 function maxGrow(sc, noLoad) {
   const st = maxAge(), key = 'hero_walk_' + st, tm = sc.textures;
   const apply = () => {

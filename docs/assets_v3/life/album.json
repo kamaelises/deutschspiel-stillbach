@@ -570,6 +570,18 @@
     32
    ],
    "type": "orc1"
+  },
+  "feldsalat": {
+   "sec": "gemuese",
+   "art": "der",
+   "w": "Feldsalat",
+   "ru": "салат-рапунцель (полевой салат)",
+   "rar": "h",
+   "img": "life/feldsalat_3.png",
+   "px": [
+    19,
+    14
+   ]
   }
  },
  "garden": {
@@ -703,6 +715,28 @@
     "img": "life/pot_kresse_3.png",
     "w": 14,
     "h": 13
+   }
+  ],
+  "feldsalat": [
+   {
+    "img": "life/feldsalat_0.png",
+    "w": 11,
+    "h": 7
+   },
+   {
+    "img": "life/feldsalat_1.png",
+    "w": 6,
+    "h": 9
+   },
+   {
+    "img": "life/feldsalat_2.png",
+    "w": 13,
+    "h": 10
+   },
+   {
+    "img": "life/feldsalat_3.png",
+    "w": 19,
+    "h": 14
    }
   ]
  },

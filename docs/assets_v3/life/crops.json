@@ -42,7 +42,7 @@
    ]
   }
  },
- "winter": "Im Winter wächst draußen nichts: die Beete ruhen (Wachstum pausiert). Feldsalat/Grünkohl (BZfE: Ernte ab Nov / ab E. Okt) — kein Bild in den lizenzierten Paketen, darum nicht im Spiel.",
+ "winter": "Im Winter wächst draußen nichts: die Beete ruhen (Wachstum pausiert). Feldsalat (BZfE: Aussaat E. Jul–A. Sep, Ernte ab A. Nov) — Bild: Арт (Uhrturm) 24.11, style_pick/uhrturm/build_feldsalat.py (craftpix farm plants). Grünkohl — noch kein Bild.",
  "sources": {
   "bzfe": "https://www.bzfe.de/fileadmin/resources/Bildung/Tabelle_Aussaat_und_Pflanzzeiten.pdf",
   "lfulg": "https://www.gartenakademie.sachsen.de/download/3_GAK_Fachtext_Rettich_und_Radies.pdf",
@@ -52,7 +52,8 @@
   "bmluk": "https://www.bmluk.gv.at/themen/lebensmittel/lebensmittel-selbst-anbauen/garteln-auf-dem-fensterbrett.html",
   "oekotest_jan": "https://www.oekotest.de/freizeit-technik/Aussaat-im-Januar-Diese-Gemuesesorten-duerfen-Sie-jetzt-schon-aussaeen_14360_1.html",
   "sternsinger_kresse": "https://www.sternsinger.de/fileadmin/bildung/Dokumente/vorschule/2023/2023_1_KITA_Kresseanleitung.pdf",
-  "duden_kresse": "https://www.duden.de/rechtschreibung/Kresse_Pflanze"
+  "duden_kresse": "https://www.duden.de/rechtschreibung/Kresse_Pflanze",
+  "duden_feldsalat": "https://www.duden.de/rechtschreibung/Feldsalat"
  },
  "crops": {
   "radieschen": {
@@ -185,6 +186,34 @@
    "src": [
     "bzfe",
     "duden_blumenkohl"
+   ]
+  },
+  "feldsalat": {
+   "verb": "säen",
+   "sow": [
+    7,
+    8,
+    9
+   ],
+   "harvest": [
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "days": 75,
+   "chapter": 2,
+   "adj": [
+    "nussig",
+    "zart"
+   ],
+   "adj_ru": "нежный, с ореховым вкусом",
+   "hardy": true,
+   "fact": "BZfE: Feldsalat Direktsaat E. Jul–A. Sep, Ernte ab A. Nov (winterhart)",
+   "src": [
+    "bzfe",
+    "duden_feldsalat"
    ]
   }
  },

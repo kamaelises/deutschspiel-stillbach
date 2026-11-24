@@ -19,6 +19,7 @@
     Object.keys(m.items).forEach(k => { if (m.items[k].sec === 'fische' && !DATA.fish[k]) delete m.items[k]; });
     Object.entries(DATA.fish).forEach(([k, v]) => { m.items[k] = { sec: 'fische', art: v.art, w: v.w, ru: v.ru, rar: v.rar, img: v.img, px: v.px }; });
   }
+  const SKF = k => { try { return window.Skills && Skills.fx ? +Skills.fx(k) || 0 : 0; } catch (e) { return 0; } };   // навыки и Forschung (Код навыки 24.11)
   const loadedP = Promise.all([dataReady, window.Album ? Album.ready : null]).then(() => { syncAlbum(); return DATA; });
 
   // ---------- время: WorldTime (time.js) или запасной расчёт по дате устройства
@@ -40,7 +41,8 @@
   function choose(water, dist, t) {                                  // вес по редкости; дальний заброс чуть чаще даёт редких
     const L = possible(water, t); if (!L.length) return null;
     const R = (window.Album && Album.meta() && Album.meta().rarity) || { h: [0, 0, 60], s: [0, 0, 28], ss: [0, 0, 10], l: [0, 0, 2] };
-    const w = L.map(k => { const r = DATA.fish[k].rar; return R[r][2] * (r === 'h' ? 1 : 1 + dist); }), sum = w.reduce((a, b) => a + b, 0);
+    const rare = 1 + SKF('fish.rare');                                // der Glückshaken / die Angel 2 (навыки, Forschung)
+    const w = L.map(k => { const r = DATA.fish[k].rar; return R[r][2] * (r === 'h' ? 1 : (1 + dist) * rare); }), sum = w.reduce((a, b) => a + b, 0);
     let r = Math.random() * sum; for (let i = 0; i < L.length; i++) { r -= w[i]; if (r < 0) return L[i]; } return L[L.length - 1];
   }
   function sizeOf(id, dist) { const [a, b] = DATA.fish[id].cm, r = Math.min(1, Math.pow(Math.random(), 1.6) * (0.85 + 0.3 * dist)); return Math.round(a + (b - a) * r); }
@@ -240,8 +242,9 @@
       <div class="row"><button class="ui ui-btn big" data-f="angeln">Angeln!<span class="ru">ловить</span></button><button class="ui ui-btn" data-f="hint">Was beißt jetzt?<span class="ru">что клюёт</span></button><button class="ui ui-btn" data-f="out">Zurück<span class="ru">назад</span></button></div></div>`);
   }
   function hint() {                                                  // какие рыбы возможны здесь и сейчас; не пойманные — силуэт и «?»
-    const c = cur, t = now(), L = possible(c.spot.water, t), A = window.Album;
-    const cards = L.map(k => { const f = DATA.fish[k], got = A && A.has(k); return `<div class="fc ${got ? '' : 'miss'}" data-id="${k}"><div class="im"><img src="${BASE + f.img}" alt="" style="${fit(f.px, 86, 50, 3)}"></div><div class="nm">${got ? art(f.art + ' ' + f.w) : '?'}</div>${got ? `<span class="ru">${f.ru}</span>` : ''}</div>`; }).join('');
+    const c = cur, t = now(), L = possible(c.spot.water, t), A = window.Album, info = SKF('fish.info') > 0;
+    const ACOL = { der: '#3a7be0', die: '#e24848', das: '#2f9a4f' }, RRU = { h: 'часто', s: 'редко', ss: 'очень редко', l: 'легенда' };
+    const cards = L.map(k => { const f = DATA.fish[k], got = A && A.has(k); return `<div class="fc ${got ? '' : 'miss'}" data-id="${k}"><div class="im"><img src="${BASE + f.img}" alt="" style="${fit(f.px, 86, 50, 3)}"></div><div class="nm">${got ? art(f.art + ' ' + f.w) : info ? `<b style="color:${ACOL[f.art] || '#2e1e12'}">${f.art}</b> ?` : '?'}</div>${got ? `<span class="ru">${f.ru}</span>` : info ? `<span class="ru">${RRU[f.rar] || ''}</span>` : ''}</div>`; }).join('');   // die Fischkunde: артикль и редкость ещё не пойманных
     show('hint', `<div class="body"><div class="t">Was beißt jetzt?<span class="ru">что сейчас клюёт · ${WRU[c.spot.water]}</span></div>${whenLine(t)}
       ${L.length ? `<div class="grid">${cards}</div>` : '<div class="msg">Jetzt beißt hier nichts.<span class="ru">сейчас здесь не клюёт — приходи в другое время</span></div>'}
       <div class="row"><button class="ui ui-btn" data-f="back">Zurück<span class="ru">назад</span></button></div></div>`);
@@ -276,6 +279,7 @@
     if (c.beifang) c.fish = null;                                    // Beifang (ракушка, морская звезда …) вместо рыбы
     const empty = F.debug.empty || (!c.fish && !c.beifang) || (!F.debug.force && winter && Math.random() < B.winter_empty);
     let ms = F.debug.bite != null ? F.debug.bite : (B.wait[0] + Math.random() * (B.wait[1] - B.wait[0])) * (winter ? B.winter_wait : 1) * (t.phase === 'nacht' ? B.night_wait : 1);
+    if (F.debug.bite == null) ms *= Math.max(0.4, 1 + SKF('fish.wait'));   // die ruhige Hand (навык), die Angel 2 (Forschung)
     c.bob = c.sc.tweens.add({ targets: c.fl, y: c.fl.y + 3, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     show('wait', `<div class="body"><div class="t">${art('der Schwimmer')} … warte!<span class="ru">смотри на поплавок: дёргается — ещё рано, нырнул — жми «Jetzt!»</span></div>
       <div class="row"><button class="ui ui-btn big" data-f="jetzt">Jetzt!<span class="ru">подсечь</span></button><button class="ui ui-btn" data-f="reelin">Einholen<span class="ru">смотать</span></button></div></div>`);

@@ -141,6 +141,46 @@
       if (!sc.textures.exists('a1_uhrturm_hands')) sc.load.spritesheet('a1_uhrturm_hands', 'assets_v3/town/a1/uhrturm_hands.png', { frameWidth: 69, frameHeight: 69 });   // кадр = uhrturm.json hands.frame
       sc.load.once('complete', signs); sc.load.start();
     }
+    // Идеал (деревня) 24.11: подписи мест — на деревянной доске (слово автора «надписи тоже вывески»). Доска собирается из town/plot_sign.png
+    // (та же доска craftpix, что у «Bauplatz»): левый/правый край 36 px + середина плитками, планки по 39 px, всё на сетке x3, тень 3 px.
+    // Текст не меняется (артикль в цвете рода, слово белым, RU мелко) — доска под ним (глубина текста -0.5). Группа = тексты с одним a1sign/qsign
+    // или соседние подписи других модулей (der Steg, der Strand, der Gemüsegarten). Доска не в проёме двери и не на другой доске. Проверка: app/checks/dv_village_sheet.cjs.
+    const boardTex = (W, H) => {
+      const k = 'a1brd_' + W + 'x' + H; if (sc.textures.exists(k)) return k;
+      const src = sc.textures.get('plot_sign').getSourceImage(), cv = document.createElement('canvas'); cv.width = W + 3; cv.height = H + 3;
+      const c = cv.getContext('2d'); c.imageSmoothingEnabled = false; c.fillStyle = 'rgba(30,16,8,0.45)'; c.fillRect(3, 3, W, H);
+      const row = (sy, sh, dy) => { c.drawImage(src, 0, sy, 36, sh, 0, dy, 36, sh); c.drawImage(src, 252, sy, 36, sh, W - 36, dy, 36, sh);
+        for (let x = 36; x < W - 36; x += 180) { const cw = Math.min(180, W - 36 - x); c.drawImage(src, 36, sy, cw, sh, x, dy, cw, sh); } };
+      for (let i = 0, dy = 0; dy < H - 3; i++, dy += 39) row(i % 2 ? 39 : 0, Math.min(39, H - 3 - dy), dy); row(78, 3, H - 3);   // последняя планка обрезана по тексту
+      sc.textures.addCanvas(k, cv); return k;
+    };
+    const boards = () => {
+      if (!sc.sys || !sc.sys.isActive() || !sc.textures.exists('plot_sign')) return;
+      const G = {}, loose = [], PSI = sc.children.list.filter(o => o.texture && o.texture.key === 'plot_sign').map(o => o.getBounds());
+      sc.children.list.forEach(o => {
+        if (o.type !== 'Text' || o.__brd || !o.visible || o.qmark || o.townPlus) return;
+        const s = o.a1sign || o.qsign; if (s) return (G[s] = G[s] || []).push(o);
+        if (o.depth % 100000 < 6000 || o.depth % 100000 >= 6100 || /^(!|✓|Hallo!)$/.test(o.text)) return;                                  // подписи мест других модулей (der Steg, der Strand, der Gemüsegarten): depth 6000–6001
+        const g = o.getBounds(); if (PSI.some(b => g.x < b.right && g.right > b.x && g.y < b.bottom && g.bottom > b.y)) return;   // уже на доске «Bauplatz»
+        loose.push(o);
+      });
+      const gb = t => t.getBounds(), near = (a, b) => { const p = gb(a), q = gb(b); return p.x < q.right + 8 && q.x < p.right + 8 && p.y < q.bottom + 6 && q.y < p.bottom + 6; };
+      loose.forEach(t => { if (t.__grp) return; const grp = [t]; t.__grp = 1; for (let i = 0; i < grp.length; i++) loose.forEach(u => { if (!u.__grp && near(grp[i], u)) { u.__grp = 1; grp.push(u); } }); G['~' + Object.keys(G).length] = grp; });
+      Object.values(G).forEach(ts => {
+        const bs = ts.map(t => t.getBounds()), x0 = Math.min(...bs.map(b => b.x)), x1 = Math.max(...bs.map(b => b.right)), y0 = Math.min(...bs.map(b => b.y)), y1 = Math.max(...bs.map(b => b.bottom));
+        const W = Math.max(72, Math.ceil((x1 - x0 + 18) / 3) * 3), H = Math.max(33, Math.ceil((y1 - y0 + 3) / 3) * 3 + 3);
+        const bx = Math.round(((x0 + x1) / 2 - W / 2) / 3) * 3; let by = Math.round(((y0 + y1) / 2 - H / 2) / 3) * 3;
+        Object.values(T.buildings).concat(T.plots || []).forEach(o => {   // не в проём двери (дверь внизу здания: [y-50, y]; дверь сверху участка: [y, y+50]) — доску с текстом выше проёма
+          const d = o.door, top = d[1] === o.box[1], ya = top ? d[1] : d[1] - 50, yb = top ? d[1] + 50 : d[1];
+          if (d[0] > bx && d[0] < bx + W && by < yb && by + H > ya) { const dy = Math.floor((ya - 3 - H - by) / 3) * 3; by += dy; ts.forEach(t => { t.y += dy; }); } });
+        sc.children.list.forEach(o => { if (o.a1board && bx < o.x + o.width && o.x < bx + W && by < o.y + o.height && o.y < by + H) {   // доски не друг на друге: верхнюю (с её текстом) поднять над новой — не в проём двери участка
+          const d = Math.ceil((o.y + o.height - by) / 3) * 3; o.y -= d; sc.children.list.forEach(t => { if (t.__brd === o) t.y -= d; }); } });
+        const img = sc.add.image(bx, by, boardTex(W, H)).setOrigin(0, 0).setDepth(Math.min(...ts.map(t => t.depth)) - 0.5); img.a1board = ts[0].a1sign || ts[0].qsign || ts.map(t => t.text).join('');
+        ts.forEach(t => { t.__brd = img; });
+      });
+      window.A1BOARDS = sc.children.list.filter(o => o.a1board).map(o => ({ de: o.a1board, x: o.x, y: o.y, w: o.width - 3, h: o.height - 3 }));   // w/h — сама доска без тени
+    };
+    sc.time.addEvent({ delay: 300, repeat: 15, callback: boards });
     const K = window.KELLER_HATCH;                                  // временный вход в подземелье (rpg-design шаг 1): люк «der Keller» у дома героя
     const hatch = () => {
       const tex = sc.textures.get('dun_anim'); if (!tex.has('hatch')) tex.add('hatch', 0, 160, 159, 17, 17);   // craftpix 436971: деревянный люк с кольцом

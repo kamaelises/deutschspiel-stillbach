@@ -4,15 +4,11 @@ const $ = (id) => document.getElementById(id);
 // 24.11 главный: один ключ картинки грузится один раз. Несколько модулей (garden/album/anim) ставят в очередь те же life_* в одной сцене
 // до окончания загрузки -> Phaser «Texture key already in use». Уже есть в текстурах или уже в очереди/загрузке — пропуск (complete всё равно придёт).
 (function () {
-  const LP = Phaser.Loader.LoaderPlugin.prototype, img = LP.image;
-  LP.image = function (key, url, xhr) {
-    if (typeof key === 'string') {
-      const tm = this.textureManager || (this.systems && this.systems.textures);
-      if (tm && tm.exists(key)) return this;
-      if ([this.list, this.inflight, this.queue].some(s => s && [...s].some(f => f.type === 'image' && f.key === key))) return this;
-    }
-    return img.call(this, key, url, xhr);
-  };
+  // 24.11 23:35: load.image ставится Phaser'ом на КАЖДЫЙ экземпляр загрузчика (патч прототипа LoaderPlugin не работал).
+  // Правка на уровне файла-картинки: если такая текстура уже есть (её успела загрузить другая сцена/модуль) — вторая копия
+  // просто не добавляется, без console.error. Прочие повторы ключей (addCanvas и т.п.) по-прежнему пишут ошибку.
+  const IF = Phaser.Loader.FileTypes.ImageFile.prototype, add = IF.addToCache;
+  IF.addToCache = function () { if (this.type === 'image' && !this.linkFile && this.cache && this.cache.exists && this.cache.exists(this.key)) return; return add.call(this); };
 })();
 const store = { get() { try { return JSON.parse(localStorage.getItem('ds_proto')) || { done: false, coins: 0 }; } catch (e) { return { done: false, coins: 0 }; } },
   set(v) { try { localStorage.setItem('ds_proto', JSON.stringify(v)); } catch (e) {} } };

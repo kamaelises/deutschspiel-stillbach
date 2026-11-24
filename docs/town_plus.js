@@ -5,19 +5,23 @@
 // Чужие файлы не правит: только Yard events.on('create') и событие 'ds:restore'. Подписи (depth 6000) и HUD не перекрывает.
 // API для проверок: TownPlus.state() -> { elternhaus, laden, gildenhaus, kirche }, TownPlus.items() -> [{ house, key, x, y, w, h }].
 (function () {
-  const P = 'assets_v3/town/plus/', KEYS = ['box', 'planter', 'planter_long', 'board', 'sign_bag'];
+  const P = 'assets_v3/town/plus/', KEYS = ['box', 'planter', 'planter_long', 'board', 'sign_bag', 'sign_mug'];
   const COL = { der: '#3a7be0', die: '#e24848', das: '#2f9a4f' };
   // [key, x (центр), y]: фасад (box/board/sign) — y = верх, глубина = низ здания; земля (lat/planter*) — y = низ, глубина = y
   const SET = {
     elternhaus: { rest: ['schild', 'beet', 'brunnen'], base: 402, items: [['box', 316, 363], ['box', 396, 363], ['box', 476, 363], ['box', 383, 271], ['box', 445, 271], ['lat', 264, 414, 1], ['planter_long', 336, 426]] },   // фонарь — у левого угла (у двери стоит Herr Schmidt с подписью)
-    laden: { ch: 4, base: 714, items: [['box', 1043, 669], ['box', 1189, 669], ['box', 1060, 576], ['box', 1176, 576], ['lat', 1034, 720], ['board', 1116, 600, 'die Bäckerei'], ['sign_bag', 1243, 627]] },
+    laden: { ch: 4, base: 714, items: [['box', 1043, 669], ['box', 1189, 669], ['box', 1060, 576], ['box', 1176, 576], ['lat', 1034, 720], ['board', 1116, 600, 'das Brot'], ['sign_bag', 1243, 627]] },   // Идеал (деревня) 24.11: на доске другое слово — «die Bäckerei» уже подпись места
+    // Идеал (деревня) 24.11: Café (глава 4) и Supermarkt (глава 6) — «целое» = глава пройдена; «verbessert» = глава пройдена И в следующей главе >= 3 урока (next)
+    cafe: { ch: 4, next: 3, base: 2556, items: [['box', 1680, 2490], ['board', 1757, 2412, 'der Kaffee'], ['sign_mug', 1612, 2462], ['planter', 1626, 2583], ['planter', 1878, 2583]] },   // справа от двери фонарь здания — туда ящик не ставим
+    supermarkt: { ch: 6, next: 3, base: 1998, items: [['box', 2613, 1812], ['board', 2671, 1862, 'das Obst'], ['lat', 2805, 2013, 1]] },   // ящики/бочки у входа уже в спрайте; фонарь правее ящика
     gildenhaus: { ch: 2, base: 594, items: [['box', 1813, 500], ['box', 1640, 402], ['box', 1697, 402], ['planter', 1617, 606], ['lat', 1728, 600, 1], ['planter', 1782, 606]] },   // левое крыло — das Schwarze Brett с подписью: туда ничего
     kirche: { ch: 5, base: 720, items: [['planter', 2064, 723], ['planter', 2175, 723], ['lat', 2034, 726], ['lat', 2205, 726, 1]] },
   };
-  const FACADE = { box: 1, board: 1, sign_bag: 1 };
+  const FACADE = { box: 1, board: 1, sign_bag: 1, sign_mug: 1 };
   const chDone = n => { try { const c = (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).find(q => +q.n === n); return !!c && c.total > 0 && c.done >= c.total; } catch (e) { return false; } };
   const restDone = ids => { try { return !!(window.Restore && Restore.info) && ids.every(id => { const i = Restore.info(id); return !!i && i.st === 'done'; }); } catch (e) { return false; } };
-  const state = () => { const s = {}; Object.entries(SET).forEach(([k, v]) => { s[k] = v.rest ? restDone(v.rest) : chDone(v.ch); }); return s; };
+  const chN = n => { try { const c = (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).find(q => +q.n === n); return c ? +c.done || 0 : 0; } catch (e) { return 0; } };
+  const state = () => { const s = {}; Object.entries(SET).forEach(([k, v]) => { s[k] = v.rest ? restDone(v.rest) : chDone(v.ch) && (!v.next || chN(v.ch + 1) >= v.next); }); return s; };
   let sc = null, objs = [], list = [];
   const g3 = v => Math.round(v / 3) * 3;                               // на сетку пикселя арта x3
   function clear() { objs.forEach(o => { try { o.destroy(); } catch (e) {} }); objs = []; list = []; }

@@ -118,7 +118,7 @@
     else body = '<div class="grid">' + ids(sec).map(k => {
       const it = META.items[k], o = v.items[k], kills = it.type ? v.kills[it.type] || 0 : 0;
       const name = o ? `<b style="color:${COL[it.art]}">${it.art}</b> ${it.w}` : '???';
-      const extra = !o ? '<span class="ru">ещё не найдено</span>' : it.type ? `<div class="n">besiegt ×${kills}${(v.words[it.type] || []).length ? '<br>' + v.words[it.type].slice(-2).map(t => { const [a, ...w] = t.split(' '); return COL[a] ? `<b style="color:${COL[a]}">${a}</b> ${w.join(' ')}` : t; }).join(', ') : ''}</div>` : `<div class="n">×${o.n}${o.art ? ' · ✓ Artikel' : ''}</div>`;
+      const extra = !o ? '<span class="ru">ещё не найдено</span>' : it.type ? `<div class="n">besiegt ×${kills}${(v.words[it.type] || []).length ? '<br>' + v.words[it.type].slice(-2).map(t => { const [a, ...w] = t.split(' '); return COL[a] ? `<b style="color:${COL[a]}">${a}</b> ${w.join(' ')}` : t; }).join(', ') : ''}</div>` : `<div class="n">×${o.n}${o.cm ? ' · max ' + o.cm + ' cm' : ''}${o.art ? ' · ✓ Artikel' : ''}</div>`;   // cm — рекорд улова (fishing.js)
       return `<div class="ac ${o ? 'found' : 'miss'}" data-id="${k}"><div class="im"><img src="${BASE + it.img}" alt="" style="${fit(it.px, 100, 66, 3)}"></div>
         <div class="nm">${name}</div>${o ? `<span class="ru">${it.ru}</span>` : ''}<div class="rb" style="color:${RCOL[it.rar]}">${RSTAR[it.rar]} ${META.rarity[it.rar][0]}</div>${extra}</div>`;
     }).join('') + '</div>';

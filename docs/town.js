@@ -81,8 +81,14 @@
       z.on('pointerup', () => {
         if (sc.__dragged || sc.busy) return; if (window.speakDE) speakDE(p.de);
         if (!built) return toast(p.de + ' — Baustelle · Kapitel ' + p.chapter, 1800);
-        const go = () => toast(p.de + ' — bald', 1600);           // интерьера пока нет: дверь -> «bald»
-        if (window.walkToScene) window.walkToScene(sc, ox + S.door[key], y1 + 30, go); else go();
+        const dx = ox + S.door[key], dy = y1 + 30, ort = window.ORTE && ORTE[key] ? key : null;   // Код (интерьеры) 24.11: дверь -> Ort (place 'cafe' / 'supermarkt'); нет интерьера -> «bald»
+        const go = () => {
+          if (!ort) return toast(p.de + ' — bald', 1600);
+          const w = sc.walker, near = w && Math.hypot(w.x - dx, w.y - dy) < 60;   // «Raus» вернёт Max к этой двери (там, где он стоял)
+          sc.registry.set('spawnAt', near ? [Math.round(w.x), Math.round(w.y)] : [dx, dy]); sc.busy = true;
+          sc.cameras.main.fadeOut(250, 29, 19, 11); sc.cameras.main.once('camerafadeoutcomplete', () => sc.scene.start('Ort', { place: ort }));
+        };
+        if (window.walkToScene) window.walkToScene(sc, dx, dy, go); else go();
       });
       if (A.keller) keller(p);
     };

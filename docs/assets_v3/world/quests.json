@@ -1,0 +1,102 @@
+{
+ "version": 1,
+ "about": "Код (задания) 24.11. Шаблоны заданий Stillbach: доска гильдии das Schwarze Brett (3 в день), сезонные, праздничные (WorldTime), жители (повтор раз в день) и сюжетные цепочки (открываются, когда глава пройдена: ds_proto.app chapters done>=total). Цели — только реальные механики игры: kind album (находка в альбом: огород, рыбалка, грибы/цветы/камни; sec/item из assets_v3/life/album.json), kill (победы в подземелье, scene Dungeon), mat (материал из сундуков, Loot.MATS; отдаётся при сдаче), talk (поговорить с жителем; npc any = любой), board (сдать задание с доски). Награда rw: c = монеты, xp = опыт (звёзды не тратятся, поражение без потерь). Немецкий A1 + мелко RU. Арт доски: Chucky Assets Frostbrook Interiors Free Sample (notice_board), столбы/крыша — style_pick/quests/build_board.py.",
+ "board": {
+  "de": "das Schwarze Brett", "ru": "доска заданий гильдии", "per_day": 3,
+  "templates": [
+   { "id": "ernte_karotte", "grp": "garden", "kind": "album", "sec": "gemuese", "item": "karotte", "need": 2, "de": "Ernte Karotten!", "ru": "собери морковку на огороде у дома", "rw": { "c": 12, "xp": 10 } },
+   { "id": "ernte_radieschen", "grp": "garden", "kind": "album", "sec": "gemuese", "item": "radieschen", "need": 2, "de": "Ernte Radieschen!", "ru": "собери редиску на огороде у дома", "rw": { "c": 12, "xp": 10 } },
+   { "id": "ernte_gemuese", "grp": "garden", "kind": "album", "sec": "gemuese", "need": 3, "de": "Ernte Gemüse!", "ru": "собери 3 овоща на огороде", "rw": { "c": 15, "xp": 12 } },
+   { "id": "fang_fisch", "grp": "fish", "kind": "album", "sec": "fische", "need": 1, "de": "Fang einen Fisch!", "ru": "поймай рыбу · die Angelstelle в мире", "rw": { "c": 10, "xp": 8 } },
+   { "id": "fang_fische", "grp": "fish", "kind": "album", "sec": "fische", "need": 2, "de": "Fang Fische!", "ru": "поймай 2 рыбы · die Angelstelle в мире", "rw": { "c": 16, "xp": 12 } },
+   { "id": "keller_3", "grp": "keller", "kind": "kill", "need": 3, "de": "Besiege Monster im Keller!", "ru": "победи 3 монстров в подвале (der Keller)", "rw": { "c": 15, "xp": 15 } },
+   { "id": "keller_5", "grp": "keller", "kind": "kill", "need": 5, "chapter": 3, "de": "Besiege Monster im Keller!", "ru": "победи 5 монстров в подвале (der Keller)", "rw": { "c": 22, "xp": 25 } },
+   { "id": "bring_holz", "grp": "mat", "kind": "mat", "mat": "holz", "need": 3, "de": "Bring Holz!", "ru": "принеси 3 дерева · из сундуков", "rw": { "c": 12, "xp": 8 } },
+   { "id": "bring_steine", "grp": "mat", "kind": "mat", "mat": "stein", "need": 2, "de": "Bring Steine!", "ru": "принеси 2 камня · из сундуков", "rw": { "c": 12, "xp": 8 } },
+   { "id": "bring_eisen", "grp": "mat", "kind": "mat", "mat": "eisen", "need": 2, "chapter": 3, "de": "Bring Eisen!", "ru": "принеси 2 железа · из сундуков", "rw": { "c": 16, "xp": 10 } },
+   { "id": "bring_mehl", "grp": "mat", "kind": "mat", "mat": "mehl", "need": 2, "chapter": 4, "de": "Bring Mehl!", "ru": "принеси 2 муки · из сундуков", "rw": { "c": 14, "xp": 10 } },
+   { "id": "sprich_jonas", "grp": "talk", "kind": "talk", "npc": "jonas", "need": 1, "de": "Sprich mit Bauer Jonas!", "ru": "поговори с крестьянином Йонасом · хутор в мире", "rw": { "c": 8, "xp": 6 } },
+   { "id": "sprich_weber", "grp": "talk", "kind": "talk", "npc": "weber", "need": 1, "de": "Sprich mit Frau Weber!", "ru": "поговори с фрау Вебер · хутор в мире", "rw": { "c": 8, "xp": 6 } },
+   { "id": "sprich_taras", "grp": "talk", "kind": "talk", "npc": "taras", "need": 1, "de": "Sprich mit Herrn Taras!", "ru": "поговори с господином Тарасом · хутор в мире", "rw": { "c": 8, "xp": 6 } },
+   { "id": "sprich_schulz", "grp": "talk", "kind": "talk", "npc": "schulz", "need": 1, "chapter": 4, "de": "Sprich mit Frau Schulz!", "ru": "поговори с фрау Шульц · пекарня", "rw": { "c": 8, "xp": 6 } },
+   { "id": "finde_pilz", "grp": "find", "kind": "album", "sec": "pilze", "need": 1, "de": "Finde einen Pilz!", "ru": "найди гриб в мире · для альбома", "rw": { "c": 10, "xp": 8 } },
+   { "id": "finde_blumen", "grp": "find", "kind": "album", "sec": "blumen", "need": 2, "de": "Finde Blumen!", "ru": "найди 2 цветка в мире · для альбома", "rw": { "c": 12, "xp": 10 } },
+   { "id": "finde_stein", "grp": "find", "kind": "album", "sec": "steine", "need": 1, "de": "Finde einen Stein für das Album!", "ru": "найди камень в мире · для альбома", "rw": { "c": 10, "xp": 8 } }
+  ]
+ },
+ "season": {
+  "note": "Сезон из WorldTime.now().season; без WorldTime — по месяцу. Один слот доски в день — сезонный.",
+  "fruehling": [
+   { "id": "s_radieschen", "grp": "garden", "kind": "album", "sec": "gemuese", "item": "radieschen", "need": 2, "de": "Frühling: Ernte Radieschen!", "ru": "весна: собери редиску", "rw": { "c": 15, "xp": 12 } },
+   { "id": "s_forelle", "grp": "fish", "kind": "album", "sec": "fische", "item": "forelle", "need": 1, "de": "Frühling: Fang eine Forelle!", "ru": "весна: поймай форель", "rw": { "c": 20, "xp": 15 } }
+  ],
+  "sommer": [
+   { "id": "s_karotte", "grp": "garden", "kind": "album", "sec": "gemuese", "item": "karotte", "need": 2, "de": "Sommer: Ernte Karotten!", "ru": "лето: собери морковку", "rw": { "c": 15, "xp": 12 } },
+   { "id": "s_barsch", "grp": "fish", "kind": "album", "sec": "fische", "item": "barsch", "need": 1, "de": "Sommer: Fang einen Barsch!", "ru": "лето: поймай окуня", "rw": { "c": 16, "xp": 12 } }
+  ],
+  "herbst": [
+   { "id": "s_paprika", "grp": "garden", "kind": "album", "sec": "gemuese", "item": "paprika", "need": 1, "de": "Herbst: Ernte Paprika!", "ru": "осень: собери перец", "rw": { "c": 15, "xp": 12 } },
+   { "id": "s_hecht", "grp": "fish", "kind": "album", "sec": "fische", "item": "hecht", "need": 1, "de": "Herbst: Fang einen Hecht!", "ru": "осень: поймай щуку", "rw": { "c": 20, "xp": 15 } }
+  ],
+  "winter": [
+   { "id": "s_karpfen", "grp": "fish", "kind": "album", "sec": "fische", "item": "karpfen", "need": 1, "de": "Winter: Fang einen Karpfen!", "ru": "зима: поймай карпа", "rw": { "c": 18, "xp": 14 } }
+  ]
+ },
+ "festivals": {
+  "note": "Активны только в дни праздника (WorldTime.now().festivals; id из calendar.json). Взятое и не сданное задание праздника исчезает на следующий день без потерь. cal: true — текст из calendar.json quest.de/ru; иначе — своя версия под механику, которая уже есть (идея календаря ждёт механики). Порядок = приоритет (один праздник в день на доске).",
+  "list": [
+   { "fest": "neujahr", "cal": true, "kind": "talk", "npc": "any", "need": 3, "rw": { "c": 25, "xp": 15 } },
+   { "fest": "valentinstag", "kind": "album", "sec": "blumen", "item": "rose", "need": 1, "de": "Valentinstag: Finde eine Rose!", "ru": "День святого Валентина: найди розу", "rw": { "c": 20, "xp": 12 } },
+   { "fest": "brezels_geburtstag", "kind": "album", "sec": "fische", "need": 1, "de": "Brezel hat Geburtstag! Fang einen Fisch für Brezel!", "ru": "у Брецеля день рождения! поймай для него рыбу", "rw": { "c": 20, "xp": 12 } },
+   { "fest": "karfreitag", "cal": true, "kind": "album", "sec": "fische", "need": 1, "rw": { "c": 15, "xp": 10 } },
+   { "fest": "ostern", "kind": "album", "sec": "blumen", "need": 2, "de": "Ostern: Finde Blumen!", "ru": "Пасха: найди 2 цветка (пасхальные яйца — когда будет арт)", "rw": { "c": 20, "xp": 12 } },
+   { "fest": "muttertag", "cal": true, "kind": "album", "sec": "blumen", "need": 3, "rw": { "c": 25, "xp": 15 } },
+   { "fest": "hafenfest", "cal": true, "kind": "album", "sec": "fische", "need": 3, "rw": { "c": 30, "xp": 20 } },
+   { "fest": "brezelfest", "kind": "mat", "mat": "mehl", "need": 2, "de": "Brezelfest: Bring Mehl in die Bäckerei!", "ru": "праздник кренделя: принеси муку в пекарню", "rw": { "c": 22, "xp": 14 } },
+   { "fest": "erntedankfest", "kind": "album", "sec": "gemuese", "distinct": true, "need": 3, "de": "Erntedank: Ernte drei Sorten Gemüse!", "ru": "праздник урожая: собери 3 разных овоща", "rw": { "c": 30, "xp": 20 } },
+   { "fest": "halloween", "kind": "kill", "need": 5, "de": "Halloween: Besiege Monster im Keller!", "ru": "Хэллоуин: победи 5 монстров в подвале", "rw": { "c": 25, "xp": 25 } },
+   { "fest": "sankt_martin", "kind": "mat", "mat": "holz", "need": 3, "de": "Sankt Martin: Bring Holz für das Martinsfeuer!", "ru": "День святого Мартина: принеси дерево для костра (das Martinsfeuer)", "rw": { "c": 22, "xp": 14 } },
+   { "fest": "advent_2", "kind": "mat", "mat": "mehl", "need": 2, "de": "Advent: Bring Mehl für Plätzchen!", "ru": "2-й адвент: принеси муку для печенья", "rw": { "c": 22, "xp": 14 } },
+   { "fest": "heiligabend", "kind": "album", "sec": "fische", "item": "karpfen", "need": 1, "de": "Heiligabend: Fang einen Karpfen!", "ru": "Сочельник: поймай карпа (рождественский карп)", "rw": { "c": 25, "xp": 15 } },
+   { "fest": "weihnachten", "kind": "talk", "npc": "any", "need": 3, "de": "Frohe Weihnachten! Sprich mit drei Nachbarn!", "ru": "С Рождеством! поговори с тремя соседями", "rw": { "c": 30, "xp": 20 } },
+   { "fest": "silvester", "kind": "album", "sec": "fische", "item": "karpfen", "need": 1, "de": "Silvester: Fang einen Karpfen!", "ru": "Сильвестр: поймай карпа (новогодний карп)", "rw": { "c": 25, "xp": 15 } },
+   { "fest": "weihnachtsmarkt", "kind": "mat", "mat": "holz", "need": 3, "de": "Weihnachtsmarkt: Bring Holz für die Buden!", "ru": "рождественская ярмарка: принеси дерево для ларьков (die Bude)", "rw": { "c": 22, "xp": 14 } }
+  ],
+  "wait_mechanic": ["heilige_drei_koenige", "fasching", "rosenmontag", "tag_der_arbeit", "christi_himmelfahrt", "pfingsten", "sommersonnenwende", "apfeltag", "tag_der_deutschen_einheit", "uhrturmnacht", "reformationstag", "advent_1", "advent_3", "advent_4", "nikolaus"]
+ },
+ "npcs": {
+  "jonas": { "name": "Bauer Jonas", "ru": "крестьянин Йонас", "scene": "Welt", "after": "holz3",
+   "repeat": [
+    { "kind": "mat", "mat": "holz", "need": 3, "de": "Bring mir bitte Holz!", "ru": "принеси мне, пожалуйста, дерево (3)", "rw": { "c": 12, "xp": 8 } },
+    { "kind": "mat", "mat": "stein", "need": 2, "de": "Bring mir bitte Steine!", "ru": "принеси мне, пожалуйста, камни (2)", "rw": { "c": 12, "xp": 8 } },
+    { "kind": "album", "sec": "gemuese", "item": "karotte", "need": 2, "de": "Hast du Karotten? Ernte bitte zwei!", "ru": "у тебя есть морковка? собери, пожалуйста, две", "rw": { "c": 14, "xp": 10 } }
+   ] },
+  "weber": { "name": "Frau Weber", "ru": "фрау Вебер", "scene": "Welt",
+   "repeat": [
+    { "kind": "album", "sec": "fische", "need": 1, "de": "Fang mir bitte einen Fisch!", "ru": "поймай мне, пожалуйста, рыбу", "rw": { "c": 12, "xp": 8 } },
+    { "kind": "album", "sec": "blumen", "need": 1, "de": "Finde bitte eine Blume für mich!", "ru": "найди, пожалуйста, цветок для меня", "rw": { "c": 10, "xp": 8 } }
+   ] },
+  "taras": { "name": "Herr Taras", "ru": "господин Тарас", "scene": "Welt",
+   "repeat": [
+    { "kind": "kill", "need": 3, "de": "Im Keller sind Monster. Besiege bitte drei!", "ru": "в подвале монстры. победи, пожалуйста, троих", "rw": { "c": 15, "xp": 15 } },
+    { "kind": "album", "sec": "pilze", "need": 1, "de": "Finde bitte einen Pilz!", "ru": "найди, пожалуйста, гриб", "rw": { "c": 10, "xp": 8 } }
+   ] },
+  "schmidt": { "name": "Herr Schmidt", "ru": "господин Шмидт · сосед", "scene": "Yard", "portrait": "schmidt_smile",
+   "chain": [
+    { "chapter": 1, "kind": "talk", "npc": "jonas", "need": 1, "title": "Sprich mit Bauer Jonas!", "de": "Guten Morgen! Wie geht es Ihnen? Sprechen Sie bitte mit Bauer Jonas.", "ru": "Доброе утро! Как у вас дела? Поговорите, пожалуйста, с крестьянином Йонасом.", "thanks": { "de": "Danke! Sehr gut!", "ru": "Спасибо! Очень хорошо!" }, "rw": { "c": 15, "xp": 10 } },
+    { "chapter": 2, "kind": "mat", "mat": "stein", "need": 2, "title": "Bring Herrn Schmidt Steine!", "de": "Haben Sie Zeit? Bringen Sie mir bitte zwei Steine.", "ru": "У вас есть время? Принесите мне, пожалуйста, два камня.", "thanks": { "de": "Danke! Schönen Tag noch!", "ru": "Спасибо! Хорошего дня!" }, "rw": { "c": 18, "xp": 12 } },
+    { "chapter": 3, "kind": "album", "sec": "pilze", "need": 1, "title": "Finde einen Pilz für Herrn Schmidt!", "de": "Was ist das? Ein Pilz? Finden Sie bitte einen Pilz für mich.", "ru": "Что это? Гриб? Найдите, пожалуйста, гриб для меня.", "thanks": { "de": "Danke! Das ist ein Pilz!", "ru": "Спасибо! Это гриб!" }, "rw": { "c": 22, "xp": 15 } }
+   ] },
+  "becker": { "name": "Frau Becker", "ru": "фрау Беккер · учительница, мастер гильдии", "scene": "Ort:buergeramt",
+   "chain": [
+    { "chapter": 2, "kind": "board", "need": 1, "title": "Eine Aufgabe vom Schwarzen Brett", "de": "Hallo! Das ist das Schwarze Brett. Nehmen Sie bitte eine Aufgabe.", "ru": "Привет! Это доска заданий. Возьмите, пожалуйста, одно задание — выполните и сдайте у доски.", "thanks": { "de": "Sehr gut! Danke!", "ru": "Очень хорошо! Спасибо!" }, "rw": { "c": 15, "xp": 10 } },
+    { "chapter": 3, "kind": "album", "sec": "blumen", "need": 1, "title": "Finde eine Blume für Frau Becker!", "de": "Wie heißt das auf Deutsch? Finden Sie bitte eine Blume.", "ru": "Как это называется по-немецки? Найдите, пожалуйста, цветок.", "thanks": { "de": "Das ist die Blume. Richtig!", "ru": "Это цветок. Правильно!" }, "rw": { "c": 18, "xp": 12 } },
+    { "chapter": 3, "kind": "kill", "need": 3, "title": "Besiege Monster für die Gilde!", "de": "Im Keller sind Monster. Besiegen Sie bitte drei.", "ru": "В подвале монстры. Победите, пожалуйста, троих.", "thanks": { "de": "Super! Danke!", "ru": "Супер! Спасибо!" }, "rw": { "c": 25, "xp": 20 } }
+   ] },
+  "schulz": { "name": "Frau Schulz", "ru": "фрау Шульц · пекарня", "scene": "Ort:baeckerei", "portrait": "schulz",
+   "chain": [
+    { "chapter": 4, "kind": "mat", "mat": "mehl", "need": 2, "title": "Bring Frau Schulz Mehl!", "de": "Guten Tag! Ich backe Brezeln. Bringen Sie mir bitte Mehl.", "ru": "Добрый день! Я пеку крендели. Принесите мне, пожалуйста, муку (2).", "thanks": { "de": "Danke! Die Brezel kostet heute nichts.", "ru": "Спасибо! Крендель сегодня бесплатно." }, "rw": { "c": 20, "xp": 12 } },
+    { "chapter": 4, "kind": "album", "sec": "gemuese", "item": "karotte", "need": 2, "title": "Karotten für Frau Schulz", "de": "Ich backe einen Karottenkuchen. Haben Sie Karotten?", "ru": "Я пеку морковный пирог. У вас есть морковка? (2)", "thanks": { "de": "Danke! Der Kuchen ist lecker.", "ru": "Спасибо! Пирог вкусный." }, "rw": { "c": 22, "xp": 14 } }
+   ] }
+ }
+}

@@ -1,0 +1,246 @@
+{
+ "note": "build_life.py 24.11 Код (огород). Monate 1..12; days = echte Kulturdauer (nach Aussaat/Pflanzung), Spielzeit = days * game.secPerDay; 4 Stadien (gesät, Keim, Pflanze, reif), jeder Schritt braucht gießen.",
+ "game": {
+  "secPerDay": 3,
+  "stages": 4
+ },
+ "seasons": {
+  "fruehling": {
+   "de": "der Frühling",
+   "ru": "весна",
+   "months": [
+    3,
+    4,
+    5
+   ]
+  },
+  "sommer": {
+   "de": "der Sommer",
+   "ru": "лето",
+   "months": [
+    6,
+    7,
+    8
+   ]
+  },
+  "herbst": {
+   "de": "der Herbst",
+   "ru": "осень",
+   "months": [
+    9,
+    10,
+    11
+   ]
+  },
+  "winter": {
+   "de": "der Winter",
+   "ru": "зима",
+   "months": [
+    12,
+    1,
+    2
+   ]
+  }
+ },
+ "winter": "Im Winter wächst draußen nichts: die Beete ruhen (Wachstum pausiert). Feldsalat/Grünkohl (BZfE: Ernte ab Nov / ab E. Okt) — kein Bild in den lizenzierten Paketen, darum nicht im Spiel.",
+ "sources": {
+  "bzfe": "https://www.bzfe.de/fileadmin/resources/Bildung/Tabelle_Aussaat_und_Pflanzzeiten.pdf",
+  "lfulg": "https://www.gartenakademie.sachsen.de/download/3_GAK_Fachtext_Rettich_und_Radies.pdf",
+  "duden_paprika": "https://www.duden.de/rechtschreibung/Paprika_Gemuese",
+  "duden_kuerbis": "https://www.duden.de/rechtschreibung/Kuerbis",
+  "duden_blumenkohl": "https://www.duden.de/rechtschreibung/Blumenkohl",
+  "bmluk": "https://www.bmluk.gv.at/themen/lebensmittel/lebensmittel-selbst-anbauen/garteln-auf-dem-fensterbrett.html",
+  "oekotest_jan": "https://www.oekotest.de/freizeit-technik/Aussaat-im-Januar-Diese-Gemuesesorten-duerfen-Sie-jetzt-schon-aussaeen_14360_1.html",
+  "sternsinger_kresse": "https://www.sternsinger.de/fileadmin/bildung/Dokumente/vorschule/2023/2023_1_KITA_Kresseanleitung.pdf",
+  "duden_kresse": "https://www.duden.de/rechtschreibung/Kresse_Pflanze"
+ },
+ "crops": {
+  "radieschen": {
+   "verb": "säen",
+   "sow": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "harvest": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "days": 25,
+   "chapter": 1,
+   "adj": [
+    "scharf",
+    "knackig"
+   ],
+   "adj_ru": "острая и хрустящая",
+   "fact": "BZfE: Aussaat M. Feb–M. Aug, Ernte E. Apr–E. Sep; LfULG Sachsen: 3–4 Wochen",
+   "src": [
+    "bzfe",
+    "lfulg"
+   ]
+  },
+  "karotte": {
+   "verb": "säen",
+   "sow": [
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "harvest": [
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "days": 100,
+   "chapter": 1,
+   "adj": [
+    "süß",
+    "knackig"
+   ],
+   "adj_ru": "сладкая и хрустящая",
+   "fact": "BZfE: frühe Karotten Aussaat A. Mär–M. Jul, Ernte nach 3–3,5 Monaten",
+   "src": [
+    "bzfe"
+   ]
+  },
+  "paprika": {
+   "verb": "pflanzen",
+   "sow": [
+    5,
+    6
+   ],
+   "harvest": [
+    7,
+    8,
+    9
+   ],
+   "days": 75,
+   "chapter": 1,
+   "adj": [
+    "süß",
+    "saftig"
+   ],
+   "adj_ru": "сладкая и сочная",
+   "fact": "BZfE: Vorkultur unter Glas M. Mär–M. Apr, Pflanzung M. Mai–A. Jun, Ernte ab E. Jul",
+   "src": [
+    "bzfe",
+    "duden_paprika"
+   ]
+  },
+  "kuerbis": {
+   "verb": "pflanzen",
+   "sow": [
+    5,
+    6
+   ],
+   "harvest": [
+    8,
+    9,
+    10
+   ],
+   "days": 105,
+   "chapter": 3,
+   "adj": [
+    "süß",
+    "nussig"
+   ],
+   "adj_ru": "сладкая, с ореховым вкусом",
+   "fact": "BZfE: Aussaat/Pflanzung ab M. Mai, Ernte ab E. Aug",
+   "src": [
+    "bzfe",
+    "duden_kuerbis"
+   ]
+  },
+  "blumenkohl": {
+   "verb": "pflanzen",
+   "sow": [
+    5,
+    6,
+    7
+   ],
+   "harvest": [
+    7,
+    8,
+    9
+   ],
+   "days": 80,
+   "chapter": 4,
+   "adj": [
+    "mild",
+    "zart"
+   ],
+   "adj_ru": "мягкая и нежная",
+   "fact": "BZfE: Sommer-Blumenkohl Pflanzung M. Mai–A. Jul, Ernte E. Jul–E. Sep",
+   "src": [
+    "bzfe",
+    "duden_blumenkohl"
+   ]
+  }
+ },
+ "indoor": {
+  "kresse": {
+   "verb": "säen",
+   "sow": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "days": 7,
+   "chapter": 1,
+   "adj": [
+    "scharf",
+    "frisch"
+   ],
+   "adj_ru": "острый и свежий",
+   "fact": "Ökotest: Kresse ist nach wenigen Tagen erntereif, Keimdauer 2 Tage; Sternsinger KITA-Anleitung: nach ca. einer Woche ernten",
+   "src": [
+    "oekotest_jan",
+    "sternsinger_kresse",
+    "duden_kresse"
+   ]
+  },
+  "radieschen": {
+   "verb": "säen",
+   "sow": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "days": 30,
+   "chapter": 1,
+   "fact": "BMLUK: Fensterbrett ganzjährig, Radieschen nach etwa einem Monat erntereif",
+   "src": [
+    "bmluk"
+   ]
+  }
+ }
+}

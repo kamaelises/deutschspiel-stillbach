@@ -1,0 +1,61 @@
+{
+ "base": "craftpix pixel_characters_4dir/2 (license craftpix.net/file-licenses)",
+ "frame": 96,
+ "stages": {
+  "adult": {
+   "file": "hero_walk_adult.png",
+   "height_px": 90,
+   "cut_rows": [
+    0,
+    0
+   ],
+   "feet_row": [
+    30,
+    31
+   ]
+  },
+  "teen": {
+   "file": "hero_walk_teen.png",
+   "height_px": 81,
+   "cut_rows": [
+    1,
+    2
+   ],
+   "feet_row": [
+    30,
+    31
+   ]
+  },
+  "kid": {
+   "file": "hero_walk_kid.png",
+   "height_px": 72,
+   "cut_rows": [
+    3,
+    3
+   ],
+   "feet_row": [
+    30,
+    31
+   ]
+  }
+ },
+ "chapters": {
+  "kid": [
+   1,
+   16
+  ],
+  "teen": [
+   17,
+   32
+  ],
+  "adult": [
+   33,
+   999
+  ]
+ },
+ "portrait": {
+  "kid": "max_<emotion>.png (reodesuxz hero_boy)",
+  "teen": "same (no better yet)",
+  "adult": "same (no better yet)"
+ }
+}

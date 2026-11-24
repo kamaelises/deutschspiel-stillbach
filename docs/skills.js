@@ -81,7 +81,7 @@
       const pots = Object.entries(Loot.POTS).map(([k, [de, ru]]) => row(de, ru, v.potions[k] || 0, k)).join('');
       const mats = Object.entries(Loot.MATS).map(([k, [de, ru]]) => row(de, ru, v.mats[k] || 0, k)).join('');
       const cards = v.cards.length ? v.cards.slice(-12).reverse().map(c => `<span style="display:inline-block;margin:3px 6px 3px 0;padding:2px 8px;border:2px solid #c9a877;border-radius:6px;font-size:16px">${c}</span>`).join('') : '<span class="ru">пока пусто — открывай сундуки</span>';
-      p.querySelector('#skList').innerHTML = `<div class="stat" style="margin-top:0"><b>Tränke</b><span class="ru">зелья</span></div>${pots}<div class="stat"><b>Baumaterial</b><span class="ru">материалы для зданий деревни</span></div>${mats}<div class="stat" style="display:flex;align-items:center;gap:8px"><img class="ico" src="${Loot.ICON('karte')}" alt=""><span><b>Wortkarten</b> (${v.cards.length})<span class="ru">карточки слов из сундуков</span></span></div><div>${cards}</div>`;
+      p.querySelector('#skList').innerHTML = `<div class="stat" style="margin-top:0"><b>Tränke</b><span class="ru">зелья</span></div>${pots}<div class="stat"><b>Baumaterial</b><span class="ru">материалы для зданий деревни</span></div>${mats}<div class="stat" style="display:flex;align-items:center;gap:8px"><img class="ico" src="${Loot.ICON('karte')}" alt=""><span><b>Wortkarten</b> (${v.cards.length})<span class="ru">карточки слов из сундуков</span></span></div><div>${cards}</div>${window.Garden && Garden.bagHTML ? Garden.bagHTML() : ''}`;   // урожай огорода + probieren (garden.js)
       return;
     }
     const b = BRANCHES.find(x => x.id === tab);
@@ -97,6 +97,7 @@
     const t = e.target.closest('button'); if (!t) return;
     if (t.id === 'skClose') return close();
     if (t.dataset.b) { tab = t.dataset.b; render(); return; }
+    if (t.dataset.probe && window.Garden) { Garden.probieren(t.dataset.probe); render(); return; }   // Rucksack: попробовать урожай (+HP)
     if (t.dataset.s && learn(t.dataset.s)) { if (window.toast) toast('Neues Talent!', 1200); render(); }
   });
   const hide = ['bag', 'bFurn', 'bMap', 'cbHero']; let was = {};

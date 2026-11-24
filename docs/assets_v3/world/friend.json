@@ -1,0 +1,22 @@
+{
+ "frame": 144,
+ "scale": 3,
+ "source": "craftpix pixel_characters_4dir (licence craftpix.net/file-licenses)",
+ "sheets": {
+  "m": {
+   "file": "world/friend_m_walk.png",
+   "pack_char": "1",
+   "origin_y": 0.667
+  },
+  "f": {
+   "file": "world/friend_f_walk.png",
+   "pack_char": "3",
+   "origin_y": 0.667
+  }
+ },
+ "portraits": {
+  "m": "reodesuxz dwarf",
+  "f": "reodesuxz hero_girl",
+  "becker": "craftpix Free 39 Portraits Icons_14"
+ }
+}

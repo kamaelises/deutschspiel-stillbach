@@ -1,0 +1,458 @@
+{
+ "note": "Код (рыбалка) 24.11, build_fish.py. Арт: craftpix free-fishing-game-assets-pixel-art-pack (License.txt -> craftpix.net/file-licenses), без перекраски. season/phase = id из WorldTime (time.js). water: meer (Stillbach: Strand, Steg), fluss (река Wiesenland), see (озёра Wiesenland).",
+ "sources": [
+  "https://www.fehmarn.de/fileadmin/fehmarn/Dateien/Flyer/Angelguide_Fehmarn_2020.pdf",
+  "https://www.dafv.de/images/dafv/fisch_des_jahres/fdj_2021_-_broschuere_-_der_atlantische_hering-lq.pdf",
+  "https://mleuv.brandenburg.de/sixcms/media.php/9/Schonzeiten-Fischarten-de.pdf",
+  "https://www.fishingworldguide.com/de/fish/makrele",
+  "https://www.t-online.de/leben/reisen/aktivurlaub/id_63670666/schleien-angeln-tipps-zu-koeder-montage-und-angeltechnik.html",
+  "https://www.planet-wissen.de/gesellschaft/sport/angeln/pwieangelfischartenindeutschland100.html",
+  "Duden: Schleie, Karausche, Meerforelle, Dorsch (Artikel)"
+ ],
+ "seasons": {
+  "fruehling": [
+   "der Frühling",
+   "весна"
+  ],
+  "sommer": [
+   "der Sommer",
+   "лето"
+  ],
+  "herbst": [
+   "der Herbst",
+   "осень"
+  ],
+  "winter": [
+   "der Winter",
+   "зима"
+  ]
+ },
+ "phases": {
+  "morgen": [
+   "der Morgen",
+   "утро"
+  ],
+  "tag": [
+   "der Tag",
+   "день"
+  ],
+  "abend": [
+   "der Abend",
+   "вечер"
+  ],
+  "nacht": [
+   "die Nacht",
+   "ночь"
+  ]
+ },
+ "waters": {
+  "meer": [
+   "das Meer",
+   "море"
+  ],
+  "fluss": [
+   "der Fluss",
+   "река"
+  ],
+  "see": [
+   "der See",
+   "озеро"
+  ]
+ },
+ "bite": {
+  "wait": [
+   2000,
+   8000
+  ],
+  "winter_wait": 1.5,
+  "winter_empty": 0.3,
+  "night_wait": 1.2,
+  "win": 800
+ },
+ "beifang": {
+  "meer": 0.12
+ },
+ "coins": {
+  "h": 3,
+  "s": 5,
+  "ss": 8,
+  "l": 12
+ },
+ "fish": {
+  "barsch": {
+   "sec": "fische",
+   "art": "der",
+   "w": "Barsch",
+   "ru": "окунь",
+   "rar": "h",
+   "img": "life/fish/barsch.png",
+   "px": [
+    16,
+    9
+   ],
+   "water": [
+    "see",
+    "fluss"
+   ],
+   "season": [
+    "fruehling",
+    "sommer",
+    "herbst",
+    "winter"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend"
+   ],
+   "cm": [
+    15,
+    40
+   ],
+   "force": 0.35,
+   "why": "Flussbarsch: Seen und Flüsse, tagaktiv, beißt auch im Winter",
+   "src": "3 Objects/Catch/2.png"
+  },
+  "karpfen": {
+   "sec": "fische",
+   "art": "der",
+   "w": "Karpfen",
+   "ru": "карп",
+   "rar": "h",
+   "img": "life/fish/karpfen.png",
+   "px": [
+    19,
+    11
+   ],
+   "water": [
+    "see"
+   ],
+   "season": [
+    "fruehling",
+    "sommer",
+    "herbst"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend",
+    "nacht"
+   ],
+   "cm": [
+    35,
+    80
+   ],
+   "force": 0.7,
+   "why": "Teiche und Seen; im kalten Winter frisst er kaum",
+   "src": "3 Objects/Catch/3.png"
+  },
+  "hecht": {
+   "sec": "fische",
+   "art": "der",
+   "w": "Hecht",
+   "ru": "щука",
+   "rar": "s",
+   "img": "life/fish/hecht.png",
+   "px": [
+    29,
+    12
+   ],
+   "water": [
+    "see",
+    "fluss"
+   ],
+   "season": [
+    "sommer",
+    "herbst",
+    "winter"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend"
+   ],
+   "cm": [
+    45,
+    100
+   ],
+   "force": 0.85,
+   "why": "Schonzeit im Frühjahr (Brandenburg 1.2.–31.3.), Mindestmaß 45 cm",
+   "src": "3 Objects/Catch/7.png"
+  },
+  "forelle": {
+   "sec": "fische",
+   "art": "die",
+   "w": "Forelle",
+   "ru": "форель",
+   "rar": "s",
+   "img": "life/fish/forelle.png",
+   "px": [
+    29,
+    11
+   ],
+   "water": [
+    "fluss"
+   ],
+   "season": [
+    "fruehling",
+    "sommer",
+    "herbst"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend"
+   ],
+   "cm": [
+    25,
+    50
+   ],
+   "force": 0.55,
+   "why": "Bachforelle: kühle Flüsse/Bäche; Schonzeit im Winter (Brandenburg 16.10.–15.4.)",
+   "src": "3 Objects/Catch/8.png"
+  },
+  "schleie": {
+   "sec": "fische",
+   "art": "die",
+   "w": "Schleie",
+   "ru": "линь",
+   "rar": "s",
+   "img": "life/fish/schleie.png",
+   "px": [
+    30,
+    30
+   ],
+   "water": [
+    "see"
+   ],
+   "season": [
+    "fruehling",
+    "sommer"
+   ],
+   "phase": [
+    "morgen",
+    "abend",
+    "nacht"
+   ],
+   "cm": [
+    25,
+    50
+   ],
+   "force": 0.5,
+   "why": "«ein echter Sommerfisch», beißt abends, nachts, früh morgens; flache Seen",
+   "src": "4 Icons/Icons_05.png"
+  },
+  "karausche": {
+   "sec": "fische",
+   "art": "die",
+   "w": "Karausche",
+   "ru": "карась",
+   "rar": "h",
+   "img": "life/fish/karausche.png",
+   "px": [
+    30,
+    30
+   ],
+   "water": [
+    "see"
+   ],
+   "season": [
+    "fruehling",
+    "sommer",
+    "herbst"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend"
+   ],
+   "cm": [
+    12,
+    30
+   ],
+   "force": 0.25,
+   "why": "Duden: Süßwasserfisch, olivgrüner Rücken, goldbraune Seiten; Teiche",
+   "src": "4 Icons/Icons_04.png"
+  },
+  "hering": {
+   "sec": "fische",
+   "art": "der",
+   "w": "Hering",
+   "ru": "сельдь",
+   "rar": "h",
+   "img": "life/fish/hering.png",
+   "px": [
+    25,
+    11
+   ],
+   "water": [
+    "meer"
+   ],
+   "season": [
+    "fruehling",
+    "herbst",
+    "winter"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend"
+   ],
+   "cm": [
+    20,
+    35
+   ],
+   "force": 0.3,
+   "why": "DAFV 2021: Laichzug an die Ostseeküste März–Mai (milde Winter ab Februar), Herbst seltener",
+   "src": "3 Objects/Catch/4.png"
+  },
+  "dorsch": {
+   "sec": "fische",
+   "art": "der",
+   "w": "Dorsch",
+   "ru": "треска",
+   "rar": "h",
+   "img": "life/fish/dorsch.png",
+   "px": [
+    30,
+    30
+   ],
+   "water": [
+    "meer"
+   ],
+   "season": [
+    "fruehling",
+    "sommer",
+    "herbst",
+    "winter"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend",
+    "nacht"
+   ],
+   "cm": [
+    35,
+    80
+   ],
+   "force": 0.75,
+   "why": "Ostsee: vor allem im Winter, aber das ganze Jahr (Angelguide Fehmarn)",
+   "src": "4 Icons/Icons_08.png"
+  },
+  "makrele": {
+   "sec": "fische",
+   "art": "die",
+   "w": "Makrele",
+   "ru": "скумбрия",
+   "rar": "s",
+   "img": "life/fish/makrele.png",
+   "px": [
+    30,
+    30
+   ],
+   "water": [
+    "meer"
+   ],
+   "season": [
+    "sommer"
+   ],
+   "phase": [
+    "morgen",
+    "tag",
+    "abend"
+   ],
+   "cm": [
+    25,
+    40
+   ],
+   "force": 0.5,
+   "why": "Hauptangelzeit Juni–September, früh morgens und am späten Nachmittag",
+   "src": "4 Icons/Icons_09.png"
+  },
+  "meerforelle": {
+   "sec": "fische",
+   "art": "die",
+   "w": "Meerforelle",
+   "ru": "кумжа (морская форель)",
+   "rar": "ss",
+   "img": "life/fish/meerforelle.png",
+   "px": [
+    30,
+    30
+   ],
+   "water": [
+    "meer"
+   ],
+   "season": [
+    "fruehling",
+    "herbst"
+   ],
+   "phase": [
+    "morgen",
+    "abend",
+    "nacht"
+   ],
+   "cm": [
+    40,
+    75
+   ],
+   "force": 0.9,
+   "why": "Angelguide Fehmarn: am besten Frühjahr und Herbst; Schonzeit 1.10.–31.12. (Laichkleid)",
+   "src": "4 Icons/Icons_10.png"
+  }
+ },
+ "noart": [
+  {
+   "art": "die",
+   "w": "Scholle",
+   "ru": "камбала-морская",
+   "water": "meer"
+  },
+  {
+   "art": "die",
+   "w": "Flunder",
+   "ru": "речная камбала",
+   "water": "meer"
+  },
+  {
+   "art": "der",
+   "w": "Hornhecht",
+   "ru": "сарган",
+   "water": "meer"
+  },
+  {
+   "art": "der",
+   "w": "Aal",
+   "ru": "угорь",
+   "water": "fluss/see/meer"
+  },
+  {
+   "art": "der",
+   "w": "Zander",
+   "ru": "судак",
+   "water": "see/fluss"
+  },
+  {
+   "art": "das",
+   "w": "Rotauge",
+   "ru": "плотва",
+   "water": "see/fluss"
+  },
+  {
+   "art": "der",
+   "w": "Wels",
+   "ru": "сом",
+   "water": "fluss/see"
+  }
+ ],
+ "removed": {
+  "goldfisch": "kein heimischer Wildfisch",
+  "sardine": "Bild ist jetzt der Hering",
+  "anglerfisch": "Seeteufel lebt tief, nicht vom Ufer",
+  "hai": "nicht vom Ufer"
+ },
+ "float": {
+  "note": "в паке нет поплавка: рисуется кодом 3x5 пикселей арта (x3) цветами пака (лесска 0xa3abb9, красный 0xd01c48 приманки Icons_01)"
+ }
+}

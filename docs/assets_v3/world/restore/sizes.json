@@ -1,0 +1,70 @@
+{
+"schild_brett": [
+45,
+39
+],
+"schild_amboss": [
+69,
+63
+],
+"schild_schwert": [
+69,
+63
+],
+"schild_helm": [
+69,
+63
+],
+"beet_erde": [
+93,
+90
+],
+"beet_rose": [
+93,
+96
+],
+"beet_nelke": [
+93,
+117
+],
+"beet_sonnenblume": [
+93,
+168
+],
+"beet_ringelblume": [
+93,
+99
+],
+"muell_steine": [
+57,
+48
+],
+"muell_kiesel": [
+54,
+51
+],
+"muell_ast": [
+108,
+66
+],
+"brunnen_laterne": [
+60,
+105
+],
+"brunnen_busch": [
+105,
+108
+],
+"brunnen_fass": [
+60,
+66
+],
+"brunnen_orange": [
+105,
+102
+],
+"arbeiter": [
+864,
+144
+]
+}

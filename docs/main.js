@@ -8,7 +8,7 @@ function fit() { const s = Math.min(innerWidth / W, innerHeight / H); const st =
 addEventListener('resize', () => window.fit()); fit();
 function setCoins(n) { state.coins = n; store.set(state); $('coins').textContent = n; }
 function toast(t, ms = 1500) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms); }
-function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.style.display = 'none'; /* TODO child portrait */ R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }
+function setPortraits(heroE, npcE, heroActive) { const L = $('pL'), R = $('pR'); L.onerror = () => { L.style.display = 'none'; }; L.style.display = ''; L.src = 'assets_v3/portraits/max_' + (heroE === 'talk' ? 'happy' : 'neutral') + '.png';   /* Max: reodesuxz hero_boy 64x64 (Код Max); нет файла — портрет скрыт */ R.src = 'assets_v3/portraits/schmidt_' + npcE + '.png'; L.style.opacity = heroActive ? 1 : .55; R.style.opacity = heroActive ? .55 : 1; }
 function speakDE(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} }
 const audioEl = new Audio();
 function playLine(l) { if (l.audio || l.audioUrl) { audioEl.src = l.audioUrl || ('audio/' + l.audio); audioEl.play().catch(() => speakDE(l.de)); } else speakDE(l.de); }
@@ -20,18 +20,38 @@ function sceneSprite(sc, key, x, y, h, fallbackColor, label) {
 const V3 = ['v3_yard_bg', 'v3_light_overlay', 'v3_house', 'v3_hero', 'v3_npc', 'v3_brezel', 'v3_reward_flowers', 'v3_room_bg'];
 function v3(sc, key, xy, depth, org) { const s = sc.add.image(xy[0], xy[1], key).setOrigin(org ? org[0] : 0.5, org ? org[1] : 1); s.setDepth(depth === undefined ? xy[1] : depth); return s; }
 function foot(sc, xy, w) { return sc.add.ellipse(xy[0] + w * 0.15, xy[1] - 2, w, w * 0.28, 0x0f1c08, 0.35).setDepth(xy[1] - 1); }
+// ---- Код (Max) 24.11: Max растёт вместе с курсом — kid (главы A1 1–16), teen (A2 17–32), adult (B1+, 33…). Листы: style_pick/max_kid/build_max_ages.py
+// (craftpix pixel_characters_4dir/2, ряды туловища/ног вырезаны, без ресемпла). Лист ступени подменяет текстуру hero_walk; нет файла — остаётся hero_walk.png.
+function maxAge() { let n = 0; try { (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).forEach(c => { if (+c.done > 0) n = Math.max(n, +c.n); }); } catch (e) {} return n >= 33 ? 'adult' : n >= 17 ? 'teen' : 'kid'; }
+window.maxAge = maxAge;
+window.MAX_SHEETS = false;   // 24.11 главный: автор ещё не выбрал вид Max — листы hero_walk_{kid,teen,adult}.png вне сборки (app\_wip_2411\max_sheets), остаётся hero_walk.png; выбран вид → true + вернуть листы
+function maxGrow(sc, noLoad) {
+  const st = maxAge(), key = 'hero_walk_' + st, tm = sc.textures;
+  const apply = () => {
+    if (!tm.exists(key)) return;
+    if (tm.exists('hero_walk')) tm.remove('hero_walk');
+    tm.addSpriteSheet('hero_walk', tm.get(key).getSourceImage(), { frameWidth: 96, frameHeight: 96 }); window.__maxAge = st;
+    ['down', 'left', 'right', 'up'].forEach((d, k) => { if (sc.anims.exists('w-' + d)) sc.anims.remove('w-' + d);   // те же анимации, что walk.js anims()
+      sc.anims.create({ key: 'w-' + d, frames: sc.anims.generateFrameNumbers('hero_walk', { frames: [k * 3, k * 3 + 1, k * 3 + 2, k * 3 + 1] }), frameRate: 8, repeat: -1 }); });
+    if (window.game) game.scene.scenes.forEach(s => { if (s.walker && s.walker.scene && s.walker.setTexture) { s.walker.anims.stop(); s.walker.setTexture('hero_walk', (s.walker.frame && +s.walker.frame.name) || 1); } });
+    let prev = null; try { prev = localStorage.getItem('ds_proto.maxAge'); localStorage.setItem('ds_proto.maxAge', st); } catch (e) {}
+    if (prev && prev !== st) setTimeout(() => toast('Max ist gewachsen! · Макс подрос!', 2600), 1200);
+  };
+  if (tm.exists(key)) apply(); else if (!noLoad && window.MAX_SHEETS) { sc.load.image(key, 'assets_v3/hero_walk_' + st + '.png'); sc.load.once('complete', apply); sc.load.start(); }
+}
+addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.ds === 'progress') setTimeout(() => { const sc = window.game && game.scene && game.isBooted && game.scene.getScenes(true)[0]; if (sc && maxAge() !== window.__maxAge) maxGrow(sc); }, 50); });
 class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
     const keys = Object.keys(window.__assets);
     keys.forEach(k => this.load.image(k, 'assets/' + k + '.png'));
-    V3.forEach(k => this.load.image(k, 'assets_v3/' + k.slice(3) + '.png')); this.load.json('lay', 'assets_v3/layout_v3.json'); this.load.image('town_bg', 'assets_v3/town/town_bg.png'); this.load.json('town', 'assets_v3/town/town.json'); this.load.spritesheet('hero_walk', 'assets_v3/hero_walk.png', { frameWidth: 96, frameHeight: 96 }); this.load.json('fur', 'assets_v3/furnish/furnish.json');
+    V3.forEach(k => this.load.image(k, 'assets_v3/' + k.slice(3) + '.png')); this.load.json('lay', 'assets_v3/layout_v3.json'); this.load.image('town_bg', 'assets_v3/town/town_bg.png'); this.load.json('town', 'assets_v3/town/town.json'); this.load.spritesheet('hero_walk', 'assets_v3/hero_walk.png', { frameWidth: 96, frameHeight: 96 }); if (window.MAX_SHEETS) this.load.image('hero_walk_' + maxAge(), 'assets_v3/hero_walk_' + maxAge() + '.png'); this.load.json('fur', 'assets_v3/furnish/furnish.json');
     [['dun_tiles', 'tileset'], ['dun_obj', 'objects'], ['dun_anim', 'anim'], ['dun_det', 'details']].forEach(([k, f]) => this.load.image(k, 'assets_v3/dungeon/' + f + '.png'));   // подземелье Keller (craftpix 436971)
     this.load.image('world_atlas', 'assets_v3/world/atlas.png'); this.load.json('world_atlas_json', 'assets_v3/world/atlas.json');   // континент Wiesenland (overworld.js)
     ['panel_paper'].forEach(k => this.load.image(k, 'assets/' + k + '.png'));
     this.load.on('loaderror', (f) => console.warn('missing', f.key));
   }
-  create() { $('icoCoin').src = 'assets_v3/icon_coin.png'; $('icoCoin').onerror = function () { this.style.display = 'none'; }; setCoins(state.coins); const w = window.whereGet ? whereGet() : null; this.scene.start(w && ['Room', 'Karte', 'Furnish', 'Ort'].includes(w.s) ? w.s : 'Yard', w || {}); }
+  create() { maxGrow(this, true); $('icoCoin').src = 'assets_v3/icon_coin.png'; $('icoCoin').onerror = function () { this.style.display = 'none'; }; setCoins(state.coins); const w = window.whereGet ? whereGet() : null; this.scene.start(w && ['Room', 'Karte', 'Furnish', 'Ort'].includes(w.s) ? w.s : 'Yard', w || {}); }
 }
 class Yard extends Phaser.Scene {
   constructor() { super('Yard'); }

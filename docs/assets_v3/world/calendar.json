@@ -1,0 +1,369 @@
+{
+  "version": "2026-11-24",
+  "about": "Код (время): праздники Stillbach. Даты — правила (rule) как в time.js RULES; real:true — настоящий праздник Германии, false — выдуманный местный. lexik.lvl: A1 — базовое слово уровня A1, A2+ — праздничное слово сверх A1 (давать с переводом). decor.key — что ставит визуал (time_fx.js), см. design-doc/time-seasons-events.md. Источники: Duden, Wiktionary, gesetzliche Feiertage der Länder.",
+  "festivals": [
+    {
+      "id": "neujahr", "de": "das Neujahr", "ru": "Новый год (1 января)", "rule": { "type": "fixed", "m": 1, "d": 1, "days": 1, "decor": [-1, 0] },
+      "when_ru": "1 января", "real": true, "feiertag": "bundesweit",
+      "note_ru": "Государственный выходной во всей Германии. Обычно говорят без артикля: «an Neujahr». Пожелание — «Frohes neues Jahr!».",
+      "lexik": [
+        { "de": "das Jahr", "ru": "год", "lvl": "A1" }, { "de": "neu", "ru": "новый", "lvl": "A1" }, { "de": "Frohes neues Jahr!", "ru": "С Новым годом!", "lvl": "A1" },
+        { "de": "der Januar", "ru": "январь", "lvl": "A1" }, { "de": "der Wunsch", "ru": "желание", "lvl": "A2+" }, { "de": "der Feiertag", "ru": "праздничный (выходной) день", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "lichterkette", "de": "die Lichterkette", "ru": "гирлянда-огоньки" } ],
+      "lines": [ { "de": "Frohes neues Jahr, Max!", "ru": "С Новым годом, Макс!" }, { "de": "Heute ist alles zu. Es ist Feiertag.", "ru": "Сегодня всё закрыто. Праздник." } ],
+      "quest": { "de": "Wünsch drei Leuten ein frohes neues Jahr!", "ru": "Поздравь трёх жителей с Новым годом!", "hook": "quests", "idea_ru": "Подойти к 3 жителям, сказать «Frohes neues Jahr!» (Sprechen); награда — монеты." }
+    },
+    {
+      "id": "heilige_drei_koenige", "de": "die Heiligen Drei Könige", "ru": "Богоявление / День трёх королей", "rule": { "type": "fixed", "m": 1, "d": 6, "days": 1 },
+      "when_ru": "6 января", "real": true, "feiertag": "regional (Baden-Württemberg, Bayern, Sachsen-Anhalt)",
+      "note_ru": "Дети-«Sternsinger» в костюмах трёх королей ходят со звездой по домам, поют, собирают деньги для детей мира и пишут мелом над дверью 20*C+M+B+27 («Christus mansionem benedicat» — «Христос, благослови этот дом»). Второе название — der Dreikönigstag.",
+      "lexik": [
+        { "de": "der König", "ru": "король", "lvl": "A2+" }, { "de": "drei", "ru": "три", "lvl": "A1" }, { "de": "der Stern", "ru": "звезда", "lvl": "A2+" },
+        { "de": "die Tür", "ru": "дверь", "lvl": "A1" }, { "de": "singen", "ru": "петь", "lvl": "A1" }, { "de": "die Kreide", "ru": "мел", "lvl": "A2+" }, { "de": "die Sternsinger", "ru": "колядующие дети («звёздные певцы»)", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "stern", "de": "der Stern", "ru": "звезда (на двери)" } ],
+      "lines": [ { "de": "Die Sternsinger kommen! Sie singen an jeder Tür.", "ru": "Идут звёздные певцы! Поют у каждой двери." }, { "de": "Schau mal, über der Tür steht C+M+B.", "ru": "Смотри, над дверью написано C+M+B." } ],
+      "quest": { "de": "Zähl die Türen mit C+M+B.", "ru": "Сосчитай двери с надписью C+M+B.", "hook": "quests", "idea_ru": "Найти 3 двери с меловой надписью в деревне, назвать число (drei)." }
+    },
+    {
+      "id": "brezels_geburtstag", "de": "der Geburtstag von Brezel", "ru": "День рождения Брецель (собаки)", "rule": { "type": "fixed", "m": 2, "d": 3, "days": 1 },
+      "when_ru": "3 февраля", "real": false, "feiertag": "nein",
+      "note_ru": "Выдуманный праздник Stillbach: в этот день пекарня нашла щенка у печи и назвала его Brezel. Пекарня печёт собачий пирог.",
+      "lexik": [
+        { "de": "der Geburtstag", "ru": "день рождения", "lvl": "A1" }, { "de": "der Hund", "ru": "собака", "lvl": "A1" }, { "de": "der Kuchen", "ru": "пирог, торт", "lvl": "A1" },
+        { "de": "das Geschenk", "ru": "подарок", "lvl": "A1" }, { "de": "Alles Gute!", "ru": "Всего хорошего! / Поздравляю!", "lvl": "A1" }, { "de": "Wie alt?", "ru": "Сколько лет?", "lvl": "A1" }, { "de": "der Knochen", "ru": "кость", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "girlande", "de": "die Wimpelkette", "ru": "гирлянда-флажки (у пекарни)" } ],
+      "lines": [ { "de": "Heute hat Brezel Geburtstag!", "ru": "Сегодня у Брецель день рождения!" }, { "de": "Wie alt ist Brezel? — Brezel ist fünf.", "ru": "Сколько лет Брецель? — Пять." }, { "de": "Alles Gute, Brezel!", "ru": "С днём рождения, Брецель!" } ],
+      "quest": { "de": "Bring Brezel ein Geschenk.", "ru": "Принеси Брецель подарок.", "hook": "quests", "idea_ru": "Взять der Knochen в пекарне (или из Rucksack), отдать собаке, сказать «Alles Gute!»." }
+    },
+    {
+      "id": "valentinstag", "de": "der Valentinstag", "ru": "День святого Валентина", "rule": { "type": "fixed", "m": 2, "d": 14, "days": 1 },
+      "when_ru": "14 февраля", "real": true, "feiertag": "nein",
+      "note_ru": "Не выходной. Дарят цветы, открытки, сладости; в Германии популярен с 1950-х.",
+      "lexik": [
+        { "de": "die Blume", "ru": "цветок", "lvl": "A1" }, { "de": "die Karte", "ru": "открытка", "lvl": "A1" }, { "de": "das Herz", "ru": "сердце", "lvl": "A2+" },
+        { "de": "lieb", "ru": "милый, любимый", "lvl": "A1" }, { "de": "die Schokolade", "ru": "шоколад", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "blumen", "de": "die Blumen", "ru": "цветы (у кафе)" } ],
+      "lines": [ { "de": "Die Blumen sind für Oma.", "ru": "Цветы — для бабушки." }, { "de": "Im Café gibt es heute Herz-Kekse.", "ru": "В кафе сегодня печенье-сердечки." } ],
+      "quest": { "de": "Schreib eine Karte für jemanden, den du magst.", "ru": "Напиши открытку тому, кто тебе нравится.", "hook": "quests", "idea_ru": "Выбрать жителя и слова «Du bist lieb!»; открытка в Rucksack → отдать." }
+    },
+    {
+      "id": "fasching", "de": "der Fasching", "ru": "Фашинг / карнавал (неделя)", "rule": { "type": "easter", "off": -52, "days": 6 },
+      "when_ru": "от Weiberfastnacht (четверг, Пасха −52) до Faschingsdienstag (Пасха −47)", "real": true, "feiertag": "nein (Rosenmontag: frei in vielen Orten am Rhein)",
+      "note_ru": "Названия по регионам: Fasching (юг, восток), Karneval (Рейн), Fastnacht. Сезон официально открывается 11.11 в 11:11, «горячие дни» — неделя перед Aschermittwoch. Кричат «Helau!» (Майнц, Дюссельдорф) или «Alaaf!» (Кёльн). Дети и взрослые переодеваются.",
+      "lexik": [
+        { "de": "das Kostüm", "ru": "костюм", "lvl": "A2+" }, { "de": "sich verkleiden", "ru": "переодеваться", "lvl": "A2+" }, { "de": "der Clown", "ru": "клоун", "lvl": "A1" },
+        { "de": "die Maske", "ru": "маска", "lvl": "A2+" }, { "de": "lustig", "ru": "весёлый, смешной", "lvl": "A1" }, { "de": "die Musik", "ru": "музыка", "lvl": "A1" }, { "de": "Helau!", "ru": "«Хелау!» (карнавальный клич)", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "girlande", "de": "die Wimpelkette", "ru": "гирлянда-флажки" }, { "key": "konfetti", "de": "das Konfetti", "ru": "конфетти (частицы)" } ],
+      "lines": [ { "de": "Helau! Was bist du? — Ich bin ein Pirat.", "ru": "Хелау! Ты кто? — Я пират." }, { "de": "Mein Kostüm ist lustig, oder?", "ru": "Мой костюм смешной, правда?" } ],
+      "quest": { "de": "Such ein Kostüm für Max.", "ru": "Найди костюм для Макса.", "hook": "quests", "idea_ru": "Выбрать костюм (der Pirat / die Hexe / der Clown) — род по цвету артикля; сказать «Ich bin ein …»." }
+    },
+    {
+      "id": "rosenmontag", "de": "der Rosenmontag", "ru": "Розовый понедельник (главный день карнавала)", "rule": { "type": "easter", "off": -48, "days": 1 },
+      "when_ru": "понедельник, за 48 дней до Пасхи", "real": true, "feiertag": "nein (aber in Köln, Düsseldorf, Mainz oft frei)",
+      "note_ru": "Большие шествия (der Rosenmontagszug) в Кёльне, Дюссельдорфе, Майнце; с повозок бросают конфеты (rheinisch: «Kamelle»).",
+      "lexik": [
+        { "de": "der Umzug", "ru": "шествие", "lvl": "A2+" }, { "de": "der Wagen", "ru": "повозка", "lvl": "A2+" }, { "de": "die Bonbons", "ru": "конфеты (леденцы)", "lvl": "A2+" },
+        { "de": "werfen", "ru": "бросать", "lvl": "A2+" }, { "de": "viele Leute", "ru": "много людей", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "girlande", "de": "die Wimpelkette", "ru": "гирлянда-флажки" }, { "key": "konfetti", "de": "das Konfetti", "ru": "конфетти (частицы)" } ],
+      "lines": [ { "de": "Der Umzug kommt! Hörst du die Musik?", "ru": "Шествие идёт! Слышишь музыку?" }, { "de": "Kamelle! Ich habe drei Bonbons!", "ru": "Конфеты! У меня три леденца!" } ],
+      "quest": { "de": "Sammle fünf Bonbons beim Umzug.", "ru": "Собери пять конфет на шествии.", "hook": "quests", "idea_ru": "Тап по падающим конфетам на улице; счёт по-немецки eins…fünf." }
+    },
+    {
+      "id": "karfreitag", "de": "der Karfreitag", "ru": "Страстная пятница", "rule": { "type": "easter", "off": -2, "days": 1 },
+      "when_ru": "пятница перед Пасхой", "real": true, "feiertag": "bundesweit",
+      "note_ru": "Тихий праздник (stiller Feiertag): государственный выходной, во многих землях запрещены громкие праздники и танцы. Многие едят рыбу.",
+      "lexik": [
+        { "de": "der Freitag", "ru": "пятница", "lvl": "A1" }, { "de": "still", "ru": "тихий", "lvl": "A2+" }, { "de": "der Fisch", "ru": "рыба", "lvl": "A1" },
+        { "de": "die Kirche", "ru": "церковь", "lvl": "A1" }, { "de": "frei", "ru": "свободный, выходной", "lvl": "A1" }
+      ],
+      "decor": [],
+      "lines": [ { "de": "Heute ist es still in Stillbach.", "ru": "Сегодня в Штилльбахе тихо." }, { "de": "Am Karfreitag essen wir Fisch.", "ru": "В Страстную пятницу мы едим рыбу." } ],
+      "quest": { "de": "Fang einen Fisch für das Abendessen.", "ru": "Поймай рыбу к ужину.", "hook": "fishing", "idea_ru": "Рыбалка: любая рыба засчитывается; реплика жителя про тихий день." }
+    },
+    {
+      "id": "ostern", "de": "das Osterfest", "short": "Ostern", "ru": "Пасха (Ostersonntag + Ostermontag)", "rule": { "type": "easter", "off": 0, "days": 2, "decor": [-7, 1] },
+      "when_ru": "первое воскресенье после первого весеннего полнолуния (22.3–25.4) и понедельник после него; дата считается алгоритмом Гаусса", "real": true, "feiertag": "Ostermontag bundesweit",
+      "note_ru": "Обычно без артикля: «Frohe Ostern!». Пасхальный заяц (der Osterhase) прячет крашеные яйца в саду — дети их ищут. За неделю ставят der Osterstrauch: ветки с подвешенными яйцами. На севере жгут Osterfeuer.",
+      "lexik": [
+        { "de": "das Ei", "ru": "яйцо", "lvl": "A1" }, { "de": "das Osterei", "ru": "пасхальное яйцо", "lvl": "A2+" }, { "de": "der Osterhase", "ru": "пасхальный заяц", "lvl": "A2+" },
+        { "de": "suchen", "ru": "искать", "lvl": "A1" }, { "de": "finden", "ru": "находить", "lvl": "A1" }, { "de": "bunt", "ru": "разноцветный", "lvl": "A2+" }, { "de": "der Garten", "ru": "сад", "lvl": "A1" }, { "de": "Frohe Ostern!", "ru": "С Пасхой! (Весёлой Пасхи!)", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "ostereier", "de": "die Ostereier", "ru": "пасхальные яйца в траве" }, { "key": "osterstrauch", "de": "der Osterstrauch", "ru": "ветки с яйцами" }, { "key": "blumen", "de": "die Blumen", "ru": "цветы" } ],
+      "lines": [ { "de": "Frohe Ostern! Der Osterhase war hier.", "ru": "С Пасхой! Здесь был пасхальный заяц." }, { "de": "Ich habe ein rotes Ei gefunden!", "ru": "Я нашёл красное яйцо!" }, { "de": "Wo sind die Eier? Such im Garten!", "ru": "Где яйца? Ищи в саду!" } ],
+      "quest": { "de": "Such zehn Ostereier in Stillbach.", "ru": "Найди десять пасхальных яиц в Штилльбахе.", "hook": "quests", "idea_ru": "10 яиц спрятаны по деревне (в траве, у домов); у каждого цвет: rot, blau, gelb… — назвать цвет при находке. Огород: в Ostern на грядке находится яйцо." }
+    },
+    {
+      "id": "tag_der_arbeit", "de": "der Tag der Arbeit", "ru": "День труда (1 мая)", "rule": { "type": "fixed", "m": 5, "d": 1, "days": 1, "decor": [-1, 30] },
+      "when_ru": "1 мая (накануне вечером — Tanz in den Mai)", "real": true, "feiertag": "bundesweit",
+      "note_ru": "Государственный выходной. Во многих сёлах 30 апреля или 1 мая ставят der Maibaum — высокое украшенное дерево-столб с венком и лентами; он стоит весь май. Вечером 30.4 — «Tanz in den Mai».",
+      "lexik": [
+        { "de": "der Mai", "ru": "май", "lvl": "A1" }, { "de": "die Arbeit", "ru": "работа", "lvl": "A1" }, { "de": "der Maibaum", "ru": "майское дерево", "lvl": "A2+" },
+        { "de": "tanzen", "ru": "танцевать", "lvl": "A1" }, { "de": "das Band", "ru": "лента", "lvl": "A2+" }, { "de": "hoch", "ru": "высокий", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "maibaum", "de": "der Maibaum", "ru": "майское дерево на площади" }, { "key": "girlande", "de": "die Wimpelkette", "ru": "гирлянда-флажки" } ],
+      "lines": [ { "de": "Der Maibaum ist so hoch!", "ru": "Майское дерево такое высокое!" }, { "de": "Heute arbeitet niemand. Es ist der erste Mai.", "ru": "Сегодня никто не работает. Первое мая." } ],
+      "quest": { "de": "Hilf beim Maibaum: Bring drei Bänder.", "ru": "Помоги с майским деревом: принеси три ленты.", "hook": "quests", "idea_ru": "Собрать ленты (rot, gelb, blau) у жителей; Maibaum на Dorfplatz появляется после задания." }
+    },
+    {
+      "id": "muttertag", "de": "der Muttertag", "ru": "День матери", "rule": { "type": "nth", "m": 5, "wd": 0, "n": 2, "days": 1 },
+      "when_ru": "второе воскресенье мая", "real": true, "feiertag": "nein (Sonntag)",
+      "note_ru": "Дети дарят маме цветы, открытку, завтрак в постель.",
+      "lexik": [
+        { "de": "die Mutter", "ru": "мать", "lvl": "A1" }, { "de": "die Mama", "ru": "мама", "lvl": "A1" }, { "de": "die Blume", "ru": "цветок", "lvl": "A1" },
+        { "de": "das Frühstück", "ru": "завтрак", "lvl": "A1" }, { "de": "danke", "ru": "спасибо", "lvl": "A1" }, { "de": "Alles Gute zum Muttertag!", "ru": "С Днём матери!", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "blumen", "de": "die Blumen", "ru": "цветы" } ],
+      "lines": [ { "de": "Die Blumen sind für meine Mama.", "ru": "Цветы — для моей мамы." }, { "de": "Alles Gute zum Muttertag!", "ru": "С Днём матери!" } ],
+      "quest": { "de": "Pflück Blumen für Mama.", "ru": "Сорви цветы для мамы.", "hook": "garden", "idea_ru": "Огород: срезать 3 цветка (если растут), отнести домой; реплика мамы «Danke, mein Schatz!»." }
+    },
+    {
+      "id": "christi_himmelfahrt", "de": "Christi Himmelfahrt", "ru": "Вознесение (и «День отца»)", "rule": { "type": "easter", "off": 39, "days": 1 },
+      "when_ru": "четверг, 39 дней после Пасхи", "real": true, "feiertag": "bundesweit",
+      "note_ru": "Без артикля. В тот же день — der Vatertag: многие отцы с друзьями идут в поход с тележкой (der Bollerwagen).",
+      "lexik": [
+        { "de": "der Vater", "ru": "отец", "lvl": "A1" }, { "de": "der Papa", "ru": "папа", "lvl": "A1" }, { "de": "der Donnerstag", "ru": "четверг", "lvl": "A1" },
+        { "de": "der Ausflug", "ru": "поездка, вылазка", "lvl": "A2+" }, { "de": "wandern", "ru": "ходить в поход", "lvl": "A2+" }
+      ],
+      "decor": [],
+      "lines": [ { "de": "Heute ist Vatertag. Papa macht einen Ausflug.", "ru": "Сегодня День отца. Папа едет на прогулку." }, { "de": "Am Donnerstag ist frei!", "ru": "В четверг выходной!" } ],
+      "quest": { "de": "Geh mit Papa in den Wald.", "ru": "Сходи с папой в лес.", "hook": "quests", "idea_ru": "Выйти в Welt (Hinaus in die Welt) и дойти до первой поляны." }
+    },
+    {
+      "id": "pfingsten", "de": "das Pfingstfest", "short": "Pfingsten", "ru": "Троица (Pfingstsonntag + Pfingstmontag)", "rule": { "type": "easter", "off": 49, "days": 2 },
+      "when_ru": "49 и 50 дней после Пасхи (воскресенье и понедельник)", "real": true, "feiertag": "Pfingstmontag bundesweit",
+      "note_ru": "Обычно без артикля: «an Pfingsten», «Frohe Pfingsten!». В Баварии и Баден-Вюртемберге — школьные каникулы (Pfingstferien).",
+      "lexik": [
+        { "de": "der Sonntag", "ru": "воскресенье", "lvl": "A1" }, { "de": "der Montag", "ru": "понедельник", "lvl": "A1" }, { "de": "die Ferien", "ru": "каникулы", "lvl": "A1" },
+        { "de": "die Sonne", "ru": "солнце", "lvl": "A1" }, { "de": "das Picknick", "ru": "пикник", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "blumen", "de": "die Blumen", "ru": "цветы" } ],
+      "lines": [ { "de": "Frohe Pfingsten! Wir machen ein Picknick.", "ru": "С Троицей! Мы устраиваем пикник." }, { "de": "Am Montag ist auch frei.", "ru": "В понедельник тоже выходной." } ],
+      "quest": { "de": "Pack den Picknickkorb.", "ru": "Собери корзину для пикника.", "hook": "quests", "idea_ru": "Положить в корзину das Brot, der Apfel, das Wasser — по-немецки с артиклем." }
+    },
+    {
+      "id": "sommersonnenwende", "de": "die Sommersonnenwende", "ru": "Летнее солнцестояние", "rule": { "type": "fixed", "m": 6, "d": 21, "days": 1 },
+      "when_ru": "около 21 июня (астрономически 20–21.6; в игре всегда 21.6)", "real": true, "feiertag": "nein",
+      "note_ru": "Самый длинный день и самая короткая ночь. В некоторых регионах — Sonnwendfeuer / Johannisfeuer (24.6). Не выходной.",
+      "lexik": [
+        { "de": "der Sommer", "ru": "лето", "lvl": "A1" }, { "de": "lang", "ru": "длинный", "lvl": "A1" }, { "de": "kurz", "ru": "короткий", "lvl": "A1" },
+        { "de": "die Nacht", "ru": "ночь", "lvl": "A1" }, { "de": "hell", "ru": "светлый", "lvl": "A2+" }, { "de": "das Feuer", "ru": "огонь, костёр", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "feuer", "de": "das Sonnwendfeuer", "ru": "костёр (у реки)" } ],
+      "lines": [ { "de": "Heute ist der längste Tag im Jahr.", "ru": "Сегодня самый длинный день в году." }, { "de": "Es ist zehn Uhr und noch hell!", "ru": "Десять часов, а ещё светло!" } ],
+      "quest": { "de": "Bleib bis zehn Uhr wach und schau den Himmel an.", "ru": "Не спи до десяти и посмотри на небо.", "hook": "quests", "idea_ru": "Задание на время: зайти в игру после 21:30 (WorldTime.now().hour ≥ 21)." }
+    },
+    {
+      "id": "hafenfest", "de": "das Hafenfest", "ru": "Праздник гавани (Stillbach)", "rule": { "type": "nth", "m": 7, "wd": 6, "n": 1, "days": 2, "decor": [-2, 1] },
+      "when_ru": "первая суббота июля и воскресенье", "real": false, "feiertag": "nein",
+      "note_ru": "Выдуманный праздник Stillbach на Hafenstraße: лодки с флажками, бутерброды с рыбой у рыбака, музыка, гонка лодок. Конкурс рыболовов.",
+      "lexik": [
+        { "de": "der Hafen", "ru": "гавань, порт", "lvl": "A2+" }, { "de": "das Schiff", "ru": "корабль", "lvl": "A1" }, { "de": "das Boot", "ru": "лодка", "lvl": "A2+" },
+        { "de": "der Fisch", "ru": "рыба", "lvl": "A1" }, { "de": "das Fischbrötchen", "ru": "булочка с рыбой", "lvl": "A2+" }, { "de": "das Wasser", "ru": "вода", "lvl": "A1" }, { "de": "die Fahne", "ru": "флаг", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "fahne", "de": "die Fahnen", "ru": "флаги у гавани" }, { "key": "girlande", "de": "die Wimpelkette", "ru": "гирлянда-флажки" }, { "key": "lichterkette", "de": "die Lichterkette", "ru": "огоньки вечером" } ],
+      "lines": [ { "de": "Heute ist Hafenfest! Ein Fischbrötchen, bitte.", "ru": "Сегодня праздник гавани! Булочку с рыбой, пожалуйста." }, { "de": "Wer fängt den größten Fisch?", "ru": "Кто поймает самую большую рыбу?" } ],
+      "quest": { "de": "Fang beim Angelwettbewerb drei Fische.", "ru": "Поймай три рыбы на конкурсе рыболовов.", "hook": "fishing", "idea_ru": "Рыбалка: 3 рыбы за день Hafenfest → приз; в этот день чаще клюёт редкая рыба." }
+    },
+    {
+      "id": "brezelfest", "de": "das Stillbacher Brezelfest", "short": "das Brezelfest", "ru": "Праздник брецеля (Stillbach)", "rule": { "type": "nth", "m": 8, "wd": 6, "n": 2, "days": 2, "decor": [-2, 1] },
+      "when_ru": "вторая суббота августа и воскресенье", "real": false, "feiertag": "nein",
+      "note_ru": "Выдуманный праздник Stillbach: день рождения пекарни (die Bäckerei). Пекарша печёт самый большой брецель деревни; дети тянут жребий, кто его разрежет.",
+      "lexik": [
+        { "de": "die Brezel", "ru": "брецель (крендель)", "lvl": "A2+" }, { "de": "die Bäckerei", "ru": "пекарня", "lvl": "A1" }, { "de": "backen", "ru": "печь", "lvl": "A2+" },
+        { "de": "das Brot", "ru": "хлеб", "lvl": "A1" }, { "de": "groß", "ru": "большой", "lvl": "A1" }, { "de": "klein", "ru": "маленький", "lvl": "A1" }, { "de": "das Salz", "ru": "соль", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "girlande", "de": "die Wimpelkette", "ru": "гирлянда-флажки у пекарни" }, { "key": "lichterkette", "de": "die Lichterkette", "ru": "огоньки вечером" } ],
+      "lines": [ { "de": "Die Brezel ist so groß wie ein Tisch!", "ru": "Брецель большой, как стол!" }, { "de": "Eine Brezel, bitte! — Mit Salz?", "ru": "Брецель, пожалуйста! — С солью?" } ],
+      "quest": { "de": "Hilf in der Bäckerei: Bring Mehl und Salz.", "ru": "Помоги в пекарне: принеси муку и соль.", "hook": "quests", "idea_ru": "Купить/найти das Mehl и das Salz, отнести в die Bäckerei; награда — die Brezel (+HP)." }
+    },
+    {
+      "id": "apfeltag", "de": "der Apfeltag", "ru": "Яблочный день (Stillbach)", "rule": { "type": "nth", "m": 9, "wd": 6, "n": 3, "days": 1 },
+      "when_ru": "третья суббота сентября", "real": false, "feiertag": "nein",
+      "note_ru": "Выдуманный праздник Stillbach: вся деревня собирает яблоки, давит сок и печёт яблочный пирог. Перед настоящим Erntedankfest.",
+      "lexik": [
+        { "de": "der Apfel", "ru": "яблоко", "lvl": "A1" }, { "de": "der Apfelsaft", "ru": "яблочный сок", "lvl": "A1" }, { "de": "der Apfelkuchen", "ru": "яблочный пирог", "lvl": "A1" },
+        { "de": "der Baum", "ru": "дерево", "lvl": "A2+" }, { "de": "rot", "ru": "красный", "lvl": "A1" }, { "de": "grün", "ru": "зелёный", "lvl": "A1" }, { "de": "die Kiste", "ru": "ящик", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "apfelkiste", "de": "die Apfelkisten", "ru": "ящики с яблоками" } ],
+      "lines": [ { "de": "Rot oder grün? Ich mag rote Äpfel.", "ru": "Красное или зелёное? Я люблю красные яблоки." }, { "de": "Der Apfelkuchen ist gleich fertig!", "ru": "Яблочный пирог почти готов!" } ],
+      "quest": { "de": "Sammle zehn Äpfel für den Apfelkuchen.", "ru": "Собери десять яблок для пирога.", "hook": "garden", "idea_ru": "Огород/деревья: в Apfeltag яблоки падают под деревьями; 10 штук → Apfelkuchen в пекарне." }
+    },
+    {
+      "id": "tag_der_deutschen_einheit", "de": "der Tag der Deutschen Einheit", "ru": "День германского единства", "rule": { "type": "fixed", "m": 10, "d": 3, "days": 1 },
+      "when_ru": "3 октября", "real": true, "feiertag": "bundesweit (Nationalfeiertag)",
+      "note_ru": "Национальный праздник: 3 октября 1990 года ГДР и ФРГ объединились в одну страну. Выходной во всей Германии.",
+      "lexik": [
+        { "de": "Deutschland", "ru": "Германия", "lvl": "A1" }, { "de": "das Land", "ru": "страна", "lvl": "A1" }, { "de": "die Fahne", "ru": "флаг", "lvl": "A2+" },
+        { "de": "schwarz, rot, gold", "ru": "чёрный, красный, золотой (флаг)", "lvl": "A2+" }, { "de": "der Oktober", "ru": "октябрь", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "fahne", "de": "die Fahnen", "ru": "флаги" } ],
+      "lines": [ { "de": "Heute ist Feiertag. Die Schule ist zu.", "ru": "Сегодня праздник. Школа закрыта." }, { "de": "Die Fahne ist schwarz, rot und gold.", "ru": "Флаг чёрный, красный и золотой." } ],
+      "quest": { "de": "Nenne die drei Farben der Fahne.", "ru": "Назови три цвета флага.", "hook": "quests", "idea_ru": "Мини-вопрос: выбрать schwarz/rot/gold среди цветов; обучает цвета." }
+    },
+    {
+      "id": "erntedankfest", "de": "das Erntedankfest", "ru": "Праздник урожая (благодарения за урожай)", "rule": { "type": "nth", "m": 10, "wd": 0, "n": 1, "days": 1, "decor": [-2, 0] },
+      "when_ru": "первое воскресенье октября (так в большинстве церквей Германии)", "real": true, "feiertag": "nein (Sonntag)",
+      "note_ru": "Церковь украшают фруктами, овощами, хлебом и венком из колосьев (die Erntekrone). Благодарят за урожай.",
+      "lexik": [
+        { "de": "das Obst", "ru": "фрукты", "lvl": "A1" }, { "de": "das Gemüse", "ru": "овощи", "lvl": "A1" }, { "de": "die Kartoffel", "ru": "картофель", "lvl": "A1" },
+        { "de": "der Kürbis", "ru": "тыква", "lvl": "A2+" }, { "de": "danke", "ru": "спасибо", "lvl": "A1" }, { "de": "die Ernte", "ru": "урожай", "lvl": "A2+" }, { "de": "die Kirche", "ru": "церковь", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "kuerbis", "de": "die Kürbisse", "ru": "тыквы у церкви" }, { "key": "apfelkiste", "de": "die Obstkisten", "ru": "ящики с фруктами" } ],
+      "lines": [ { "de": "Wir sagen danke für die Ernte.", "ru": "Мы говорим спасибо за урожай." }, { "de": "Bring Gemüse in die Kirche!", "ru": "Принеси овощи в церковь!" } ],
+      "quest": { "de": "Bring drei Sorten Gemüse aus deinem Garten in die Kirche.", "ru": "Принеси из огорода в церковь три вида овощей.", "hook": "garden", "idea_ru": "Огород: собрать 3 разных овоща (die Karotte, die Kartoffel, der Kürbis…), отнести к die Kirche." }
+    },
+    {
+      "id": "uhrturmnacht", "de": "die Uhrturmnacht", "ru": "Ночь часовой башни (Stillbach)", "rule": { "type": "nth", "m": 10, "wd": 0, "n": -1, "days": 1 },
+      "when_ru": "последнее воскресенье октября — в эту ночь в ЕС переводят часы (3:00 → 2:00, die Zeitumstellung)", "real": false, "feiertag": "nein",
+      "note_ru": "Выдуманный праздник Stillbach у der Uhrturm, но на настоящем факте: в ночь на последнее воскресенье октября в Германии часы переводят на час назад (Winterzeit), «у дня 25 часов». Часовщик вечером показывает детям, как переводят большие часы, все считают хором.",
+      "lexik": [
+        { "de": "die Uhr", "ru": "часы", "lvl": "A1" }, { "de": "die Stunde", "ru": "час (60 минут)", "lvl": "A1" }, { "de": "Wie spät ist es?", "ru": "Который час?", "lvl": "A1" },
+        { "de": "die Zeit", "ru": "время", "lvl": "A1" }, { "de": "der Turm", "ru": "башня", "lvl": "A2+" }, { "de": "die Winterzeit", "ru": "зимнее время", "lvl": "A2+" }, { "de": "eine Stunde zurück", "ru": "на час назад", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "laterne", "de": "die Laternen", "ru": "фонарики у башни" } ],
+      "lines": [ { "de": "Heute hat der Tag 25 Stunden!", "ru": "Сегодня в сутках 25 часов!" }, { "de": "Wie spät ist es? — Es ist drei Uhr … nein, zwei Uhr!", "ru": "Который час? — Три часа… нет, два!" } ],
+      "quest": { "de": "Stell die Uhr am Uhrturm eine Stunde zurück.", "ru": "Переведи часы на башне на час назад.", "hook": "quests", "idea_ru": "Мини-игра «Wie spät ist es?»: показать время, повернуть стрелку на час назад, сказать время по-немецки." }
+    },
+    {
+      "id": "reformationstag", "de": "der Reformationstag", "ru": "День Реформации", "rule": { "type": "fixed", "m": 10, "d": 31, "days": 1 },
+      "when_ru": "31 октября", "real": true, "feiertag": "regional (Brandenburg, Bremen, Hamburg, Mecklenburg-Vorpommern, Niedersachsen, Sachsen, Sachsen-Anhalt, Schleswig-Holstein, Thüringen)",
+      "note_ru": "В память о 1517 годе, когда Мартин Лютер опубликовал 95 тезисов. Выходной в части земель (в т. ч. в Саксонии). В тот же день — Halloween.",
+      "lexik": [
+        { "de": "die Kirche", "ru": "церковь", "lvl": "A1" }, { "de": "das Buch", "ru": "книга", "lvl": "A1" }, { "de": "frei", "ru": "выходной, свободный", "lvl": "A1" },
+        { "de": "die Schule", "ru": "школа", "lvl": "A1" }, { "de": "der Feiertag", "ru": "праздничный день", "lvl": "A2+" }
+      ],
+      "decor": [],
+      "lines": [ { "de": "In Sachsen ist heute frei.", "ru": "В Саксонии сегодня выходной." }, { "de": "Heute ist keine Schule!", "ru": "Сегодня нет школы!" } ],
+      "quest": { "de": "Lies das alte Buch in der Kirche.", "ru": "Прочитай старую книгу в церкви.", "hook": "quests", "idea_ru": "Короткий текст на A1 (3 предложения) в die Kirche, когда откроется глава 5." }
+    },
+    {
+      "id": "halloween", "de": "das Halloween", "short": "Halloween", "ru": "Хэллоуин", "rule": { "type": "fixed", "m": 10, "d": 31, "days": 1, "decor": [-3, 0] },
+      "when_ru": "31 октября", "real": true, "native": false, "feiertag": "nein",
+      "note_ru": "НЕ немецкий по происхождению: пришёл из Ирландии через США, в Германии популярен примерно с 1990-х. Дети ходят по домам в костюмах: «Süßes oder Saures!». Вырезают тыквы. Обычно говорят без артикля.",
+      "lexik": [
+        { "de": "der Kürbis", "ru": "тыква", "lvl": "A2+" }, { "de": "die Hexe", "ru": "ведьма", "lvl": "A2+" }, { "de": "das Gespenst", "ru": "привидение", "lvl": "A2+" },
+        { "de": "Süßes oder Saures!", "ru": "Сладость или гадость!", "lvl": "A2+" }, { "de": "dunkel", "ru": "тёмный", "lvl": "A2+" }, { "de": "die Süßigkeiten", "ru": "сладости", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "kuerbis", "de": "die Kürbisse", "ru": "тыквы у дверей (ночью светятся)" } ],
+      "lines": [ { "de": "Süßes oder Saures!", "ru": "Сладость или гадость!" }, { "de": "Ist das ein Gespenst? — Nein, das ist Brezel!", "ru": "Это привидение? — Нет, это Брецель!" } ],
+      "quest": { "de": "Geh von Tür zu Tür und sag: Süßes oder Saures!", "ru": "Пройди от двери к двери и скажи: «Süßes oder Saures!»", "hook": "quests", "idea_ru": "Вечер/ночь 31.10: 3 двери, Sprechen «Süßes oder Saures!» → конфеты в Rucksack." }
+    },
+    {
+      "id": "sankt_martin", "de": "der Martinstag", "short": "Sankt Martin", "ru": "День святого Мартина", "rule": { "type": "fixed", "m": 11, "d": 11, "days": 1, "decor": [-1, 0] },
+      "when_ru": "11 ноября (шествия — вечером, часто в ближайшие дни)", "real": true, "feiertag": "nein",
+      "note_ru": "Святой Мартин разделил свой плащ с замёрзшим нищим. Вечером дети идут с фонариками (der Laternenumzug) и поют «Laterne, Laterne, Sonne, Mond und Sterne». Едят гуся (die Martinsgans) и сдобного человечка (der Weckmann, регионально — Stutenkerl).",
+      "lexik": [
+        { "de": "die Laterne", "ru": "фонарик", "lvl": "A2+" }, { "de": "der Laternenumzug", "ru": "шествие с фонариками", "lvl": "A2+" }, { "de": "der Mond", "ru": "луна", "lvl": "A2+" },
+        { "de": "die Sonne", "ru": "солнце", "lvl": "A1" }, { "de": "der Mantel", "ru": "пальто, плащ", "lvl": "A1" }, { "de": "teilen", "ru": "делиться", "lvl": "A2+" }, { "de": "die Gans", "ru": "гусь", "lvl": "A2+" }, { "de": "der Abend", "ru": "вечер", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "laterne", "de": "die Laternen", "ru": "бумажные фонарики (вечером горят)" } ],
+      "lines": [ { "de": "Laterne, Laterne, Sonne, Mond und Sterne!", "ru": "Фонарик, фонарик, солнце, луна и звёзды! (песня)" }, { "de": "Hast du eine Laterne? Der Umzug beginnt um fünf.", "ru": "У тебя есть фонарик? Шествие начинается в пять." }, { "de": "Sankt Martin teilt seinen Mantel.", "ru": "Святой Мартин делится плащом." } ],
+      "quest": { "de": "Bastel eine Laterne und geh mit zum Umzug.", "ru": "Смастери фонарик и иди на шествие.", "hook": "quests", "idea_ru": "Собрать das Papier + die Kerze → die Laterne; вечером (phase abend) пройти за детьми от Gildenhaus к Uhrturm." }
+    },
+    {
+      "id": "weihnachtsmarkt", "de": "der Weihnachtsmarkt", "ru": "Рождественская ярмарка", "rule": { "type": "advent", "n": 1, "shift": -6, "untilM": 12, "untilD": 23 },
+      "when_ru": "в Stillbach: с понедельника перед 1-м Адвентом по 23 декабря (в реальных городах сроки разные)", "real": true, "feiertag": "nein",
+      "note_ru": "Настоящая немецкая традиция (Дрезден, Нюрнберг…): ларьки, огоньки, пряники (der Lebkuchen), жареный миндаль, детский пунш. Сроки в каждом городе свои — в Stillbach правило выше.",
+      "lexik": [
+        { "de": "der Markt", "ru": "рынок", "lvl": "A1" }, { "de": "der Lebkuchen", "ru": "пряник", "lvl": "A2+" }, { "de": "der Kinderpunsch", "ru": "детский пунш", "lvl": "A2+" },
+        { "de": "warm", "ru": "тёплый", "lvl": "A1" }, { "de": "kalt", "ru": "холодный", "lvl": "A1" }, { "de": "kaufen", "ru": "покупать", "lvl": "A1" }, { "de": "die Lichterkette", "ru": "гирлянда-огоньки", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "lichterkette", "de": "die Lichterkette", "ru": "огоньки на домах" }, { "key": "tannenbaum", "de": "der Tannenbaum", "ru": "ёлка на площади" } ],
+      "lines": [ { "de": "Ein Kinderpunsch, bitte. Mir ist kalt!", "ru": "Детский пунш, пожалуйста. Мне холодно!" }, { "de": "Der Lebkuchen kostet zwei Euro.", "ru": "Пряник стоит два евро." } ],
+      "quest": { "de": "Kauf drei Sachen auf dem Weihnachtsmarkt.", "ru": "Купи три вещи на ярмарке.", "hook": "quests", "idea_ru": "Диалог покупки: «Ich möchte …, bitte. — Das kostet … Euro.» (числа и цены)." }
+    },
+    {
+      "id": "advent_1", "de": "der erste Advent", "ru": "Первое воскресенье Адвента", "rule": { "type": "advent", "n": 1, "days": 1 },
+      "when_ru": "4-е воскресенье перед Рождеством (27.11–3.12)", "real": true, "feiertag": "nein (Sonntag)",
+      "note_ru": "На венке (der Adventskranz) четыре свечи; в 1-й Адвент зажигают первую. 1 декабря открывают первое окошко календаря (der Adventskalender).",
+      "lexik": [
+        { "de": "die Kerze", "ru": "свеча", "lvl": "A2+" }, { "de": "der Adventskranz", "ru": "рождественский венок", "lvl": "A2+" }, { "de": "eins", "ru": "один", "lvl": "A1" },
+        { "de": "der Sonntag", "ru": "воскресенье", "lvl": "A1" }, { "de": "der Adventskalender", "ru": "адвент-календарь", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "adventskranz", "de": "der Adventskranz", "ru": "венок: горит 1 свеча" } ],
+      "lines": [ { "de": "Heute brennt die erste Kerze.", "ru": "Сегодня горит первая свеча." }, { "de": "Advent, Advent, ein Lichtlein brennt …", "ru": "Адвент, адвент, горит огонёк… (стишок)" } ],
+      "quest": { "de": "Zünde die erste Kerze am Adventskranz an.", "ru": "Зажги первую свечу на венке.", "hook": "quests", "idea_ru": "Тап по венку в доме героя; счёт свечей: eine, zwei, drei, vier." }
+    },
+    {
+      "id": "nikolaus", "de": "der Nikolaustag", "short": "Nikolaus", "ru": "День святого Николая", "rule": { "type": "fixed", "m": 12, "d": 6, "days": 1, "decor": [-1, 0] },
+      "when_ru": "6 декабря (сапоги выставляют вечером 5 декабря)", "real": true, "feiertag": "nein",
+      "note_ru": "Вечером 5.12 дети чистят сапог и ставят его за дверь; ночью der Nikolaus кладёт туда мандарины, орехи, шоколад. Не путать с Weihnachtsmann.",
+      "lexik": [
+        { "de": "der Stiefel", "ru": "сапог", "lvl": "A2+" }, { "de": "die Mandarine", "ru": "мандарин", "lvl": "A2+" }, { "de": "die Nuss", "ru": "орех", "lvl": "A2+" },
+        { "de": "die Schokolade", "ru": "шоколад", "lvl": "A1" }, { "de": "die Tür", "ru": "дверь", "lvl": "A1" }, { "de": "die Nacht", "ru": "ночь", "lvl": "A1" }, { "de": "der Dezember", "ru": "декабрь", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "stiefel", "de": "die Stiefel", "ru": "сапоги у дверей" }, { "key": "lichterkette", "de": "die Lichterkette", "ru": "огоньки" } ],
+      "lines": [ { "de": "Hast du deinen Stiefel vor die Tür gestellt?", "ru": "Ты поставил сапог за дверь?" }, { "de": "Im Stiefel ist Schokolade! Danke, Nikolaus!", "ru": "В сапоге шоколад! Спасибо, Николай!" } ],
+      "quest": { "de": "Putz deinen Stiefel und stell ihn vor die Tür.", "ru": "Почисти сапог и поставь его за дверь.", "hook": "quests", "idea_ru": "5.12 вечером: поставить сапог у дома героя; 6.12 утром в нём подарок (монеты + Schokolade)." }
+    },
+    {
+      "id": "advent_2", "de": "der zweite Advent", "ru": "Второе воскресенье Адвента", "rule": { "type": "advent", "n": 2, "days": 1 },
+      "when_ru": "3-е воскресенье перед Рождеством (4.12–10.12)", "real": true, "feiertag": "nein (Sonntag)",
+      "note_ru": "Горят две свечи на венке.",
+      "lexik": [ { "de": "zwei", "ru": "два", "lvl": "A1" }, { "de": "die Kerze", "ru": "свеча", "lvl": "A2+" }, { "de": "brennen", "ru": "гореть", "lvl": "A2+" }, { "de": "das Mehl", "ru": "мука", "lvl": "A2+" }, { "de": "die Plätzchen", "ru": "рождественское печенье", "lvl": "A2+" } ],
+      "decor": [ { "key": "adventskranz", "de": "der Adventskranz", "ru": "венок: горят 2 свечи" } ],
+      "lines": [ { "de": "Zwei Kerzen brennen schon.", "ru": "Уже горят две свечи." }, { "de": "Wir backen Plätzchen!", "ru": "Мы печём печенье!" } ],
+      "quest": { "de": "Back Plätzchen in der Bäckerei.", "ru": "Испеки печенье в пекарне.", "hook": "quests", "idea_ru": "Рецепт: das Mehl, die Butter, der Zucker — собрать и отнести в die Bäckerei." }
+    },
+    {
+      "id": "advent_3", "de": "der dritte Advent", "ru": "Третье воскресенье Адвента", "rule": { "type": "advent", "n": 3, "days": 1 },
+      "when_ru": "2-е воскресенье перед Рождеством (11.12–17.12)", "real": true, "feiertag": "nein (Sonntag)",
+      "note_ru": "Горят три свечи на венке.",
+      "lexik": [ { "de": "drei", "ru": "три", "lvl": "A1" }, { "de": "der Schnee", "ru": "снег", "lvl": "A2+" }, { "de": "kalt", "ru": "холодный", "lvl": "A1" }, { "de": "der Schal", "ru": "шарф", "lvl": "A2+" }, { "de": "die Mütze", "ru": "шапка", "lvl": "A2+" } ],
+      "decor": [ { "key": "adventskranz", "de": "der Adventskranz", "ru": "венок: горят 3 свечи" } ],
+      "lines": [ { "de": "Drei Kerzen! Bald ist Weihnachten.", "ru": "Три свечи! Скоро Рождество." }, { "de": "Es ist kalt. Nimm deine Mütze!", "ru": "Холодно. Возьми шапку!" } ],
+      "quest": { "de": "Bau einen Schneemann.", "ru": "Слепи снеговика.", "hook": "quests", "idea_ru": "Если идёт снег (season winter): тап 3 раза по снегу у дома → der Schneemann (нужен арт, см. design-doc)." }
+    },
+    {
+      "id": "advent_4", "de": "der vierte Advent", "ru": "Четвёртое воскресенье Адвента", "rule": { "type": "advent", "n": 4, "days": 1 },
+      "when_ru": "последнее воскресенье до 25.12 (18.12–24.12)", "real": true, "feiertag": "nein (Sonntag)",
+      "note_ru": "Горят все четыре свечи. Иногда 4-й Адвент совпадает с Heiligabend (например, 2023).",
+      "lexik": [ { "de": "vier", "ru": "четыре", "lvl": "A1" }, { "de": "bald", "ru": "скоро", "lvl": "A1" }, { "de": "das Geschenk", "ru": "подарок", "lvl": "A1" }, { "de": "einpacken", "ru": "упаковывать", "lvl": "A2+" }, { "de": "der Wunschzettel", "ru": "список желаний (письмо)", "lvl": "A2+" } ],
+      "decor": [ { "key": "adventskranz", "de": "der Adventskranz", "ru": "венок: горят 4 свечи" } ],
+      "lines": [ { "de": "Alle vier Kerzen brennen!", "ru": "Горят все четыре свечи!" }, { "de": "Hast du schon alle Geschenke?", "ru": "У тебя уже есть все подарки?" } ],
+      "quest": { "de": "Schreib einen Wunschzettel.", "ru": "Напиши список желаний.", "hook": "quests", "idea_ru": "Выбрать 3 вещи «Ich wünsche mir …» (с артиклем в Akkusativ — только если глава прошла)." }
+    },
+    {
+      "id": "heiligabend", "de": "der Heiligabend", "ru": "Сочельник (24 декабря)", "rule": { "type": "fixed", "m": 12, "d": 24, "days": 1, "decor": [-24, 13] },
+      "when_ru": "24 декабря (украшения — с 1.12 до 6.1)", "real": true, "feiertag": "nein (ab Mittag meist alles zu)",
+      "note_ru": "Главный семейный вечер: ёлка (der Weihnachtsbaum / der Tannenbaum), вечером die Bescherung — подарки; приносит das Christkind (юг, запад) или der Weihnachtsmann (север, восток). Многие идут в церковь. Ёлку часто убирают после 6 января.",
+      "lexik": [
+        { "de": "der Weihnachtsbaum", "ru": "рождественская ёлка", "lvl": "A2+" }, { "de": "der Tannenbaum", "ru": "ель, ёлка", "lvl": "A2+" }, { "de": "das Geschenk", "ru": "подарок", "lvl": "A1" },
+        { "de": "die Familie", "ru": "семья", "lvl": "A1" }, { "de": "der Weihnachtsmann", "ru": "Дед Мороз / Санта", "lvl": "A2+" }, { "de": "das Christkind", "ru": "Младенец Христос (приносит подарки)", "lvl": "A2+" }, { "de": "die Bescherung", "ru": "вручение подарков", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "tannenbaum", "de": "der Tannenbaum", "ru": "ёлка на площади" }, { "key": "lichterkette", "de": "die Lichterkette", "ru": "огоньки на домах" } ],
+      "lines": [ { "de": "Heute Abend kommt das Christkind!", "ru": "Сегодня вечером придёт Христос-младенец (с подарками)!" }, { "de": "Der Tannenbaum ist so schön!", "ru": "Ёлка такая красивая!" } ],
+      "quest": { "de": "Schmück den Tannenbaum auf dem Dorfplatz.", "ru": "Наряди ёлку на площади.", "hook": "quests", "idea_ru": "Повесить 5 шаров разных цветов (rot, gold, blau…), вечером — Bescherung дома." }
+    },
+    {
+      "id": "weihnachten", "de": "das Weihnachtsfest", "short": "Weihnachten", "ru": "Рождество (25–26 декабря)", "rule": { "type": "fixed", "m": 12, "d": 25, "days": 2 },
+      "when_ru": "25 и 26 декабря (1. und 2. Weihnachtsfeiertag)", "real": true, "feiertag": "bundesweit (25. und 26.12)",
+      "note_ru": "Обычно без артикля: «Frohe Weihnachten!». Семья, гости, праздничный обед (часто гусь).",
+      "lexik": [
+        { "de": "Frohe Weihnachten!", "ru": "Счастливого Рождества!", "lvl": "A1" }, { "de": "die Oma", "ru": "бабушка", "lvl": "A1" }, { "de": "der Opa", "ru": "дедушка", "lvl": "A1" },
+        { "de": "essen", "ru": "есть", "lvl": "A1" }, { "de": "der Besuch", "ru": "визит, гости", "lvl": "A2+" }, { "de": "die Gans", "ru": "гусь", "lvl": "A2+" }
+      ],
+      "decor": [ { "key": "tannenbaum", "de": "der Tannenbaum", "ru": "ёлка" }, { "key": "lichterkette", "de": "die Lichterkette", "ru": "огоньки" } ],
+      "lines": [ { "de": "Frohe Weihnachten, Max!", "ru": "Счастливого Рождества, Макс!" }, { "de": "Oma und Opa kommen zu Besuch.", "ru": "Бабушка и дедушка приезжают в гости." } ],
+      "quest": { "de": "Bring allen Nachbarn ein Geschenk.", "ru": "Отнеси всем соседям подарок.", "hook": "quests", "idea_ru": "Раздать 3 подарка жителям, сказать «Frohe Weihnachten!»." }
+    },
+    {
+      "id": "silvester", "de": "das Silvester", "art_note": "Duden: der oder das Silvester", "ru": "Канун Нового года (31 декабря)", "rule": { "type": "fixed", "m": 12, "d": 31, "days": 1 },
+      "when_ru": "31 декабря; в полночь — фейерверк", "real": true, "feiertag": "nein",
+      "note_ru": "Вечеринки, в полночь — фейерверк (das Feuerwerk) и отсчёт «zehn, neun … null!». Желают «Guten Rutsch!» («удачно проскользнуть» в новый год). Собаки боятся салюта.",
+      "lexik": [
+        { "de": "das Feuerwerk", "ru": "фейерверк", "lvl": "A2+" }, { "de": "Guten Rutsch!", "ru": "С наступающим!", "lvl": "A2+" }, { "de": "Mitternacht", "ru": "полночь", "lvl": "A2+" },
+        { "de": "zehn, neun, acht …", "ru": "десять, девять, восемь…", "lvl": "A1" }, { "de": "laut", "ru": "громкий", "lvl": "A1" }, { "de": "die Party", "ru": "вечеринка", "lvl": "A1" }
+      ],
+      "decor": [ { "key": "feuerwerk", "de": "das Feuerwerk", "ru": "фейерверк в небе (частицы, 23:50–0:30)" }, { "key": "lichterkette", "de": "die Lichterkette", "ru": "огоньки" } ],
+      "lines": [ { "de": "Guten Rutsch, Max!", "ru": "С наступающим, Макс!" }, { "de": "Brezel hat Angst. Das Feuerwerk ist so laut!", "ru": "Брецель боится. Фейерверк такой громкий!" } ],
+      "quest": { "de": "Bleib bei Brezel, bis das Feuerwerk vorbei ist.", "ru": "Побудь с Брецель, пока не закончится фейерверк.", "hook": "quests", "idea_ru": "Найти собаку (спряталась), успокоить: «Ruhig, Brezel!»; обратный отсчёт по-немецки." }
+    }
+  ]
+}

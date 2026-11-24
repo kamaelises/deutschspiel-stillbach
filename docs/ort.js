@@ -4,6 +4,9 @@
 const ORTE = {
   buergeramt: { img: 'assets_v3/places/buergeramt.png', w: 1008, h: 672, hero: [450, 548], npc: [498, 300], walk: [[335, 470, 650, 566], [110, 330, 300, 466], [290, 420, 340, 482], [455, 404, 586, 478]], exit: [505, 590], ch: 'ch02', dialog: 'ch02_d1', heroRole: 'H', title: 'das Gildenhaus', portrait: 'beamter' },
   baeckerei: { img: 'assets_v3/places/baeckerei.png', w: 624, h: 732, hero: [310, 680], npc: [310, 536], walk: [[135, 625, 490, 694]], exit: [310, 708], ch: 'ch04', dialog: 'ch04_d4', heroRole: 'H', title: 'die Bäckerei', portrait: 'schulz' },   // craftpix workshop = bakery (build_baeckerei_b.py)
+  // Код (интерьеры) 24.11: style_pick/interiors/build_cafe.py, build_supermarkt.py (craftpix Guild Hall / Home / Glassblower, x3). Вход — дверь участка A1 (town.js, ступень Gebäude).
+  cafe: { img: 'assets_v3/places/cafe.png', w: 768, h: 528, hero: [384, 462], npc: [384, 132], walk: [[216, 252, 540, 492], [108, 420, 216, 492], [540, 216, 720, 264], [540, 408, 672, 492]], exit: [384, 486], ch: 'ch04', dialog: 'ch04_d7', heroRole: 'H', title: 'das Café', portrait: 'schulz' },
+  supermarkt: { img: 'assets_v3/places/supermarkt.png', w: 912, h: 528, hero: [456, 468], npc: [300, 297], walk: [[504, 216, 744, 492], [396, 432, 504, 492], [168, 420, 396, 492], [24, 312, 168, 384], [744, 312, 888, 384], [168, 348, 192, 432]], exit: [456, 486], ch: 'ch06', dialog: 'ch06_d3', heroRole: 'H', title: 'der Supermarkt', portrait: 'kassiererin' },
 };
 class Ort extends Room {
   constructor() { super('Ort'); }

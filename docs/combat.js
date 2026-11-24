@@ -183,6 +183,7 @@
     e.lhp.clear().fillStyle(0x2e1e12, 0.9).fillRect(-bw / 2 - 2, 2, bw + 4, 9).fillStyle(k > 0.5 ? 0x6cc04a : k > 0.25 ? 0xffc23c : 0xe24848, 1).fillRect(-bw / 2, 4, bw * k, 5);
     const st = [e.burn && e.burn.n > 0 ? 'brennt' : '', e.slow > 0 ? 'langsam' : '', e.tangle > 0 ? 'umrankt' : '', e.stun > 0 ? 'betäubt' : ''].filter(Boolean).join(' · ');
     if (e.lst.text !== st) e.lst.setText(st);
+    e.lph = h + 2; e.lbb = 12 + (st ? e.lst.height + 1 : 0);        // 24.11: real extent around the origin: plate above (lph), HP bar + status line below (lbb)
   }
   function reveal(e) {                                               // после ответа (артикль, голос, стихия) или победы: «der» в цвете рода
     if (!e || e.shown) return; e.shown = true;
@@ -196,16 +197,18 @@
     if (then) e.spr.once('animationcomplete', then);
   }
   function unclutter(S) {                                            // подписи не налезают друг на друга: верхняя уходит выше (плавно)
-    const L = S.enemies.filter(e => !e.dead && e.label.visible).map(e => ({ e, x: e.spr.x, b: labelY(e), w: e.lbw || 80, h: e.lbh || 50 })).sort((a, b) => b.b - a.b);
+    // 24.11: rect = what is drawn (plate above the origin, HP bar + status line «brennt…» below it), 10 px air between labels
+    const L = S.enemies.filter(e => !e.dead && e.label.visible).map(e => ({ e, x: e.spr.x, b: labelY(e), w: e.lbw || 80, up: e.lph || 40, dn: e.lbb || 12 })).sort((a, b) => b.b - a.b);
     const placed = [];
     L.forEach(o => {
-      let bot = o.b;
+      let bot = o.b;                                                 // bot = label origin
       for (let k = 0; k < 8; k++) {
-        const hit = placed.find(p => Math.abs(p.x - o.x) < (p.w + o.w) / 2 + 4 && bot > p.top - 2 && bot - o.h < p.bot + 2);
-        if (!hit) break; bot = hit.top - 4;
+        const hit = placed.find(p => Math.abs(p.x - o.x) < (p.w + o.w) / 2 + 6 && bot + o.dn > p.top - 10 && bot - o.up < p.bot + 10);
+        if (!hit) break; bot = hit.top - 10 - o.dn;
       }
-      placed.push({ x: o.x, w: o.w, bot, top: bot - o.h });
-      const want = o.b - bot; o.e.dl = Math.abs(want - (o.e.dl || 0)) < 1 ? want : (o.e.dl || 0) + (want - (o.e.dl || 0)) * 0.4;
+      placed.push({ x: o.x, w: o.w, top: bot - o.up, bot: bot + o.dn });
+      const want = o.b - bot, cur = o.e.dl || 0;                     // 24.11: up at once (no overlapping frames while easing), down smoothly
+      o.e.dl = want > cur || Math.abs(want - cur) < 1 ? want : cur + (want - cur) * 0.4;
       o.e.label.setPosition(o.e.spr.x, o.b - o.e.dl);
     });
   }

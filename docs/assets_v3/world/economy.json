@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "about": "Единая таблица цен и начислений Stillbach (Код экономика 24.11). Читает proto/economy.js (window.Eco). Уровень A1 = Max-ребёнок: карманные деньги (das Taschengeld), маленькие суммы. Источник чисел: DESIGN_DIGEST §4 (M §2/§15: урок +5, часть урока +1, вещь в дом 5–15) + решения автора 23.11 21:13 (звёзды не тратятся, поражение без потерь). Подробно: public/deutschspiel-stillbach/design-doc/economy-restoration.md",
+  "level": "A1",
+  "currency": {
+    "coins": { "de": "die Münze", "ru": "монета", "spend": true, "note": "das Taschengeld на A1; не покупаются за деньги" },
+    "stars": { "de": "der Stern", "ru": "звезда", "spend": false, "note": "открывают задачи и ступени; никогда не уменьшаются" },
+    "baustoffe": { "de": "die Baustoffe", "ru": "стройматериалы = карточки выученных слов", "spend": false, "note": "слово вносится тестом артикля и остаётся выученным" },
+    "harvest": { "de": "die Ernte", "ru": "урожай (ds_proto.garden2.bag)", "spend": true },
+    "fish": { "de": "der Fang", "ru": "улов (ds_proto.inv.fish)", "spend": true }
+  },
+  "earn": {
+    "appLesson": 5,
+    "lessonLine": 1,
+    "lessonEnd": 5,
+    "ortEnd": 5,
+    "weekCheck": 5,
+    "fishBonus": { "h": 2, "s": 3, "ss": 5, "l": 8 }
+  },
+  "scale": { "quest": 0.4, "fight": 0.5, "chest": 0.5 },
+  "caps_day": { "fish": 10, "fight": 15, "sell": 15 },
+  "stars": { "perLesson": 1, "note": "пока приложение не шлёт оценку урока (1★ ≥60 %, 2★ ≥80 %, 3★ ≥95 %), каждый пройденный урок = 1★; приложение может прислать ds_proto.app.stars — тогда берётся оно; звёзды только растут" },
+  "sell": {
+    "buyer": { "place": "cafe", "de": "Frau Schulz (das Café)", "ru": "Фрау Шульц из кафе покупает овощи для супа и рыбу для Fischbrötchen" },
+    "crop": { "radieschen": 1, "karotte": 1, "kresse": 1, "paprika": 2, "blumenkohl": 3, "kuerbis": 4 },
+    "fish": { "h": 2, "s": 3, "ss": 5, "l": 8 }
+  },
+  "buy": {
+    "shop": { "place": "supermarkt", "de": "der Supermarkt (Kassiererin)", "ru": "супермаркет: семена и зелья (до Alchemie-Werkstatt, гл. 13)" },
+    "seed": { "paprika": 2, "blumenkohl": 3, "kuerbis": 3 },
+    "seed_free": ["radieschen", "karotte", "kresse"],
+    "seed_start": { "paprika": 2, "blumenkohl": 2, "kuerbis": 2 },
+    "potion": { "heil": 8, "blick": 10 }
+  },
+  "furn": { "bett": 15, "schrank": 15, "regal": 12, "vorrat": 12, "tisch": 10, "stuhl": 5, "teppich": 8, "pflanze": 5, "vase": 5, "truhe": 8, "fass": 6, "kerze": 8 },
+  "names": {
+    "radieschen": ["das", "Radieschen", "редиска", "Radieschen"], "karotte": ["die", "Karotte", "морковь", "Karotten"], "kresse": ["die", "Kresse", "кресс-салат", "Kresse"],
+    "paprika": ["die", "Paprika", "перец", "Paprika"], "blumenkohl": ["der", "Blumenkohl", "цветная капуста", "Blumenkohl"], "kuerbis": ["der", "Kürbis", "тыква", "Kürbisse"],
+    "heil": ["der", "Heiltrank", "зелье лечения"], "blick": ["der", "Artikeltrank", "зелье артикля"]
+  },
+  "furn_family": ["bett", "schrank"],
+  "later": { "deko_small": 10, "deko_medium": 25, "deko_big": 60, "kleidung": [20, 40], "brezel_item": [3, 8], "ticket": [20, 50], "note": "M §15.3/§21.1 — стоки следующих шагов (украшено, одежда, Brezel, поездки)" },
+  "research": { "currency": "coins", "costs": {}, "note": "раздел для помощника «навыки и исследования»: research.js читает Eco.price('research', id, fallback)" }
+}

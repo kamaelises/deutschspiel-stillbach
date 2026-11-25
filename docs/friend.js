@@ -5,7 +5,7 @@
 // Решения автора: «гарем — к B1» -> на A1/A2 только дружба (в промпте запрет романтики/флирта); звёзды не тратятся; ошибки ничего не отнимают.
 // Разговор: только по-немецки на уровне игрока — словарь пройденных уроков (MF.knownWords из mentor_data.json), 1–2 короткие фразы, RU мелко по кнопке «RU»,
 // мягкое исправление (TIPP по-русски + LanguageTool, как tutor.js), темы мира (WorldTime: сезон/время суток/праздник, огород, рыбалка, задания), голос speakDE, микрофон SpeechG.
-// ИИ: MF.AI (mentor.js) — тот же /ollama и модель, что app/src/core/ai.js. Ответ длиннее 2 фраз — обрезается; фраза со словами вне уровня или с ошибкой LT — выкидывается;
+// ИИ: MF.AI (mentor.js) поверх ds_ai.js (ИИ публично 25.11): ПК автора → свой ключ игрока → ИИ в телефоне → реплики уроков. Ответ длиннее 2 фраз — обрезается; фраза со словами вне уровня или с ошибкой LT — выкидывается;
 // ничего не осталось — готовая реплика из уроков. ИИ выкл. (route off) — офлайн: реплики уроков (DE+RU) и мини-диалоги глав (content dialogs).
 // Арт: craftpix pixel_characters_4dir 1 / 3 (как Max), портреты reodesuxz dwarf / hero_girl (style_pick/mentor/build_mf.py). API: Friend.*
 (function () {
@@ -204,7 +204,8 @@
           <div><b>Name</b><span class="ru">имя (можно своё)</span></div><div class="inp"><input id="fName" maxlength="14" value="${esc(W.draft.name)}" placeholder="${NAMES[g][0]}" autocomplete="off"></div>
           <div class="opts">${NAMES[g].map(x => `<button class="ui ui-btn" data-nm="${x}" style="min-width:90px;font-size:17px">${x}</button>`).join('')}</div>
           <span class="ru">Только дружба: друг говорит по-немецки на твоём уровне, помогает и подсказывает. Личные данные не спрашивает.</span>
-          <div class="btns" style="display:flex;justify-content:flex-end"><button class="ui ui-btn" data-ok="1">Fertig!<span class="ru">готово</span></button></div></div>`;
+          <div class="btns" style="display:flex;justify-content:flex-end"><button class="ui ui-btn" data-ok="1">Fertig!<span class="ru">готово</span></button></div>${first ? '' : '<div id="fDsai"></div>'}</div>`;
+      const ph = $('fDsai'); if (ph && window.DSAI) DSAI.card(ph, { mode: 'panel', onDone: st => aiBadge(st) });   // ИИ публично: ключ / ИИ в телефоне — удалить, подключить
     };
     W.draw = draw; draw();
   }
@@ -222,16 +223,24 @@
     const e = show(); W.setup = false; const n = noun(F.g);
     e.className = 'ui ui-panel-paper' + (W.ru ? ' ru' : '');
     e.innerHTML = `<div class="hd"><img class="pt" src="${(window.Portraits && Portraits.get('friend_' + F.g, 'happy')) || BASE + 'portraits/friend_' + F.g + '_happy.png'}" alt=""><div class="t">${esc(F.name)} <span style="font-size:16px"><b style="color:${COL[n.art]}">${n.art}</b> ${n.w}</span><span class="ru">${n.ru} · немецкий на твоём уровне</span><span class="ai" id="fAi">ИИ: проверяю…</span></div>
-        <button class="ui ui-btn${W.ru ? ' on' : ''}" data-ru="1">RU<span class="ru">перевод</span></button><button class="ui ui-btn" data-set="1">⚙<span class="ru">настр.</span></button><button class="ui ui-btn" data-x="1">Tschüss<span class="ru">пока</span></button></div>
+        <button class="ui ui-btn${W.ru ? ' on' : ''}" data-ru="1">${(window.DS_I18N && window.DS_I18N.lang === 'en') ? 'EN' : 'RU'}<span class="ru">перевод</span></button><button class="ui ui-btn" data-set="1">⚙<span class="ru">настр.</span></button><button class="ui ui-btn" data-x="1">Tschüss<span class="ru">пока</span></button></div>
       <div class="log" id="fLog"></div>
       <div class="chips">${Object.entries(TOPICS).map(([k, t]) => `<button class="ui ui-btn" data-topic="${k}">${t.de}<span class="ru">${t.ru}</span></button>`).join('')}<button class="ui ui-btn" data-dlg="1">Mini-Dialog<span class="ru">сценка урока</span></button></div>
       <div class="inp"><input id="fIn" lang="de" placeholder="Schreib auf Deutsch… · напиши по-немецки" autocomplete="off"><button class="ui ui-btn" data-mic="1" id="fMic">🎤<span class="ru">сказать</span></button><button class="ui ui-btn" data-send="1">Senden<span class="ru">отправить</span></button></div>`;
     const log = $('fLog'); (W.log || []).forEach(h => log.appendChild(h)); log.scrollTop = 1e6;
     if (!(W.log || []).length) { const g = canned(null); say({ de: 'Hallo, Max!', ru: 'Привет, Макс!', src: 'заготовка' }); if (g && g.de && g.de !== 'Hallo!') say({ de: g.de, ru: g.ru, src: 'реплика урока ' + (g.lid || '') }); }
-    MF.AI.status().then(st => { aiBadge(st); if (st.route === 'pc') MF.AI.warm(); });
+    MF.AI.status().then(st => { aiBadge(st); if (st.route === 'pc') MF.AI.warm(); offerKey(F); });
     return true;
   }
-  function aiBadge(st) { const b = $('fAi'); if (!b) return; b.className = 'ai' + (st.route === 'pc' ? '' : ' off'); b.textContent = st.route === 'pc' ? 'ИИ: ПК — свободный разговор' : 'ИИ выкл. — реплики уроков'; b.dataset.route = st.route; }
+  function aiBadge(st) {                                             // кто отвечает: ПК / твой ключ / ИИ в телефоне / реплики уроков (ИИ публично 25.11)
+    const b = $('fAi'); if (!b) return; const L = MF.AI.LABEL; b.className = 'ai' + (st.route === 'off' ? ' off' : ''); b.dataset.route = st.route;
+    const X = (ru, en) => (window.DSAI ? DSAI.L(ru, en) : ru);
+    b.textContent = st.route === 'off' ? 'ИИ выкл. — реплики уроков' : st.route === 'browser' ? L.browser + X(' — простые фразы', ' — simple phrases') : (L[st.route] || L.pc) + X(' — свободный разговор', ' — free talk');
+  }
+  function offerKey(F) {                                             // мастер «умный собеседник» — в окне беседы, один раз за сеанс (и не чаще раза в день после «Позже»)
+    if (W.wiz || !window.DSAI) return; DSAI.shouldOffer().then(y => { if (!y || W.wiz || !isOpen()) return; W.wiz = true;
+      const d = add('sys wiz', ''); DSAI.card(d, { who: (F && F.name ? F.name : 'Olga') + DSAI.L(' и ', ' and ') + 'Frau Becker', onDone: st => aiBadge(st) }); }).catch(() => {});
+  }
   function add(cls, html) { const d = document.createElement('div'); d.className = 'm ' + cls; d.innerHTML = html; (W.log = W.log || []).push(d); if (W.log.length > 60) W.log.shift(); const log = $('fLog'); if (log) { log.appendChild(d); log.scrollTop = 1e6; } return d; }
   function say(o) {                                                  // реплика друга: DE крупно, RU мелко (кнопка RU), намёк, источник, 🔊
     const d = add('fr', `<button class="ui ui-btn hr" data-hear="1" title="Hören">🔊</button><div class="de" lang="de">${artC(o.de)}</div><span class="ru">${esc(o.ru || '')}</span>${o.tip ? `<div class="tip">Tipp: <span class="ru" style="display:inline">${esc(o.tip)}</span></div>` : ''}<div class="src">${esc(o.src || '')}</div>`);
@@ -265,17 +274,19 @@
     try {
       if (userText) tip = await ltTip(userText);
       const st = await MF.AI.status(); aiBadge(st);
-      if (st.route !== 'pc') { const c = canned(topic, userText); return done({ de: c.de, ru: c.ru, tip, src: 'без ИИ · реплика урока ' + (c.lid || ''), kind: 'canned' }); }
-      const ctx = worldCtx(), lex = lexicon(ctx.de.concat([F.name, 'Max', 'Stillbach']));
-      const msgs = [{ role: 'system', content: sysPrompt(F, lex, ctx) }].concat(W.hist.slice(-8));
+      if (st.route === 'off') { const c = canned(topic, userText); offerKey(F); return done({ de: c.de, ru: c.ru, tip, src: 'без ИИ · реплика урока ' + (c.lid || ''), kind: 'canned' }); }
+      const ctx = worldCtx(), lex = lexicon(ctx.de.concat([F.name, 'Max', 'Stillbach'])), H = MF.hero ? MF.hero() : { level: 'A1.1', child: true };
+      const mem = window.DSAI ? DSAI.memo(W.hist, 6) : { summary: '', recent: W.hist.slice(-8) };   // память: выжимка старого + последние 6 реплик
+      const msgs = [{ role: 'system', content: sysPrompt(F, lex, ctx) + (mem.summary ? '\n' + mem.summary : '') }].concat(mem.recent);
+      const complex = !!(window.DSAI && userText && DSAI.isComplex(userText, { turns: W.hist.length, level: H.level }));
       msgs.push({ role: 'user', content: topic ? `(Тема: ${TOPICS[topic].ask}. Начни об этом одной короткой фразой.)` : userText });
       const p = MF.AI.warm(); const slow = setTimeout(() => { const r = wait.querySelector('.ru'); if (r) r.textContent = 'думаю… (модель на ПК загружается — до 2 минут)'; }, 1500);
       await Promise.race([p, new Promise(r => setTimeout(r, 300))]);
-      const txt = await MF.AI.chat(msgs, 150000, 120); clearTimeout(slow);
+      const txt = await MF.AI.chat(msgs, 150000, 120, { complex, child: H.child, verify: false }).finally(() => clearTimeout(slow));
       const line = k => ((txt.match(new RegExp('^\\s*' + k + ':\\s*(.*)$', 'im')) || [])[1] || '').replace(/\*\*/g, '').trim();
       let de = line('DE') || (txt.split('\n')[0] || '').trim(), ru = line('RU'), aiTip = line('TIPP');
       const f = levelFilter(de, lex); let kept = f.kept.map(x => x.s);
-      if (kept.length && st.lt !== false) {                         // каждая немецкая строка ИИ — через LanguageTool, фраза с ошибкой выкидывается
+      if (kept.length && st.lt) {                         // каждая немецкая строка ИИ — через LanguageTool, фраза с ошибкой выкидывается
         const iss = await MF.AI.lt(kept.join(' ')); if (iss && iss.length) { const nm = [String(F.name).toLowerCase(), 'max', 'stillbach']; let pos = 0;
           kept = kept.filter(s => { const a = pos, b = pos + s.length; pos = b + 1; return !iss.some(m => m.offset >= a && m.offset < b && !nm.includes(kept.join(' ').substr(m.offset, m.length).toLowerCase())); }); }
       }
@@ -287,8 +298,13 @@
         ru = rs.length === sents.length ? sents.map((s, i) => (kept.includes(s) ? rs[i] : null)).filter(Boolean).join(' ') : rs.slice(0, kept.length).join(' ');
       }
       W.hist.push({ role: 'assistant', content: 'DE: ' + outDe + '\nRU: ' + ru });
-      done({ de: outDe, ru, tip: tip || aiTip || null, src: MF.AI.LABEL.pc + (f.dropped.length || f.cut ? ' · упрощено до уровня' : ''), kind: 'ai' });
-    } catch (e) { const c = canned(topic, userText); done({ de: c.de, ru: c.ru, tip, src: 'ИИ не ответил — реплика урока ' + (c.lid || ''), kind: 'canned' }); }
+      const who = (MF.AI.last && MF.AI.last.label) || MF.AI.LABEL.pc; aiBadge(MF.AI.st || st);
+      done({ de: outDe, ru, tip: tip || aiTip || null, src: who + (f.dropped.length || f.cut ? ' · упрощено до уровня' : ''), kind: 'ai' });
+    } catch (e) { const c = canned(topic, userText), k = e && e.code; if (MF.AI.st) aiBadge(MF.AI.st);
+      const X = (ru, en) => (window.DSAI ? DSAI.L(ru, en) : ru);
+      const why = k === 'simple' ? X('упрощённый режим (ИИ в телефоне — только простые фразы)', 'simple mode (on-device AI: simple phrases only)') : k === 'safety' ? X('давай о другом', 'let’s talk about something else')
+        : k === 'quota' ? X('лимит ключа на сегодня', 'key limit for now') : 'ИИ не ответил';
+      done({ de: c.de, ru: c.ru, tip, src: why + (k === 'simple' || k === 'safety' || k === 'quota' ? X(' — реплика урока ', ' — lesson line ') : ' — реплика урока ') + (c.lid || ''), kind: 'canned' }); }
   }
   function send(text) {
     text = String(text || '').trim().slice(0, 160); if (!text || W.busy) return; const inp = $('fIn'); if (inp) inp.value = '';

@@ -27,7 +27,7 @@
   const today = () => { const d = nowDate(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
   function season() { const W = WT(); if (W) { try { return W.now().season; } catch (e) {} } const m = nowDate().getMonth() + 1; return m >= 3 && m <= 5 ? 'fruehling' : m <= 8 && m >= 6 ? 'sommer' : m >= 9 && m <= 11 ? 'herbst' : 'winter'; }
   function fests() { const W = WT(); if (!W) return []; try { return W.now().festivals || []; } catch (e) { return []; } }
-  const chapters = () => { try { return JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) { return []; } };
+  const chapters = () => { try { return window.DSMode ? DSMode.chapters() : JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) { return []; } };   // Три режима: DSMode (mode.js)
   function passed(n) { if (!n) return true; const c = chapters().find(c => +c.n === +n); if (c && c.total > 0 && c.done >= c.total) return true; return +n === 1 && typeof state !== 'undefined' && !!state.done; }
   function reach() { const started = chapters().filter(c => c.done > 0).map(c => +c.n); return Math.max(typeof state !== 'undefined' && state.done ? 2 : 1, started.length ? Math.max(...started) + 1 : 1); }   // как town.js
   const boardOpen = () => reach() >= 2;                              // das Gildenhaus открыто с главы 2 (town.js HOUSES)
@@ -141,6 +141,7 @@
     e.addEventListener('click', ev => {
       const b = ev.target.closest('button'); if (!b) return; ev.stopPropagation();
       if (b.dataset.x) return close();
+      if (b.dataset.alltag) { close(); return window.Alltag && Alltag.open(); }   // Задания в жизни 25.11: текущее задание из приложения
       if (b.dataset.take != null) return take(+b.dataset.take);
       if (b.dataset.turn) { turnIn(b.dataset.turn); return view(); }
       if (b.dataset.acc) { accept(W.mode); const q = Qs().list().find(x => x.giver === W.mode); if (q && window.speakDE) speakDE(q.title_de); return close(); }
@@ -169,7 +170,7 @@
           const btn = o.done ? '<span class="st">✓ erledigt</span>' : act ? `<span class="st">${act.count}/${act.need} · läuft</span>` : `<button class="ui ui-btn" data-take="${i}">Nehmen<span class="ru">взять</span></button>`;
           return `<div class="row${o.fest ? ' fest' : ''}"><div class="tx"><div class="de">${o.fest ? '<span class="tag">' + (o.festDe || 'Fest') + '</span>' : ''}${o.t.de} <span style="color:#9b6a2e">×${o.t.need}</span></div><div class="ru">${o.t.ru}</div><div class="rw">${rwTxt(o.t)}</div></div>${btn}</div>`;
         }));
-      show(`<div class="hd"><div class="t">${art('das Schwarze Brett')}<span class="ru">доска заданий гильдии · 3 задания в день · сдать можно здесь</span></div><button class="ui ui-btn" data-x="1">Zurück<span class="ru">назад</span></button></div>${rows.join('')}`);
+      show(`<div class="hd"><div class="t">${art('das Schwarze Brett')}<span class="ru">доска заданий гильдии · 3 задания в день · сдать можно здесь</span></div><button class="ui ui-btn" data-x="1">Zurück<span class="ru">назад</span></button></div>${window.Alltag ? Alltag.boardRow() : ''}${rows.join('')}`);
       return;
     }
     const id = W.mode, n = NPC()[id]; if (!n) return close();
@@ -183,7 +184,7 @@
   }
   function open(mode) {
     if (!Q || !Qs()) return false;
-    if (mode === 'board') { if (!boardOpen()) { if (window.toast) toast('das Schwarze Brett: ab Kapitel 2', 1800); return false; } W.mode = 'board'; if (window.speakDE) speakDE('das Schwarze Brett'); view(); return true; }
+    if (mode === 'board') { if (!boardOpen()) { if (window.toast) toast('das Schwarze Brett: ' + (window.DSMode ? DSMode.lock(2).de : 'ab Kapitel 2'), 1800); return false; } W.mode = 'board'; if (window.speakDE) speakDE('das Schwarze Brett'); view(); return true; }
     return interact(activeScene(), mode);
   }
   function interact(sc, id) {                                         // житель: сдать готовое или предложить новое; нет ни того, ни другого -> false (обычная реплика)

@@ -349,6 +349,13 @@
       <div class="rar" style="color:${RCOL[f.rar]}">${RSTAR[f.rar]} ${(Album.meta() ? Album.meta().rarity[f.rar][0] : '')}</div>
       <div class="row">${['der', 'die', 'das'].map(a => `<button class="ui ui-btn art" data-a="${a}" style="color:${COL[a]}">${a}</button>`).join('')}</div></div>`);
   }
+  function payBonus(rar, id) {                                       // Антифарм 25.11: бонус за верный артикль — до caps_day.fish монет в день (Rewards -> Eco.earn)
+    const want = ((DATA && DATA.coins) || {})[rar] || 3; let bonus = want;
+    if (window.Rewards) bonus = Rewards.coins(want, 'fish ' + (id || rar), 'fish');
+    else if (typeof setCoins === 'function' && typeof state !== 'undefined') setCoins(state.coins + bonus);
+    return { bonus, capped: bonus < want };
+  }
+  F.payBonus = payBonus;
   function answer(a) {
     const c = cur, id = c.fish, f = DATA.fish[id], ok = a === f.art, word = f.art + ' ' + f.w;
     let isNew = true, rec = false, n = 1, bonus = 0;
@@ -358,7 +365,8 @@
     }
     try { const k = 'ds_proto.inv', v = JSON.parse(localStorage.getItem(k)) || {}; v.fish = v.fish || {}; v.fish[id] = (v.fish[id] || 0) + 1; n = v.fish[id];   // Rucksack: улов + карточка слова
       v.cards = v.cards || []; if (!v.cards.includes(word)) v.cards.push(word); localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
-    if (ok) { bonus = (DATA.coins || {})[f.rar] || 3; if (typeof setCoins === 'function' && typeof state !== 'undefined') setCoins(state.coins + bonus); }
+    let capped = false;
+    if (ok) { const P = payBonus(f.rar, id); bonus = P.bonus; capped = P.capped; }
     else if (window.Combat && Combat.addReview) Combat.addReview({ art: f.art, w: f.w, ru: f.ru });
     if (window.speakDE) speakDE(word);
     const det = { id, art: f.art, w: f.w, ru: f.ru, cm: c.cm, water: c.spot.water, season: c.t && c.t.season, phase: c.t && c.t.phase, artOk: ok };
@@ -367,7 +375,7 @@
     c.lastCatch = det;
     show('catch', `<div class="pic"><img src="${BASE + f.img}" alt="" style="${fit(f.px, 92, 88, 4)}"></div><div class="body">
       <div class="q">${art(word)} · ${c.cm} cm<span class="ru">${f.ru}</span></div>
-      <div class="msg${ok ? ' good' : ''}">${ok ? `Richtig! ✓ +${bonus} Münzen<span class="ru">верно — бонус монетами</span>` : `Fast! Richtig ist: ${art(word)}<span class="ru">почти — улов всё равно твой, слово ушло в «Повтор»</span>`}</div>
+      <div class="msg${ok ? ' good' : ''}">${ok ? (capped && !bonus ? `Richtig! ✓<span class="ru">верно · на сегодня монеты за рыбу собраны — ловить можно для практики</span>` : `Richtig! ✓ +${bonus} Münzen<span class="ru">верно — бонус монетами</span>`) : `Fast! Richtig ist: ${art(word)}<span class="ru">почти — улов всё равно твой, слово ушло в «Повтор»</span>`}</div>
       <div class="rar">${isNew ? 'Neu im Album!' : rec ? 'Rekord: ' + c.cm + ' cm!' : 'Im Album ✓'} · im Rucksack: ×${n}<span class="ru">${isNew ? 'новое в альбоме' : rec ? 'рекорд размера' : 'уже в альбоме'} · в рюкзаке</span></div>
       <div class="row"><button class="ui ui-btn big" data-f="weiter">Weiter</button></div></div>`);
   }

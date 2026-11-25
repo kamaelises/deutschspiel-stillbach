@@ -12,7 +12,7 @@
   window.WELT_ON = true;                                             // континент Wiesenland готов: checks/overworld_check.cjs PASS (23.11)
   window.KELLER_HATCH = { x: 696, y: 440 };                          // люк в подвал (центр, px деревни); Dungeon возвращает Max сюда
   function reach() {
-    let ch = []; try { ch = JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) {}
+    let ch = []; try { ch = window.DSMode ? DSMode.chapters() : JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) {}   // Три режима: DSMode (mode.js)
     const started = ch.filter(c => c.done > 0).map(c => c.n);
     return Math.max(typeof state !== 'undefined' && state.done ? 2 : 1, started.length ? Math.max(...started) + 1 : 1);
   }
@@ -33,7 +33,7 @@
         if (sc.__dragged || sc.busy) return;
         if (window.speakDE) speakDE(h.de);
         const go = () => {
-          if (locked) return toast(h.de + ': ab Kapitel ' + h.chapter, 1800);
+          if (locked) return toast(h.de + ': ' + (window.DSMode ? DSMode.lock(h.chapter).de : 'ab Kapitel ' + h.chapter), 1800);
           if (!h.ort || !(window.ORTE && ORTE[h.ort])) return toast(h.de + ' — bald', 1600);
           sc.registry.set('spawnAt', [b.door[0], b.door[1] + 40]); sc.busy = true;
           sc.cameras.main.fadeOut(250, 29, 19, 11); sc.cameras.main.once('camerafadeoutcomplete', () => sc.scene.start('Ort', { place: h.ort }));
@@ -56,7 +56,7 @@
       window.UHRTURM = { x: ox, y: oy, w: U.w, h: U.h, clock: [hx, hy], hands: () => [hm.frame.name, hh.frame.name], time: () => hm.uhr };
     };
     if (!T.__mask0) T.__mask0 = T.mask.slice(); T.mask = T.__mask0.slice();   // маска заново при каждом входе: ступени только добавляют стены
-    const chOf = n => { try { return (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).find(c => +c.n === n) || null; } catch (e) { return null; } };
+    const chOf = n => { try { return (window.DSMode ? DSMode.chapters() : JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).find(c => +c.n === n) || null; } catch (e) { return null; } };
     const plotStage = p => { if (p.chapter > open) return 1; const c = chOf(p.chapter); return c && c.total > 0 && c.done >= c.total ? 3 : 2; };
     window.plotStage = plotStage;
     const wall = (x, y, w, h) => { const c = T.cell; for (let r = Math.floor(y / c); r <= Math.floor((y + h - 1) / c); r++) { const row = T.mask[r]; if (!row) continue;
@@ -100,7 +100,7 @@
         if (sc.__dragged || sc.busy) return;
         if (key === 'uhrturm') { const [h, mi] = uhrNow(); if (window.speakDE) speakDE('der Uhrturm. Es ist ' + h + ' Uhr' + (mi ? ' ' + mi : '') + '.'); return toast('der Uhrturm — Es ist ' + h + ':' + String(mi).padStart(2, '0') + ' Uhr.', 2200); }   // интерьера нет: башня говорит время
         if (window.speakDE) speakDE(p.de);
-        if (!built) return toast(p.de + ' — Baustelle · Kapitel ' + p.chapter, 1800);
+        if (!built) return toast(p.de + ' — Baustelle · ' + (window.DSMode ? DSMode.unit(p.chapter) : 'Kapitel ' + p.chapter), 1800);
         const dx = ox + S.door[key], dy = y1 + 30, ort = window.ORTE && ORTE[key] ? key : null;   // Код (интерьеры) 24.11: дверь -> Ort (place 'cafe' / 'supermarkt'); нет интерьера -> «bald»
         const go = () => {
           if (!ort) return toast(p.de + ' — bald', 1600);
@@ -124,12 +124,12 @@
       const t1 = sc.add.text(0, 0, 'Bauplatz', { ...st, fontSize: '13px', fontStyle: 'bold', color: '#f3d9a4' });
       const ta = sc.add.text(0, 0, art + ' ', { ...st, fontSize: '19px', fontStyle: 'bold', color: COL[art] || '#fff4dc' });
       const tw = sc.add.text(0, 0, w.join(' '), { ...st, fontSize: '19px', fontStyle: 'bold', color: '#fff4dc' });
-      const t3 = sc.add.text(0, 0, 'ab Kapitel ' + p.chapter + ' · ' + p.ru, { ...st, fontSize: '12px', color: '#f3d9a4', strokeThickness: 2 });
+      const t3 = sc.add.text(0, 0, (window.DSMode ? DSMode.lock(p.chapter).de : 'ab Kapitel ' + p.chapter) + ' · ' + p.ru, { ...st, fontSize: '12px', color: '#f3d9a4', strokeThickness: 2 });
       const rows = [[t1], [ta, tw], [t3]], wid = r => r.reduce((s, t) => s + t.width, 0), hei = r => Math.max(...r.map(t => t.height));
       let k = Math.min(1, ih / rows.reduce((s, r) => s + hei(r), 0)); rows.forEach(r => { k = Math.min(k, iw / wid(r)); });
       let y = sy + iy0 + 1 + (ih - rows.reduce((s, r) => s + hei(r) * k, 0)) / 2;
       rows.forEach(r => { let x = cx - wid(r) * k / 2; r.forEach(t => { t.setScale(k).setPosition(x, y).setDepth(dep + 1); x += t.width * k; }); y += hei(r) * k; });
-      board.setInteractive({ useHandCursor: true }).on('pointerup', () => { if (sc.__dragged) return; if (window.speakDE) speakDE(p.de); toast(p.de + ' — ab Kapitel ' + p.chapter, 1800); });
+      board.setInteractive({ useHandCursor: true }).on('pointerup', () => { if (sc.__dragged) return; if (window.speakDE) speakDE(p.de); toast(p.de + ' — ' + (window.DSMode ? DSMode.lock(p.chapter).de : 'ab Kapitel ' + p.chapter), 1800); });
     });
     const A1K = ['baustelle', 'baustelle_s', 'uhrturm_bau', 'cafe', 'supermarkt', 'stake', 'uhrturm'];   // ступени (Код A1) + der Uhrturm (Арт)
     if (sc.textures.exists('plot_sign') && sc.cache.json.get('a1st') && sc.cache.json.get('a1ut') && sc.textures.exists('a1_uhrturm_hands') && A1K.every(k => sc.textures.exists('a1_' + k))) signs();

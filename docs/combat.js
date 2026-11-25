@@ -53,6 +53,13 @@
   function pool() {
     const W = nounsJson() && nounsJson().chapters; if (!W) return [];
     let out = []; passedLessons().forEach(p => out.push(...p.les.words));
+    if (window.DSMode && DSMode.mode() === 'game') {                 // Три режима, «Только игра»: главы 1–2 + слова пройденных (по желанию) уроков + Wortkarten из сундуков
+      const set = new Map(), all = new Map(), add = w => { if (w && w.w && !set.has(w.art + ' ' + w.w)) set.set(w.art + ' ' + w.w, w); };
+      ['1', '2'].forEach(k => (W[k] || []).forEach(l => l.words.forEach(add))); out.forEach(add);
+      Object.values(W).forEach(ls => ls.forEach(l => (l.words || []).forEach(w => all.set(w.art + ' ' + w.w, w))));
+      DSMode.gameWords().forEach(s => add(all.get(s)));
+      C.fallback = false; return [...set.values()];
+    }
     C.fallback = out.length < 3;
     if (C.fallback) { out = []; ['1', '2'].forEach(k => (W[k] || []).forEach(l => out.push(...l.words))); }   // ещё ничего не пройдено: существительные глав 1–2
     return out;
@@ -571,16 +578,20 @@
     if (H.stun > 0) { H.stun--; F.heroSkips = (F.heroSkips || 0) + 1; heroPlate(true); say('Max ist betäubt …', 'Макс оглушён и пропускает ход. «Reinigung» снимает оглушение.'); return sc.time.delayedCall(700, () => enemyTurn(sc)); }
     F.turn = 'hero'; F.busy = false; buttons(true); say('Dein Zug: Welcher Artikel?', 'Твой ход: какой артикль?');
   }
+  function payFight(c0, x0) {                                        // Антифарм 25.11: монеты (caps_day.fight) и опыт (caps_day.xp) за бои — до дневного предела (rewards.js)
+    const R = window.Rewards, coins = R ? R.coins(c0, 'fight', 'fight') : c0, xp = R ? R.xp(x0, 'xp') : x0;
+    if (!R) setCoins(state.coins + coins); state.xp = (state.xp || 0) + xp;
+    while (lvl() < MAXLVL && state.xp >= xpNeed(lvl())) { state.xp -= xpNeed(lvl()); state.level = lvl() + 1; }
+    store.set(state); return { coins, xp, capped: coins < c0 || xp < x0 };
+  }
   function victory(sc) {
     const F = sc.__cb.fight; F.turn = 'end';
-    const coins = F.coins, xp = F.xp, l0 = lvl();
-    setCoins(state.coins + coins); state.xp = (state.xp || 0) + xp;
-    while (lvl() < MAXLVL && state.xp >= xpNeed(lvl())) { state.xp -= xpNeed(lvl()); state.level = lvl() + 1; }
+    const R = window.Rewards, l0 = lvl(), P = payFight(F.coins, F.xp), coins = P.coins, xp = P.xp, capped = P.capped && !!R;
     const up = lvl() > l0; if (up) state.hp = hpMax(); mana(manaMax()); store.set(state); heroPlate(true);
     const words = F.won.map(w => `<div class="cb-w"><b style="color:${COL[w.art]}">${w.art}</b> ${w.w}<small class="cb-ru">${w.ru || ''}</small></div>`).join('');
     endPanel(`<div class="cb-big">Sieg!</div><small class="cb-ru">победа</small>
       <div class="cb-gain"><img src="assets_v3/icon_coin.png" alt=""> +${coins} Münzen · +${xp} XP${up ? ' · <b>Stufe ' + lvl() + '!</b>' : ''}</div>
-      <small class="cb-ru">+${coins} монет · +${xp} опыта${up ? ' · новый уровень' : ''} · мана снова полная</small><div class="cb-words">${words}</div>`, 'Weiter', 'дальше', () => endFight(sc, 'win'));
+      <small class="cb-ru">+${coins} монет · +${xp} опыта${up ? ' · новый уровень' : ''} · мана снова полная</small>${capped ? `<div class="cb-cap" style="font-size:15px;margin-top:2px">${R.msg().de}</div><small class="cb-ru">${R.msg().ru}</small>` : ''}<div class="cb-words">${words}</div>`, 'Weiter', 'дальше', () => endFight(sc, 'win'));
     if (sc.__cb.opts.onVictory) sc.__cb.opts.onVictory({ coins, xp });
   }
   function defeat(sc) {
@@ -729,7 +740,7 @@ body.vert #cbHero{top:var(--cbTop,66px);right:12px}
     const y = g.scene.getScene('Yard'); if (y) y.events.on('create', () => { const w = y.registry.get('wokeHome'); if (w) { y.registry.set('wokeHome', null); setTimeout(() => wakeCard(w), 350); } });
   })();
 
-  window.Combat = { spawnEnemies, update, preload, act, addReview, review, heroHp, hpMax, pool, mana, manaMax, vocab, power, lvl, xpNeed, SPELLS, spellOpen, cast, potion, similar, passedLessons, magic,
+  window.Combat = { payFight, spawnEnemies, update, preload, act, addReview, review, heroHp, hpMax, pool, mana, manaMax, vocab, power, lvl, xpNeed, SPELLS, spellOpen, cast, potion, similar, passedLessons, magic,
     get rng() { return C.rng; }, set rng(f) { C.rng = f; }, get srng() { return C.srng; }, set srng(f) { C.srng = f; }, fleeChance,
     fight: sc => sc.__cb && sc.__cb.fight, enemies: sc => (sc.__cb ? sc.__cb.enemies : []), start: (sc, e) => startFight(sc, e), aim, wakeHome };
 })();

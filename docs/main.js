@@ -9,6 +9,8 @@ const $ = (id) => document.getElementById(id);
   // просто не добавляется, без console.error. Прочие повторы ключей (addCanvas и т.п.) по-прежнему пишут ошибку.
   const IF = Phaser.Loader.FileTypes.ImageFile.prototype, add = IF.addToCache;
   IF.addToCache = function () { if (this.type === 'image' && !this.linkFile && this.cache && this.cache.exists && this.cache.exists(this.key)) return; return add.call(this); };
+  const SF = Phaser.Loader.FileTypes.SpriteSheetFile && Phaser.Loader.FileTypes.SpriteSheetFile.prototype;   // 25.11: то же для спрайт-листов (rs_arbeiter в restore.js)
+  if (SF) { const addS = SF.addToCache; SF.addToCache = function () { if (!this.linkFile && this.cache && this.cache.exists && this.cache.exists(this.key)) return; return addS.call(this); }; }
 })();
 const store = { get() { try { return JSON.parse(localStorage.getItem('ds_proto')) || { done: false, coins: 0 }; } catch (e) { return { done: false, coins: 0 }; } },
   set(v) { try { localStorage.setItem('ds_proto', JSON.stringify(v)); } catch (e) {} } };
@@ -44,7 +46,7 @@ function v3(sc, key, xy, depth, org) { const s = sc.add.image(xy[0], xy[1], key)
 function foot(sc, xy, w) { return sc.add.ellipse(xy[0] + w * 0.15, xy[1] - 2, w, w * 0.28, 0x0f1c08, 0.35).setDepth(xy[1] - 1); }
 // ---- Код (Max) 24.11: Max растёт вместе с курсом — kid (главы A1 1–16), teen (A2 17–32), adult (B1+, 33…). Листы: style_pick/max_kid/build_max_ages.py
 // (craftpix pixel_characters_4dir/2, ряды туловища/ног вырезаны, без ресемпла). Лист ступени подменяет текстуру hero_walk; нет файла — остаётся hero_walk.png.
-function maxAge() { let n = 0; try { (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).forEach(c => { if (+c.done > 0) n = Math.max(n, +c.n); }); } catch (e) {} return n >= 33 ? 'adult' : n >= 17 ? 'teen' : 'kid'; }
+function maxAge() { let n = 0; try { (window.DSMode ? DSMode.chapters() : JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).forEach(c => { if (+c.done > 0) n = Math.max(n, +c.n); }); } catch (e) {} return n >= 33 ? 'adult' : n >= 17 ? 'teen' : 'kid'; }
 window.maxAge = maxAge;
 window.MAX_SHEETS = true;    // 24.11 главный выбрал вид: листы craftpix + лицо по пикселям (style_pick/max_kid/add_face.py, Код Max/Olga); false — снова только hero_walk.png
 function maxGrow(sc, noLoad) {
@@ -117,6 +119,8 @@ function endCard(sc, o) {
 function paidKey(sc) { return sc.scene.key === 'Ort' ? 'ort:' + sc.placeKey : 'room1'; }
 function isRepeat(sc) { return !!(state.paid && state.paid[paidKey(sc)]); }
 function markPaid(sc) { state.paid = state.paid || {}; state.paid[paidKey(sc)] = true; store.set(state); }
+function linePaid(sc) { return !!(state.paidLines && state.paidLines[paidKey(sc) + ':' + sc.i]); }   // Антифарм 25.11: +5 за реплику — один раз (выйти до конца и войти снова больше не платит)
+function markLine(sc) { state.paidLines = state.paidLines || {}; state.paidLines[paidKey(sc) + ':' + sc.i] = 1; store.set(state); }
 class Room extends Phaser.Scene {
   constructor(k) { super(k || 'Room'); }
   create(data) {
@@ -151,7 +155,7 @@ class Room extends Phaser.Scene {
     const cx = this.hero.x, cy = this.hero.y - 120;
     for (let k = 0; k < 24; k++) { const d = this.add.circle(cx, cy, 5, k % 2 ? 0xffd23f : 0xffffff).setDepth(999), a = k / 24 * Math.PI * 2, r = 80 + Math.random() * 90;
       this.tweens.add({ targets: d, x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r - 20, alpha: 0, duration: 800, onComplete: () => d.destroy() }); }
-    this.tweens.add({ targets: this.npc, y: this.npc.y - 18, duration: 150, yoyo: true, repeat: 1 }); if (isRepeat(this)) toast('Zauber!', 1000); else { this.coinsEarned += 5; setCoins(state.coins + 5); toast('Zauber! +5', 1100); } setPortraits('smile', 'smile', true);
+    this.tweens.add({ targets: this.npc, y: this.npc.y - 18, duration: 150, yoyo: true, repeat: 1 }); if (isRepeat(this) || linePaid(this)) toast('Zauber!', 1000); else { markLine(this); this.coinsEarned += 5; setCoins(state.coins + 5); toast('Zauber! +5', 1100); } setPortraits('smile', 'smile', true);
   }
   next() {
     clearInterval(this.tw); this.i++;

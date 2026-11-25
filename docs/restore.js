@@ -44,10 +44,11 @@
     const other = Object.keys(v.t).find(k => v.t[k].st === 'work');
     if (other) { const o = task(other); return { ok: false, why: 'busy', de: 'Max ist beschäftigt: ' + (o ? o.de : other) + '.', ru: 'Max уже занят другим делом — подожди, пока закончит.' }; }
     if (t.kind === 'help') {
-      const P = plotOf(t); if (!P || P.stage < (t.min_stage || 2)) return { ok: false, why: 'stage', de: 'Die Baustelle beginnt ab Kapitel ' + (P ? P.p.chapter : '?') + '.', ru: 'стройка начнётся с главы ' + (P ? P.p.chapter : '?') };
+      const P = plotOf(t); if (!P || P.stage < (t.min_stage || 2)) return { ok: false, why: 'stage', de: 'Die Baustelle beginnt ' + (P && window.DSMode ? DSMode.lock(P.p.chapter).de : 'ab Kapitel ' + (P ? P.p.chapter : '?')) + '.', ru: 'стройка начнётся ' + (P && window.DSMode ? DSMode.lock(P.p.chapter).ru : 'с главы ' + (P ? P.p.chapter : '?')) };
       if (window.Eco && Eco.capLeft('help') <= 0) return { ok: false, why: 'tired', de: 'Max ist müde. Morgen wieder!', ru: 'на сегодня хватит — Max устал, завтра снова' };
     }
     const need = (t.stars || 0) - stars();
+    if (need > 0 && window.DSMode && DSMode.starsWhy(need)) return Object.assign({ ok: false, why: 'stars' }, DSMode.starsWhy(need));   // Три режима: в «Только игра» ★ от Stufe
     if (need > 0) return { ok: false, why: 'stars', de: 'Noch ' + need + ' ★ — lerne in der App.', ru: 'нужно ещё ' + need + ' ★: пройди уроки в приложении (звёзды не тратятся)' };
     const miss = costOf(t) - coins();
     if (miss > 0) return { ok: false, why: 'coins', de: 'Noch ' + miss + ' Münzen.', ru: 'не хватает ' + miss + ' монет: урок, помощь на стройке, продажа урожая' };

@@ -233,8 +233,10 @@
       const place = (key, tx, ty) => { const f = this.textures.get(key).getSourceImage(), w = f.width - 2, h = f.height - 1;
         return this.add.image(tx * TS + Math.round((T - w) / 2) * SC, (ty + 1) * TS - SC - h * SC, key).setOrigin(0, 0).setScale(SC).setDepth((ty + 1) * TS - SC); };
       d.props.forEach(p => place('dp_' + p.t, p.tx, p.ty));
+      let op = []; try { op = JSON.parse(localStorage.getItem('ds_proto.opened')) || []; } catch (e) {}   // Антифарм 25.11: открытый сундук этого сида/этажа остаётся пустым при новом входе
       d.chests.forEach((c, i) => {
         c.img = place('dp_chest', c.tx, c.ty); c.id = 'dun:' + this.seed + ':' + this.floorNo + ':' + i; c.tier = this.floorNo === FLOORS - 1 ? 'boss' : 'normal';
+        c.opened = op.includes(c.id) || !!(window.Rewards && Rewards.has('chest:' + c.id)); if (c.opened && c.img.setTint) c.img.setTint(0xb8a890);
         if (c.img && c.img.setInteractive && window.Loot) c.img.setInteractive({ useHandCursor: true }).on('pointerup', () => {   // tap: Max walks up, the chest asks a word
           if (this.__dragged || this.busy || c.opened) return;
           const go = () => Loot.open(this, c); if (window.walkToScene) window.walkToScene(this, c.x, c.y + 30, go); else go();

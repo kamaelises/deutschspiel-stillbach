@@ -31,6 +31,7 @@
   function price(sec, id, fb) { const s = C[sec], p = s ? s[id] : undefined; return typeof p === 'number' ? p : fb; }
   function stars() {                                              // lessons of the app = stars; only grow (kept max), never spent
     let n = 0; try { const a = JSON.parse(localStorage.getItem('ds_proto.app')) || {};
+      if (window.DSMode) a.chapters = DSMode.chapters();             // Три режима: в «Только игра» звёзды и от Stufe (главы, открытые игрой)
       n = typeof a.stars === 'number' ? a.stars : (a.chapters || []).reduce((s, c) => s + Math.max(0, +c.done || 0), 0) * ((C.stars && C.stars.perLesson) || 1); } catch (e) {}
     const v = load(); if (n > v.starsMax) { v.starsMax = n; save(v); } return Math.max(n, v.starsMax);
   }

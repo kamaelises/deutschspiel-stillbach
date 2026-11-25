@@ -40,37 +40,27 @@
     return { name: 'Max', level, child, age_ru: child ? 'ребёнок' : 'подросток' };
   }
 
-  // ---------- ИИ: тот же путь, что app/src/core/ai.js (route pc|off), без облака
-  const AI = { MODEL: 'gemma4:12b', KEEP: '30m', st: null, at: 0, warming: null };
-  const tmo = (ms, run) => { const c = new AbortController(), t = setTimeout(() => c.abort(), ms); return run(c.signal).finally(() => clearTimeout(t)); };
+  // ---------- ИИ (ИИ публично 25.11): слои ds_ai.js — (а) ПК автора → (б) свой ключ игрока → (в) ИИ в браузере → (г) реплики уроков.
+  // MF.AI — прежний интерфейс (status/warm/chat/lt/LABEL) поверх window.DSAI; route: pc | key | browser | off. AI.last — кто ответил последним.
+  const DS = () => window.DSAI || null;
+  const Lx = (ru, en) => (DS() ? DS().L(ru, en) : ru);               // новые строки ИИ — сразу RU/EN (как в ds_ai.js)
+  const AI = { st: null, last: null };
   AI.status = function (force) {
-    if (!force && AI.st && Date.now() - AI.at < 30000) return Promise.resolve(AI.st);
-    if (window.__mfAiOff) return Promise.resolve(AI.st = { route: 'off', ollama: false, lt: false });
-    const o = { route: 'off', ollama: false, lt: false };
-    return Promise.all([
-      tmo(4000, s => fetch('/ollama/api/tags', { signal: s, cache: 'no-store' })).then(async r => { if (r.ok) { const j = await r.json(); o.ollama = (j.models || []).some(m => m.name === AI.MODEL || m.model === AI.MODEL); } }).catch(() => {}),
-      tmo(4000, s => fetch('/lt/v2/languages', { signal: s, cache: 'no-store' })).then(r => { o.lt = r.ok; }).catch(() => {}),
-    ]).then(() => { o.route = o.ollama ? 'pc' : 'off'; AI.st = o; AI.at = Date.now(); return o; });
+    const d = DS(); if (!d) return Promise.resolve(AI.st = { route: 'off', ollama: false, lt: false });
+    return d.status(force).then(s => (AI.st = s)).catch(() => (AI.st = { route: 'off', ollama: false, lt: false }));
   };
-  AI.warm = function () {                                            // как ai.warm(): уже в памяти -> продлить; нет -> загрузить (до ~90 с с HDD)
-    if (AI.warming) return AI.warming; const t0 = Date.now();
-    AI.warming = tmo(5000, s => fetch('/ollama/api/ps', { signal: s, cache: 'no-store' })).then(r => r.ok ? r.json() : { models: [] }).catch(() => ({ models: [] })).then(j => {
-      const body = JSON.stringify({ model: AI.MODEL, keep_alive: AI.KEEP });
-      if ((j.models || []).some(m => m.name === AI.MODEL || m.model === AI.MODEL)) { fetch('/ollama/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }).catch(() => {}); return { loaded: true, already: true, ms: Date.now() - t0 }; }
-      return tmo(180000, s => fetch('/ollama/api/generate', { method: 'POST', signal: s, headers: { 'Content-Type': 'application/json' }, body })).then(r => ({ loaded: r.ok, already: false, ms: Date.now() - t0 })).catch(() => ({ loaded: false, ms: Date.now() - t0 }));
-    }).finally(() => setTimeout(() => { AI.warming = null; }, 1000));
-    return AI.warming;
+  AI.warm = () => (DS() && AI.st && AI.st.route === 'pc' ? DS().pc.warm() : Promise.resolve({ loaded: false, ms: 0 }));
+  AI.chat = function (messages, ms = 150000, maxTok = 160, opt) {   // -> текст; кто ответил — AI.last.route
+    const d = DS(); if (!d) return Promise.reject(Object.assign(new Error('off'), { code: 'off' }));
+    return d.chat(messages, Object.assign({ ms, maxTok }, opt || {})).then(r => { AI.last = r; if (AI.st && AI.st.route !== r.route) AI.st = Object.assign({}, AI.st, { route: r.route }); return r.text; });
   };
-  AI.chat = function (messages, ms = 150000, maxTok = 160) {
-    return tmo(ms, s => fetch('/ollama/api/chat', { method: 'POST', signal: s, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: AI.MODEL, stream: false, think: false, keep_alive: AI.KEEP, options: { temperature: 0.4, num_predict: maxTok }, messages }) }))
-      .then(r => { if (!r.ok) throw new Error('ПК ответил ' + r.status); return r.json(); }).then(j => (j.message && j.message.content) || '');
+  AI.lt = text => (DS() ? DS().pc.lt(text) : Promise.resolve(null));   // LanguageTool — только на ПК автора; без ПК null (проверка уровня — своя)
+  AI.on = st => !!st && st.route !== 'off';
+  Object.defineProperty(AI, 'LABEL', { get: () => (DS() ? DS().labels() : { pc: 'ИИ: ПК', key: 'ИИ: твой ключ', browser: 'ИИ в телефоне', off: 'ИИ выкл.' }) });
+  AI.offer = function (host, who, onDone) {                          // мастер ключа в момент ИИ-беседы (не чаще раза в день после «Позже»)
+    const d = DS(); if (!d || !host) return Promise.resolve(null);
+    return d.shouldOffer().then(y => (y && host.isConnected ? d.card(host, { who, onDone }) : null)).catch(() => null);
   };
-  AI.lt = function (text) {                                          // LanguageTool (/lt) -> [{message, offset, length, rep[]}] | null (недоступен)
-    return tmo(6000, s => fetch('/lt/v2/check', { method: 'POST', signal: s, body: new URLSearchParams({ language: 'de-DE', text }) }))
-      .then(r => r.ok ? r.json() : null).then(j => j ? (j.matches || []).map(m => ({ message: m.message, offset: m.offset, length: m.length, rep: (m.replacements || []).slice(0, 2).map(x => x.value) })) : null).catch(() => null);
-  };
-  AI.LABEL = { pc: 'ИИ: ПК', off: 'ИИ выкл.' };
   const go = h => { if (window.dsGo) return window.dsGo(h); if (window.toast) toast('В приложении: вкладка «Мир» · nur in der App', 1800); };
   window.MF = { data, nouns, nextLesson, passedLessons, knownWords, curChapter, reviewList, appCh, hero, AI, esc, artC, ld, sv, go, COL, D: () => D };
 
@@ -132,7 +122,8 @@
   const TABS = [['next', 'Was jetzt?', 'что дальше'], ['why', 'Warum?', 'почему так'], ['rev', 'Wiederholen', 'повтор'], ['tal', 'Talente', 'навыки']];
   function head() {
     const h = W.el && W.el.querySelector('.ai'); if (!h) return; const st = AI.st;
-    h.className = 'ai' + (st && st.route === 'pc' ? '' : ' off'); h.textContent = st ? AI.LABEL[st.route] + (st.route === 'off' ? ' — всё работает без ИИ' : '') : 'ИИ: проверяю…';
+    h.className = 'ai' + (AI.on(st) ? '' : ' off'); h.dataset.route = st ? st.route : '';
+    h.textContent = st ? AI.LABEL[st.route] + (st.route === 'off' ? Lx(' — правила из уроков', ' — rules from the lessons') : st.route === 'browser' ? Lx(' · простые вопросы', ' · simple questions') : '') : 'ИИ: проверяю…';
   }
   function render() {
     const e = el();
@@ -203,18 +194,25 @@
     a.style.display = 'block'; a.innerHTML = 'думаю…'; a.dataset.src = 'wait'; toAns();
     const fallback = why => { a.dataset.src = 'data'; a.innerHTML = `<span class="ru" style="display:inline">${esc(why)}</span><br>${artC(w.text)}${w.why_ru ? '<br>' + artC(w.why_ru) : ''}<div class="src">ответ из урока ${w.lid}</div>`; toAns(); };
     AI.status().then(st => {
-      if (st.route !== 'pc') return fallback('ИИ выкл. — правило из урока:');
+      if (st.route === 'off') { fallback('ИИ выкл. — правило из урока:'); return AI.offer(a, 'Frau Becker', () => { AI.status(true).then(() => head()); }); }
       const cards = whyCards().slice(0, 6), first = [w].concat(cards.filter(c => c.pid !== w.pid)).slice(0, 5);
       const ctx = first.map(c => `Фраза: ${c.de} — ${c.ru}\nПравило: ${c.text}${c.why_ru ? ' ' + c.why_ru : ''}\nПримеры: ${c.ex.map(x => x.de + ' — ' + x.ru).join('; ')}`).join('\n\n');
       const H = hero(), sys = mentorPrompt(H, ctx), maxS = H.child ? 2 : 3;
-      const p = AI.warm(); return Promise.race([p, new Promise(r => setTimeout(r, 400))]).then(() => AI.chat([{ role: 'system', content: sys }, { role: 'user', content: q }], 150000, 180)).then(txt => {
+      const p = AI.warm(); return Promise.race([p, new Promise(r => setTimeout(r, 400))]).then(() => AI.chat([{ role: 'system', content: sys }, { role: 'user', content: q }], 150000, 180, { complex: true, child: H.child, onBad: 'flag' })).then(txt => {
         txt = String(txt).replace(/^(RU|DE):\s*/gim, '').replace(/\*\*/g, '').trim(); const ss = txt.split(/(?<=[.!?:])\s+/); let n = Math.min(maxS, ss.length); while (n < ss.length && n < maxS + 2 && /:$/.test(ss[n - 1])) n++;   // фраза с «:» — вместе с примером после неё
         const sents = ss.slice(0, n).join(' ').slice(0, 480);
-        const ctxL = ctx.toLowerCase(), bad = latin(sents).filter(x => !ctxL.includes(x.toLowerCase()) && !/^(A1|Max|ok)$/i.test(x));
+        // English: объяснение по-английски — немецкое только в «…» (так велит DSAI.langLine), сверяем с карточками только его
+        const en = !!(DS() && DS().isEn()), deParts = en ? (sents.match(/«[^»]+»/g) || []).map(x => x.slice(1, -1)).join(' ') : sents;
+        const ctxL = ctx.toLowerCase(), bad = latin(deParts).filter(x => !ctxL.includes(x.toLowerCase()) && !/^(A1|Max|ok)$/i.test(x));
+        const wrong = (AI.last && AI.last.bad) || [];                // заземление: слово переведено не как в уроках -> объяснение из урока
+        if (wrong.length) return fallback(Lx(`ИИ перепутал значение «${wrong[0].de}» (в уроках — «${wrong[0].expected}») — правило урока:`, `The AI mixed up «${wrong[0].de}» (in the course: “${wrong[0].expected}”) — the lesson rule:`));
         if (!sents || bad.length) return fallback(bad.length ? `ИИ взял немецкое не из урока (${bad.slice(0, 2).join(', ')}) — показываю правило урока:` : 'ИИ промолчал — правило урока:');
-        a.dataset.src = 'ai'; a.innerHTML = `${artC(sents)}<div class="src">${AI.LABEL.pc} · по карточкам урока ${w.lid}</div>`; toAns();
+        a.dataset.src = 'ai'; a.dataset.route = (AI.last && AI.last.route) || ''; a.innerHTML = `${artC(sents)}<div class="src">${esc((AI.last && AI.last.label) || AI.LABEL.pc)} · по карточкам урока ${w.lid}</div>`; toAns(); head();
       });
-    }).catch(e => fallback('ИИ не ответил (' + (e && e.name === 'AbortError' ? 'долго' : 'нет связи') + ') — правило урока:'));
+    }).catch(e => { const c = e && e.code; head();
+      fallback(c === 'simple' ? Lx('Упрощённый режим: ИИ в телефоне не объясняет «почему» — правило урока:', 'Simple mode: on-device AI can’t explain “why” — the lesson rule:')
+        : c === 'safety' ? Lx('Давай про урок — правило урока:', 'Let’s talk about the lesson — the rule:')
+        : c === 'quota' ? Lx('Лимит ключа на сегодня исчерпан — правило урока:', 'The key’s limit is used up for now — the lesson rule:') : 'ИИ не ответил (' + (e && e.name === 'AbortError' ? 'долго' : 'нет связи') + ') — правило урока:'); });
   }
 
   // ---------- «Wiederholen»: слова из «Повтора» (ds_proto.review, туда их кладёт бой) — артикль, потом перевод; оба верно -> слово уходит из «Повтора»

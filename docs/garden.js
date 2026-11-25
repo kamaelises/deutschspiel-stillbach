@@ -36,13 +36,13 @@
     const m = now().getMonth() + 1; return m >= 3 && m <= 5 ? 'fruehling' : m >= 6 && m <= 8 ? 'sommer' : m >= 9 && m <= 11 ? 'herbst' : 'winter';
   }
   function reach() {                                                  // открытые главы (как town.js)
-    let ch = []; try { ch = JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) {}
+    let ch = []; try { ch = window.DSMode ? DSMode.chapters() : JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []; } catch (e) {}   // Три режима: DSMode
     const started = ch.filter(c => c.done > 0).map(c => c.n);
     return Math.max(typeof state !== 'undefined' && state.done ? 2 : 1, started.length ? Math.max(...started) + 1 : 1);
   }
   function canSow(id) {
     const c = C(id), it = meta(id); if (!c || !it) return { ok: false, why_de: '…', why_ru: '' };
-    if (c.chapter > reach()) return { ok: false, lock: true, why_de: 'ab Kapitel ' + c.chapter, why_ru: 'откроется с главы ' + c.chapter };
+    if (c.chapter > reach()) return { ok: false, lock: true, why_de: window.DSMode ? DSMode.lock(c.chapter).de : 'ab Kapitel ' + c.chapter, why_ru: 'откроется ' + (window.DSMode ? DSMode.lock(c.chapter).ru : 'с главы ' + c.chapter) };
     const m = now().getMonth() + 1, win = `${MON[c.sow[0]]}–${MON[c.sow[c.sow.length - 1]]}`;
     if (c.sow.includes(m)) return { ok: true, why_de: c.verb, why_ru: c.verb === 'säen' ? 'посеять' : 'посадить' };
     if (season() === 'winter' || m < c.sow[0] || m >= 9) return { ok: false, cold: true, why_de: 'Jetzt ist es zu kalt', why_ru: 'сейчас слишком холодно · ' + win };

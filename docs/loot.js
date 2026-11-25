@@ -78,8 +78,21 @@
       <button class="ui ui-btn" data-x="1" style="min-height:46px;font-size:18px">Später<span class="ru">позже</span></button>`);
   }
   const LEGEND = { rubin: ['der Rubin', 'рубин — легенда Stillbach, бывает один раз', 'assets_v3/life/rubin.png'] };
+  function rest(c, card, gate) {                                     // Антифарм 25.11: сундук уже оплачен / дневной предел — только карточка слова (практика, без потерь)
+    give({ coins: 0, items: [] }, card); if (window.speakDE) speakDE(card);
+    if (gate === 'again' && c.chest) { c.chest.opened = true; if (c.chest.img && c.chest.img.setTint) c.chest.img.setTint(0xb8a890);
+      try { const o = JSON.parse(localStorage.getItem('ds_proto.opened')) || []; if (c.chest.id && !o.includes(c.chest.id)) { o.push(c.chest.id); localStorage.setItem('ds_proto.opened', JSON.stringify(o)); } } catch (e) {} }
+    const M = window.Rewards ? Rewards.msg() : { de: '', ru: '' }, full = gate === 'full';
+    show(`<div class="t">${full ? 'Morgen wieder!' : 'Die Truhe ist leer'}<span class="ru">${full ? 'на сегодня сундуков хватит — этот откроется завтра' : 'этот сундук уже открыт раньше'}</span></div>
+      <div class="rw" data-gate="${gate}"><div><img src="${ICON('karte')}" alt="">Wortkarte: ${card}<span class="ru">карточка слова · ${c.q.w.ru}</span></div></div>
+      ${full ? `<div class="q" style="font-size:16px">${M.de}<span class="ru">${M.ru}</span></div>` : ''}
+      <button class="ui ui-btn" data-x="1">Gut!<span class="ru">хорошо</span></button>`);
+  }
   function reward() {
-    const c = cur, rar = rarity(c.tier), r = roll(c.tier, rar), card = c.q.w.art + ' ' + c.q.w.w; give(r, card);
+    const c = cur, rar = rarity(c.tier), card = c.q.w.art + ' ' + c.q.w.w;
+    const gate = window.Rewards && c.chest ? Rewards.chest(c.chest.id) : 'ok';   // Антифарм 25.11: сундук платит один раз на id и до caps_count.chest в день
+    if (gate !== 'ok') return rest(c, card, gate);
+    const r = roll(c.tier, rar); give(r, card);
     const anim = !!(window.AnimFX && c.chest && c.chest.img && c.sc && c.sc.sys && c.sc.sys.isActive());
     if (c.chest) { c.chest.opened = true; if (!anim && c.chest.img && c.chest.img.setTint) c.chest.img.setTint(0xb8a890); if (c.onOpen) c.onOpen(c.chest, r); }
     try { const o = JSON.parse(localStorage.getItem('ds_proto.opened')) || []; if (c.chest && c.chest.id) { o.push(c.chest.id); localStorage.setItem('ds_proto.opened', JSON.stringify(o)); } } catch (e) {}

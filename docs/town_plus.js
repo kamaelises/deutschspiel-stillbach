@@ -18,9 +18,10 @@
     kirche: { ch: 5, base: 720, items: [['planter', 2064, 723], ['planter', 2175, 723], ['lat', 2034, 726], ['lat', 2205, 726, 1]] },
   };
   const FACADE = { box: 1, board: 1, sign_bag: 1, sign_mug: 1 };
-  const chDone = n => { try { const c = (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).find(q => +q.n === n); return !!c && c.total > 0 && c.done >= c.total; } catch (e) { return false; } };
+  const appCh = () => (window.DSMode ? DSMode.chapters() : JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []);   // Три режима: DSMode (mode.js)
+  const chDone = n => { try { const c = appCh().find(q => +q.n === n); return !!c && c.total > 0 && c.done >= c.total; } catch (e) { return false; } };
   const restDone = ids => { try { return !!(window.Restore && Restore.info) && ids.every(id => { const i = Restore.info(id); return !!i && i.st === 'done'; }); } catch (e) { return false; } };
-  const chN = n => { try { const c = (JSON.parse(localStorage.getItem('ds_proto.app')).chapters || []).find(q => +q.n === n); return c ? +c.done || 0 : 0; } catch (e) { return 0; } };
+  const chN = n => { try { const c = appCh().find(q => +q.n === n); return c ? +c.done || 0 : 0; } catch (e) { return 0; } };
   const state = () => { const s = {}; Object.entries(SET).forEach(([k, v]) => { s[k] = v.rest ? restDone(v.rest) : chDone(v.ch) && (!v.next || chN(v.ch + 1) >= v.next); }); return s; };
   let sc = null, objs = [], list = [];
   const g3 = v => Math.round(v / 3) * 3;                               // на сетку пикселя арта x3

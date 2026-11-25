@@ -123,7 +123,7 @@ window.DS_EN = {
 "готовая фраза": "ready-made phrase",
 "слово": "word",
 "страна": "country",
-"город": "city",
+"город": "town",
 "земля": "state",
 "число": "number",
 "буква": "letter",
@@ -310,7 +310,7 @@ window.DS_EN = {
 "держится": "holding",
 "· повторить:": "· review:",
 "Навыки в этом уроке": "Skills in this lesson",
-"пока нет": "none yet",
+"пока нет": "not yet",
 "нет": "no",
 "Ошибки ушли в повторение — вернутся, когда начнёшь забывать. «Шатко» — это верно, но с подсказкой, со второго раза или долго.": "Mistakes went to Review: they come back when you start forgetting. \"Shaky\" means correct, but with a hint, on the second try or slowly.",
 "Мини-теста сегодня не было (режим дня) — итог по ответам урока.": "No mini test today (day mode): the summary is based on your lesson answers.",
@@ -2141,13 +2141,13 @@ window.DS_EN = {
 "(тратится)": "(spent)",
 "выученных слов (не тратятся)": "learned words (not spent)",
 "исследования идут по реальному времени, даже когда игра закрыта; ускорить нельзя. Монеты и материалы тратятся, выученные слова — нет.": "research runs in real time, even when the game is closed; it can't be sped up. Coins and materials are spent, learned words are not.",
-"идёт": "in progress",
+"идёт": "running",
 "ветка в тумане": "branch in the fog",
-"откроется дальше": "unlocks later",
+"откроется дальше": "opens later",
 "· когда Макс подрастёт:": "· when Max grows up:",
 "пока в тумане": "still in the fog",
 "туман": "fog",
-"слот занят": "slot taken",
+"слот занят": "slot busy",
 "начать ·": "start ·",
 "мин": "min",
 "näher · ближе": "näher · closer",
@@ -2814,7 +2814,135 @@ window.DS_EN = {
 "на сегодня сундуков хватит — этот откроется завтра": "enough chests for today — this one opens tomorrow",
 "этот сундук уже открыт раньше": "this chest was opened before",
 "хорошо": "good",
-"верно · на сегодня монеты за рыбу собраны — ловить можно для практики": "right · today's fishing coins are collected — keep fishing for practice"
+"верно · на сегодня монеты за рыбу собраны — ловить можно для практики": "right · today's fishing coins are collected — keep fishing for practice",
+"эпоха — уровень языка: деревня A1 → городок A2 → город B1. Новая эпоха — праздник в деревне и бонус на выбор; монетами её не купить.": "the epoch is your language level: village A1 → small town A2 → town B1. A new epoch is a village celebration plus a bonus of your choice; coins can't buy it.",
+"в деревню": "to the village",
+"выбранные бонусы эпох": "chosen epoch bonuses",
+"чертежи и улучшения (прежняя Forschung)": "blueprints and upgrades (the earlier Forschung)",
+"бонус эпохи ещё не выбран": "epoch bonus not chosen yet",
+"выбрать": "choose",
+"исследование = тема грамматики. Открывается пройденной главой (поле), идёт по реальному времени, монет не стоит. Эффект — в мире.": "research = a grammar topic. It opens with a finished chapter (the field), runs in real time and costs no coins. The effect shows in the world.",
+"идёт исследование": "research in progress",
+"осталось": "left",
+"реставраций готово": "restorations done",
+"слов «твёрдо» (FSRS) или Wortkarten — не тратятся": "words known \"firmly\" (FSRS) or word cards - not spent",
+"пропустить": "skip",
+"что нового": "what's new",
+"выбери бонус — один; учебные темы открываются все": "pick one bonus; all learning topics still open",
+"деревня": "village",
+"городок": "small town",
+"Штилльбах теперь городок: флажки над домами.": "Stillbach is a small town now: little flags over the houses.",
+"новые исследования грамматики уровня A2 — открываются главами A2.": "new A2 grammar research - it opens with the A2 chapters.",
+"бонус на выбор — один из трёх; учебные темы открываются все, бонус только ускоряет мир.": "a bonus of your choice - one of three; all learning topics still open, the bonus only speeds up the world.",
+"Штилльбах теперь город.": "Stillbach is a town now.",
+"новые исследования грамматики уровня B1.": "new B1 grammar research.",
+"бонус на выбор — один из трёх.": "a bonus of your choice - one of three.",
+"мастерская": "workshop",
+"библиотека": "library",
+"стройдвор": "builder's yard",
+"глаголы-действия": "action verbs",
+"еда и природа": "food and nature",
+"чтение": "reading",
+"работа и планы": "work and plans",
+"природа и климат": "nature and climate",
+"новости и мнение": "news and opinions",
+"реставрация на 20 % быстрее.": "restoration is 20 % faster.",
+"огород растёт на 25 % быстрее.": "the garden grows 25 % faster.",
+"задания приносят на 15 % больше монет.": "tasks give 15 % more coins.",
+"реставрация на 15 % быстрее.": "restoration is 15 % faster.",
+"иногда двойной урожай (+10 %).": "sometimes a double harvest (+10 %).",
+"задания приносят на 10 % больше монет.": "tasks give 10 % more coins.",
+"настоящее время": "present tense",
+"артикль: der/die/das, ein, kein": "article: der/die/das, ein, kein",
+"множественное число, сложные слова": "plural, compound words",
+"отделяемые приставки": "separable prefixes",
+"винительный: einen, den": "accusative: einen, den",
+"können, müssen, wollen, dürfen": "können, müssen, wollen, dürfen",
+"прошедшее: habe gemacht, bin gefahren": "past: habe gemacht, bin gefahren",
+"дательный: dem, der, mir": "dative: dem, der, mir",
+"просьба: Komm! Kommt!": "request: Komm! Kommt!",
+"союзы": "conjunctions",
+"указательные и неопределённые": "demonstratives and indefinites",
+"простое прошедшее": "simple past",
+"придаточные weil, dass": "subordinate clauses weil, dass",
+"in, an, auf: где? / куда?": "in, an, auf: where? / where to?",
+"вежливо: Könnten Sie …?": "polite: Könnten Sie …?",
+"пассив": "passive",
+"задания +5 % монет.": "tasks +5 % coins.",
+"редкие рыбы +10 %.": "rare fish +10 %.",
+"иногда двойной урожай (+5 %).": "sometimes a double harvest (+5 %).",
+"реставрация на 5 % быстрее.": "restoration is 5 % faster.",
+"огород растёт на 5 % быстрее.": "the garden grows 5 % faster.",
+"поклёвка на 5 % быстрее.": "bites come 5 % faster.",
+"задания +10 % монет; дальше (A2) — Präteritum.": "tasks +10 % coins; next (A2): Präteritum.",
+"«жили-были…» — эпоха A2": "\"once upon a time…\" - epoch A2",
+"глагол в конце — эпоха A2": "verb at the end - epoch A2",
+"где? куда? — эпоха A2": "where? where to? - epoch A2",
+"очень вежливо — эпоха B1": "very polite - epoch B1",
+"дом строится — эпоха B1": "the house is being built - epoch B1",
+"уличный рынок": "street market",
+"фрау Бергер, продавщица на рынке": "Frau Berger, the market seller",
+"список выполнен — дальше можно покупать для практики (без монет)": "the list is done — you can keep buying for practice (no coins)",
+"мамин список и деньги на покупки": "Mum's list and the shopping money",
+"сердится": "annoyed",
+"незнакомы": "strangers",
+"знакомы": "acquainted",
+"дружите": "friends",
+"до свидания (закрыть)": "goodbye (close)",
+"к товарам": "back to the goods",
+"попробуй ещё раз": "try again",
+"Добрый день! Что тебе дать?": "Good afternoon! What can I get you?",
+"поздоровайся с продавщицей": "greet the seller",
+"добрый день, фрау Бергер!": "good afternoon, Frau Berger!",
+"спокойной ночи, фрау Бергер!": "good night, Frau Berger!",
+"«Gute Nacht» говорят перед сном — днём «Guten Tag»": "«Gute Nacht» is said before bed — in the daytime it is «Guten Tag»",
+"пока, фрау Бергер!": "bye, Frau Berger!",
+"«Tschüss» — это «пока» при прощании": "«Tschüss» means \"bye\" when you leave",
+"ещё что-нибудь? можно потренироваться": "anything else? we can practise",
+"что ты хочешь?": "what would you like?",
+"нажми на товар": "tap an item",
+"да, пожалуйста?": "yes, please?",
+"спроси, сколько это стоит": "ask how much it costs",
+"сколько стоит …?": "how much is …?",
+"где …?": "where is …?",
+"«Wo?» — это «где?», а нужно спросить цену": "«Wo?» means \"where?\", but you need to ask the price",
+"сколько? выбери число": "how much? pick the number",
+"послушай ещё раз (кнопка «Hören»)": "listen again (the «Hören» button)",
+"для тебя уже со скидкой": "already cheaper for you",
+"сегодня скидка": "on sale today",
+"сегодня дороже обычного": "more expensive than usual today",
+"это сейчас много покупают — цена подросла (скоро вернётся)": "many people are buying this now — the price went up (it will come back soon)",
+"цена за штуку": "price per piece",
+"можно поторговаться — но вежливо": "you can haggle — but politely",
+"вы не могли бы дешевле, пожалуйста? (Sie — вежливо)": "could you make it cheaper, please? (Sie — polite)",
+"можешь дешевле? (du)": "can you make it cheaper? (du)",
+"незнакомым взрослым говорят «Sie», а не «du» — отношение испортилось": "say «Sie» to adults you don't know, not «du» — the attitude got worse",
+"хорошо, беру": "OK, I'll take it",
+"продавщица ещё сердится (было «du»): скидки нет — со временем пройдёт": "the seller is still annoyed (you said «du»): no discount — it will pass with time",
+"дважды за день на один товар скидку не дают": "no second discount on the same item in one day",
+"дешевле уже нельзя": "it can't get any cheaper",
+"ладно — для тебя дешевле!": "all right — cheaper for you!",
+"после числа — множественное число": "after a number — use the plural",
+"на мамином листке другое количество": "Mum's list says a different number",
+"сколько штук?": "how many?",
+"возьми столько, сколько на мамином листке": "take as many as Mum's list says",
+"тренировка: сколько хочешь (монеты не тратятся)": "practice: as many as you like (no coins are spent)",
+"с тебя столько (из маминых денег)": "that's what you pay (from Mum's money)",
+"тренировка: монеты не тратятся": "practice: no coins are spent",
+"маминых денег не хватает — добавишь свои или подожди, пока цена вернётся": "Mum's money is not enough — add your own or wait until the price comes back",
+"отдай деньги": "hand over the money",
+"пожалуйста! (когда даёшь)": "here you are! (when you give)",
+"спасибо!": "thank you!",
+"«Bitte schön» — когда даёшь, «Danke» — когда получаешь": "«Bitte schön» when you give, «Danke» when you receive",
+"не хватает монет — подожди, цена вернётся": "not enough coins — wait, the price will come back",
+"куплено для мамы": "bought for Mum",
+"тренировка — монеты не тратятся": "practice — no coins are spent",
+"всё куплено — мама разрешила оставить сдачу себе": "everything is bought — Mum lets you keep the change",
+"ты вежливо поздоровался": "you greeted politely",
+"ты был вежлив (Sie, bitte)": "you were polite (Sie, bitte)",
+"ты сделал мамины покупки": "you did Mum's shopping",
+"сказал «du» взрослой вместо «Sie»": "said «du» to an adult instead of «Sie»",
+"груша": "pear"
 },
 "p": [
 [
@@ -2872,6 +3000,10 @@ window.DS_EN = {
 [
 "ИИ перепутал значение «{0}» (в уроках — «{1}») — правило урока:",
 "The AI mixed up «{0}» (in the course: “{1}”) — the lesson rule:"
+],
+[
+"следующая эпоха — {0}: ворота открыты, праздник — в деревне",
+"next epoch: {0} - the gate is open, the celebration is in the village"
 ],
 [
 "{0} фразы. Слушай медленно, по частям, сколько нужно раз.",
@@ -2982,6 +3114,10 @@ window.DS_EN = {
 "The PC didn’t answer — the backup answered: {0}."
 ],
 [
+"новая эпоха: {0} ({1}) — открыта навсегда",
+"new epoch: {0} ({1}) - open forever"
+],
+[
 "Ты — {0}. Отвечай вслух на реплики: {1}.",
 "You are {0}. Answer the lines out loud: {1}."
 ],
@@ -3016,6 +3152,10 @@ window.DS_EN = {
 [
 "Не получилось: {0} Нажми ➤ ещё раз.",
 "Didn't work: {0} Tap ➤ again."
+],
+[
+"Stufe героя {0} или пройдена глава {1}",
+"hero Stufe {0} or chapter {1} finished"
 ],
 [
 "Без ключа: ИИ в телефоне (≈{0} ГБ)",
@@ -3134,6 +3274,10 @@ window.DS_EN = {
 "· when Max grows up: {0}"
 ],
 [
+"глава {0} пройдена (поле: {1})",
+"chapter {0} finished (field: {1})"
+],
+[
 "Стройка: {0} · уроков {1} из {2}",
 "Construction: {0} · lessons {1} of {2}"
 ],
@@ -3152,6 +3296,10 @@ window.DS_EN = {
 [
 "{0} · по карточкам урока {1}",
 "{0} · from the cards of lesson {1}"
+],
+[
+"отношение продавщицы: {0}",
+"the seller's attitude: {0}"
 ],
 [
 "Совпало {0}%. Правильно:",
@@ -3266,6 +3414,10 @@ window.DS_EN = {
 "unlocks from chapter {0}"
 ],
 [
+"следующая эпоха — {0}",
+"next epoch: {0}"
+],
+[
 "{0} · какой артикль?",
 "{0} · which article?"
 ],
@@ -3336,6 +3488,10 @@ window.DS_EN = {
 [
 "ответ из урока {0}",
 "answer from lesson {0}"
+],
+[
+"пройдена глава {0}",
+"chapter {0} finished"
 ],
 [
 "🔁 Повторить ({0})",
@@ -3416,6 +3572,14 @@ window.DS_EN = {
 [
 "пока в тумане{0}",
 "still in the fog{0}"
+],
+[
+"начать · {0} мин",
+"start · {0} min"
+],
+[
+"новая эпоха: {0}",
+"new epoch: {0}"
 ],
 [
 "Остановка {0}: {1}{2}",
@@ -3614,6 +3778,10 @@ window.DS_EN = {
 "{0} · harvest"
 ],
 [
+"сначала: {0}",
+"first: {0}"
+],
+[
 "· 🔥 {0} дн.",
 "· 🔥 {0} d"
 ],
@@ -3718,12 +3886,20 @@ window.DS_EN = {
 "hand in: {0}"
 ],
 [
+"эпоха {0}",
+"epoch {0}"
+],
+[
 "Урок {0}",
 "Lesson {0}"
 ],
 [
 "гл. {0}–{1}",
 "ch. {0}–{1}"
+],
+[
+"род: {0}",
+"gender: {0}"
 ],
 [
 "{0} мин",

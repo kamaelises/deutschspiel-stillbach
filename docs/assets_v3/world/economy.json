@@ -19,7 +19,7 @@
     "help": 2
   },
   "scale": { "quest": 0.4, "fight": 0.5, "chest": 0.5 },
-  "caps_day": { "fish": 10, "fight": 15, "sell": 15, "help": 6, "xp": 150, "minigame": 10 },
+  "caps_day": { "fish": 10, "fight": 15, "sell": 15, "help": 6, "xp": 150, "minigame": 10, "markt": 4 },
   "caps_count": { "chest": 6, "note": "Антифарм 25.11 (rewards.js): сундуков с наградой в день; сундук платит один раз на id (сид:этаж:номер); сверх предела сундук не открывается до завтра, карточка слова — сразу" },
   "repeat": [1, 0.5, 0.25, 0],
   "antifarm": "Антифарм 25.11 (proto/rewards.js, tasks/ANTIFARM.md): caps_day.fight/fish — монеты за бои/рыбу в день через Eco.earn; caps_day.xp — опыт боёв в день; repeat — множитель повтора (1-й проход 100 %, потом 50/25/0); реплики Ort/Room — монеты один раз за реплику",

@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "about": "Epoch-2 (Markt) 25.11, только за флагом ?markt=1 (proto/markt.js). Wochenmarkt-стенд у участка «der Markt» (глава 16): A1 — Zahlen, «Was kostet…?», Akkusativ (einen Apfel), Plural, Sie/du. Идеи: 0 A.D. Barter (цена дышит: покупка +1, возврат со временем), Unciv Diplomacy (Ruf = сумма причин с текстом, затухание к 0). Код и значения чужих игр не копируем (tasks/EPOCH_STUDY.md §4).",
+  "vendor": { "de": "Frau Berger", "ru": "фрау Бергер, продавщица на рынке" },
+  "stall": { "x": 800, "y": 1760, "stand": [800, 1778], "plot": "markt", "from_chapter": 4, "note": "mk2 25.11 (решение главного): стенд виден, когда открыта глава 4 (начата глава 3; «Только игра» — по Stufe, DSMode.chapters), как участки town.js; после главы 16 не прячется" },
+  "goods": [
+    { "id": "apfel",  "art": "der", "sg": "Apfel",  "pl": "Äpfel",   "ru": "яблоко",  "base": 2 },
+    { "id": "banane", "art": "die", "sg": "Banane", "pl": "Bananen", "ru": "банан",   "base": 2 },
+    { "id": "tomate", "art": "die", "sg": "Tomate", "pl": "Tomaten", "ru": "помидор", "base": 2 },
+    { "id": "birne",  "art": "die", "sg": "Birne",  "pl": "Birnen",  "ru": "груша",   "base": 2 },
+    { "id": "ei",     "art": "das", "sg": "Ei",     "pl": "Eier",    "ru": "яйцо",    "base": 1 },
+    { "id": "brot",   "art": "das", "sg": "Brot",   "pl": "Brote",   "ru": "хлеб",    "base": 4 }
+  ],
+  "price": { "floor": 1, "pressure_max": 3, "pressure_back_min": 10, "mood": { "angebot": -1, "teuer": 1 } },
+  "list": { "items": 2, "qty_max": 3, "purse_extra_per_piece": 1 },
+  "antifarm": {
+    "change_cap_day": 4,
+    "ruf_gain_day": 4,
+    "note": "Доход рынка — только сдача (das Wechselgeld) с маминого списка: список один раз в день, сдача ≤ change_cap_day через Rewards.coins(…,'markt'). Покупки «для практики» — 0 монет. Торг только снижает трату (−1 за штуку, раз в день на товар), не даёт дохода. Ruf — не валюта; рост ≤ ruf_gain_day в день, каждая причина затухает на 1 в день."
+  },
+  "ruf": {
+    "decay_per_day": 1,
+    "levels": [
+      { "min": -99, "de": "verärgert",  "ru": "сердится" },
+      { "min": 0,   "de": "fremd",      "ru": "незнакомы" },
+      { "min": 5,   "de": "bekannt",    "ru": "знакомы" },
+      { "min": 12,  "de": "befreundet", "ru": "дружите" }
+    ],
+    "why": {
+      "gruss":    { "v": 1,  "de": "Du hast höflich gegrüßt", "ru": "ты вежливо поздоровался" },
+      "hoeflich": { "v": 2,  "de": "Du warst höflich (Sie, bitte)", "ru": "ты был вежлив (Sie, bitte)" },
+      "zettel":   { "v": 3,  "de": "Du hast für Mama eingekauft", "ru": "ты сделал мамины покупки" },
+      "du":       { "v": -3, "de": "«du» statt «Sie»", "ru": "сказал «du» взрослой вместо «Sie»" }
+    }
+  }
+}

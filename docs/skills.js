@@ -203,6 +203,11 @@
     #skills .close{width:110px;height:52px;font-size:18px;line-height:1.05;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#2e1e12;font-family:inherit;padding:2px 6px}`;
   document.head.appendChild(css);
   const p = document.createElement('div'); p.id = 'skills'; p.className = 'ui ui-panel-paper';
+  // 25.11 Epoch-1 (CHECK_epoch_markt_2511 Д1/Д3): касание панели — целиком мимо Phaser (его слушатели на window): пары down+up глушатся на самой панели,
+  // иначе тап по вкладке/«Zurück» над домом уводил Max в Elternhaus, а половинка пары (down без up) оставляла палец «нажатым» -> следующие тапы = щипок.
+  const SHIELD = ['mousedown', 'mouseup', 'mousemove', 'touchstart', 'touchend', 'touchmove', 'touchcancel', 'pointerdown', 'pointerup', 'pointermove', 'pointercancel', 'wheel'];
+  const shield = el => SHIELD.forEach(t => el.addEventListener(t, e => e.stopPropagation(), { passive: true }));
+  shield(p);
   p.innerHTML = `<div class="top"><div class="ttl">Held &amp; Talente<small>герой и навыки</small></div><button class="ui ui-btn close" id="skClose">Zurück<span class="ru">назад</span></button></div>
     <div class="stat" id="skStat"></div><div class="tabs grp" id="skGrp"></div><div class="tabs" id="skTabs"></div><div class="list" id="skList"></div>`;
   let group = 'kampf', tab = 'wort';
@@ -267,9 +272,10 @@
     if (t.dataset.r && window.Research) { const r = Research.start(t.dataset.r); if (r.ok && window.toast) toast('Die Forschung läuft!', 1400); render(); return; }
     if (t.dataset.s && learn(t.dataset.s)) { if (window.toast) toast('Neues Talent!', 1200); render(); }
   });
-  const hide = ['bag', 'bFurn', 'bMap', 'cbHero']; let was = {}, timer = 0;
+  const hide = ['bag', 'bFurn', 'bMap', 'cbHero']; let was = {}, timer = 0, busyOwner = null;
   function open() {
     festSeen(); wrapTalk(); render();
+    try { const s = window.game && game.scene.getScenes(true)[0]; if (s && !s.busy) { s.busy = true; busyOwner = s; } } catch (e) {}   // как markt.js: пока панель открыта, сцена не берёт тапы (Д1/Д3)
     hide.forEach(k => { const e = document.getElementById(k); if (e) { was[k] = e.style.display; e.style.display = 'none'; } }); p.style.display = 'flex';
     loadFirm().then(() => { if (p.style.display === 'flex') render(); });
     clearInterval(timer); timer = setInterval(() => {                // таймер исследования: полоска и «noch m:ss» живые
@@ -277,12 +283,12 @@
       if (window.Research) { const fin = Research.tick(); if (fin || (tab === 'forsch' && Research.active())) render(); }
     }, 1000);
   }
-  function close() { clearInterval(timer); p.style.display = 'none'; hide.forEach(k => { const e = document.getElementById(k); if (e && was[k] !== undefined) e.style.display = was[k]; }); }
+  function close() { clearInterval(timer); p.style.display = 'none'; if (busyOwner) { busyOwner.busy = false; busyOwner = null; } hide.forEach(k => { const e = document.getElementById(k); if (e && was[k] !== undefined) e.style.display = was[k]; }); }
   window.Skills.open = open; window.Skills.close = close; window.Skills.render = () => { if (p.style.display === 'flex') render(); };
   function hook() {
     const ui = document.getElementById('ui'), bag = document.getElementById('bag');
     if (!ui || !bag) return setTimeout(hook, 100);
-    ui.appendChild(p); bag.addEventListener('click', open);
+    ui.appendChild(p); bag.addEventListener('click', open); shield(bag);   // кнопка Rucksack: тап не уходит в Phaser (на 360x740 под ней стоит друг -> окно друга вместо рюкзака)
     festSeen(); wrapTalk(); setTimeout(wrapTalk, 1500);
     try { if (window.WorldTime && WorldTime.on) WorldTime.on('festival', festSeen); } catch (e) {}
   }

@@ -1,0 +1,80 @@
+{
+  "_note": "25.11 Epoch-1 (tasks\\EPOCH_STUDY.md §2, §5 п.1–3). Только за флагом ?epoch=1 / localStorage DS_EPOCH=1 (epoch.js). Эпоха = уровень языка: A1 das Dorf -> A2 das Städtchen -> B1 die Stadt. Ворота эпохи (gate): reach — старшая глава мира (DSMode.chapters: начатая n или пройденная n+1; в «Только игра» — Stufe, MODES §3: 17/33), restore — сколько задач Restore (kind != help) готово, words — слова «твёрдо» FSRS (Skills.firm) или Wortkarten (что больше). Монетами эпоху не купить. Числа ворот и fx свои [предлагаю]. fx читают существующие модули через Skills.fx (epoch.js добавляет сумму): restore.speed (restore.js, предел 0.4), garden.speed / garden.double (garden.js), quest.reward (quests.js), fish.rare / fish.wait (fishing.js, предел 0.4).",
+  "epochs": [
+    { "id": "A1", "de": "das Dorf", "ru": "деревня", "gate": null },
+    { "id": "A2", "de": "das Städtchen", "ru": "городок", "gate": { "reach": 17, "restore": 3, "words": 40 },
+      "news": [
+        { "de": "Stillbach ist jetzt ein Städtchen: Fähnchen über den Häusern.", "ru": "Штилльбах теперь городок: флажки над домами." },
+        { "de": "Neue Grammatik-Forschung: das Präteritum, weil und dass, Wechselpräpositionen.", "ru": "новые исследования грамматики уровня A2 — открываются главами A2." },
+        { "de": "Ein Bonus nach Wahl: 1 aus 3.", "ru": "бонус на выбор — один из трёх; учебные темы открываются все, бонус только ускоряет мир." }
+      ],
+      "bonus": [
+        { "id": "werkstatt", "art": "die", "de": "Werkstatt", "ru": "мастерская", "theme_de": "bauen, reparieren, machen", "theme": "глаголы-действия", "fx": { "restore.speed": -0.2 }, "txt_de": "Restaurieren geht 20 % schneller.", "txt": "реставрация на 20 % быстрее." },
+        { "id": "garten", "art": "der", "de": "Garten", "ru": "сад", "theme_de": "der Apfel, die Karotte, wachsen", "theme": "еда и природа", "fx": { "garden.speed": 0.25 }, "txt_de": "Der Garten wächst 25 % schneller.", "txt": "огород растёт на 25 % быстрее." },
+        { "id": "bibliothek", "art": "die", "de": "Bibliothek", "ru": "библиотека", "theme_de": "das Buch, lesen, die Geschichte", "theme": "чтение", "fx": { "quest.reward": 0.15 }, "txt_de": "Aufgaben bringen 15 % mehr Münzen.", "txt": "задания приносят на 15 % больше монет." }
+      ] },
+    { "id": "B1", "de": "die Stadt", "ru": "город", "gate": { "reach": 33, "restore": 3, "words": 120 },
+      "news": [
+        { "de": "Stillbach ist jetzt eine Stadt.", "ru": "Штилльбах теперь город." },
+        { "de": "Neue Grammatik-Forschung: Konjunktiv II, Relativsätze, Passiv.", "ru": "новые исследования грамматики уровня B1." },
+        { "de": "Ein Bonus nach Wahl: 1 aus 3.", "ru": "бонус на выбор — один из трёх." }
+      ],
+      "bonus": [
+        { "id": "bauhof", "art": "der", "de": "Bauhof", "ru": "стройдвор", "theme_de": "planen, bauen, verbessern", "theme": "работа и планы", "fx": { "restore.speed": -0.15 }, "txt_de": "Restaurieren geht 15 % schneller.", "txt": "реставрация на 15 % быстрее." },
+        { "id": "gewaechshaus", "art": "das", "de": "Gewächshaus", "ru": "теплица", "theme_de": "das Klima, die Pflanze, ernten", "theme": "природа и климат", "fx": { "garden.double": 0.1 }, "txt_de": "Manchmal doppelte Ernte (+10 %).", "txt": "иногда двойной урожай (+10 %)." },
+        { "id": "zeitung", "art": "die", "de": "Zeitung", "ru": "газета", "theme_de": "der Artikel, berichten, die Meinung", "theme": "новости и мнение", "fx": { "quest.reward": 0.1 }, "txt_de": "Aufgaben bringen 10 % mehr Münzen.", "txt": "задания приносят на 10 % больше монет." }
+      ] }
+  ],
+  "_grammar_note": "Карта поле -> грамматика: ch — глава, которую нужно пройти (её уроки = «поле»), fields — все главы с этой темой, src — content\\chapters.json grammar_de_toc (Linie 1 A1, учебник автора). A2/B1: главы ещё не написаны — номера [предлагаю], до эпохи узел в тумане. Цена — только время и слова (не тратятся); монет нет: учебный прогресс не продаётся.",
+  "slots": 1,
+  "grammar": [
+    { "id": "praesens", "art": "das", "de": "Präsens", "ru": "настоящее время", "epoch": "A1", "ch": 1, "fields": [1, 2], "need": [], "words": 0, "min": 10,
+      "src": "Verben und Personalpronomen kommen, wohnen, heißen, sein; sprechen, lernen, haben", "fx": { "quest.reward": 0.05 },
+      "txt_de": "ich komme, du wohnst — Aufgaben +5 % Münzen.", "txt": "задания +5 % монет." },
+    { "id": "artikel", "art": "der", "de": "Artikel", "ru": "артикль: der/die/das, ein, kein", "epoch": "A1", "ch": 3, "fields": [3], "need": ["praesens"], "words": 5, "min": 15,
+      "src": "bestimmter Artikel; unbestimmter Artikel ein, eine; Negativartikel kein, keine", "fx": { "fish.rare": 0.1 },
+      "txt_de": "der Fisch, die Forelle — seltene Fische +10 %.", "txt": "редкие рыбы +10 %." },
+    { "id": "plural", "art": "der", "de": "Plural", "ru": "множественное число, сложные слова", "epoch": "A1", "ch": 4, "fields": [4], "need": ["artikel"], "words": 8, "min": 15,
+      "src": "Artikel und Nomen in Singular und Plural; Komposita", "fx": { "garden.double": 0.05 },
+      "txt_de": "zwei Karotten — manchmal doppelte Ernte (+5 %).", "txt": "иногда двойной урожай (+5 %)." },
+    { "id": "trennbar", "art": "die", "de": "trennbaren Verben", "ru": "отделяемые приставки", "epoch": "A1", "ch": 5, "fields": [5], "need": ["praesens"], "words": 8, "min": 20,
+      "src": "Verben mit Vokalwechsel; trennbare Verben", "fx": { "restore.speed": -0.05 },
+      "txt_de": "Max baut auf — Restaurieren 5 % schneller.", "txt": "реставрация на 5 % быстрее." },
+    { "id": "akkusativ", "art": "der", "de": "Akkusativ", "ru": "винительный: einen, den", "epoch": "A1", "ch": 6, "fields": [4, 6], "need": ["plural"], "words": 10, "min": 20,
+      "src": "unbestimmter Artikel im Akkusativ; bestimmter Artikel: Akkusativ", "fx": { "garden.speed": 0.05 },
+      "txt_de": "Ich pflanze den Salat — der Garten wächst 5 % schneller.", "txt": "огород растёт на 5 % быстрее." },
+    { "id": "modal", "art": "die", "de": "Modalverben", "ru": "können, müssen, wollen, dürfen", "epoch": "A1", "ch": 8, "fields": [7, 8, 13], "need": ["trennbar"], "words": 12, "min": 25,
+      "src": "Modalverben können, müssen, wollen, dürfen (sollen — Kap. 13); Satzklammer", "fx": { "fish.wait": -0.05 },
+      "txt_de": "Ich kann warten — die Fische beißen 5 % schneller an.", "txt": "поклёвка на 5 % быстрее." },
+    { "id": "perfekt", "art": "das", "de": "Perfekt", "ru": "прошедшее: habe gemacht, bin gefahren", "epoch": "A1", "ch": 10, "fields": [9, 10], "need": ["modal"], "words": 15, "min": 30,
+      "src": "Perfekt mit haben und sein; Partizip II; trennbare und -ieren-Verben", "fx": { "quest.reward": 0.1 },
+      "txt_de": "Max erzählt, was er gemacht hat — Aufgaben +10 % Münzen.", "txt": "задания +10 % монет; дальше (A2) — Präteritum." },
+    { "id": "dativ", "art": "der", "de": "Dativ", "ru": "дательный: dem, der, mir", "epoch": "A1", "ch": 12, "fields": [11, 12, 14, 15], "need": ["akkusativ"], "words": 15, "min": 30,
+      "src": "Possessivartikel und Personalpronomen im Dativ; bestimmter Artikel im Dativ; von, nach, zu, mit, bei + Dativ", "fx": { "restore.speed": -0.05 },
+      "txt_de": "Ich helfe dem Nachbarn — Restaurieren 5 % schneller.", "txt": "реставрация на 5 % быстрее." },
+    { "id": "imperativ", "art": "der", "de": "Imperativ", "ru": "просьба: Komm! Kommt!", "epoch": "A1", "ch": 12, "fields": [12, 15], "need": ["trennbar"], "words": 10, "min": 20,
+      "src": "Imperativ: du-Form (Kap. 12), ihr-Form (Kap. 15)", "fx": { "quest.reward": 0.05 },
+      "txt_de": "Hilf mir! — Aufgaben +5 % Münzen.", "txt": "задания +5 % монет." },
+    { "id": "konnektoren", "art": "", "de": "und, oder, aber, denn", "ru": "союзы", "epoch": "A1", "ch": 14, "fields": [13, 14], "need": ["modal"], "words": 15, "min": 20,
+      "src": "Satzverbindungen mit und, oder, aber; mit denn", "fx": { "garden.speed": 0.05 },
+      "txt_de": "Ich gieße, denn es ist trocken — Garten 5 % schneller.", "txt": "огород растёт на 5 % быстрее." },
+    { "id": "demonstrativ", "art": "", "de": "dieser, welcher, alles, nichts", "ru": "указательные и неопределённые", "epoch": "A1", "ch": 16, "fields": [16], "need": ["akkusativ"], "words": 20, "min": 20,
+      "src": "unbestimmte Pronomen alles, etwas, nichts; Welch-…?; Demonstrativartikel; für + Akkusativ", "fx": { "fish.rare": 0.1 },
+      "txt_de": "Welcher Fisch? Dieser! — seltene Fische +10 %.", "txt": "редкие рыбы +10 %." },
+    { "id": "praeteritum", "art": "das", "de": "Präteritum", "ru": "простое прошедшее", "epoch": "A2", "ch": 20, "fields": [20], "need": ["perfekt"], "words": 50, "min": 40,
+      "src": "[предлагаю] A2", "fx": { "quest.reward": 0.05 }, "hint": { "de": "Es war einmal …", "ru": "«жили-были…» — эпоха A2" },
+      "txt_de": "Es war einmal — Aufgaben +5 % Münzen.", "txt": "задания +5 % монет." },
+    { "id": "nebensatz", "art": "der", "de": "Nebensatz: weil, dass", "ru": "придаточные weil, dass", "epoch": "A2", "ch": 22, "fields": [22], "need": ["konnektoren"], "words": 60, "min": 40,
+      "src": "[предлагаю] A2", "fx": { "restore.speed": -0.05 }, "hint": { "de": "…, weil das Verb am Ende steht.", "ru": "глагол в конце — эпоха A2" },
+      "txt_de": "Restaurieren 5 % schneller.", "txt": "реставрация на 5 % быстрее." },
+    { "id": "wechsel", "art": "die", "de": "Wechselpräpositionen", "ru": "in, an, auf: где? / куда?", "epoch": "A2", "ch": 24, "fields": [24], "need": ["dativ"], "words": 70, "min": 45,
+      "src": "[предлагаю] A2", "fx": { "garden.speed": 0.05 }, "hint": { "de": "Wo? Wohin?", "ru": "где? куда? — эпоха A2" },
+      "txt_de": "Garten 5 % schneller.", "txt": "огород растёт на 5 % быстрее." },
+    { "id": "konjunktiv2", "art": "der", "de": "Konjunktiv II", "ru": "вежливо: Könnten Sie …?", "epoch": "B1", "ch": 34, "fields": [34], "need": ["nebensatz"], "words": 130, "min": 60,
+      "src": "[предлагаю] B1", "fx": { "quest.reward": 0.05 }, "hint": { "de": "Könnten Sie …?", "ru": "очень вежливо — эпоха B1" },
+      "txt_de": "Aufgaben +5 % Münzen.", "txt": "задания +5 % монет." },
+    { "id": "passiv", "art": "das", "de": "Passiv", "ru": "пассив", "epoch": "B1", "ch": 38, "fields": [38], "need": ["praeteritum"], "words": 150, "min": 60,
+      "src": "[предлагаю] B1", "fx": { "restore.speed": -0.05 }, "hint": { "de": "Das Haus wird gebaut.", "ru": "дом строится — эпоха B1" },
+      "txt_de": "Restaurieren 5 % schneller.", "txt": "реставрация на 5 % быстрее." }
+  ]
+}

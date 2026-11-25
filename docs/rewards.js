@@ -7,7 +7,7 @@
 //   best(id, score) -> true if a new record, full(kind) -> the plaque «на сегодня награды собраны» once a day, msg(), state(), _reset().
 (function () {
   const K = 'ds_proto.rewards';
-  const DEF = { caps_day: { fight: 15, fish: 10, help: 6, xp: 150, minigame: 10 }, caps_count: { chest: 6 }, repeat: [1, 0.5, 0.25, 0] };
+  const DEF = { caps_day: { fight: 15, fish: 10, help: 6, xp: 150, minigame: 10, markt: 4 }, caps_count: { chest: 6 }, repeat: [1, 0.5, 0.25, 0] };
   const MSG = { de: 'Für heute genug Belohnungen — üben kannst du immer.', ru: 'На сегодня награды собраны — играть можно для практики.' };
   const day = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
   function cfg() {
